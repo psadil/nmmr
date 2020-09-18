@@ -33,6 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE)
+          remotes::install_github('stan-dev/posterior')
           install.packages("pkgdown")
         shell: Rscript {0}
 
