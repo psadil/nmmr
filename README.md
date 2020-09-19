@@ -3,14 +3,6 @@
 
 # vtuner
 
-<!-- badges: start -->
-
-[![Codecov test
-coverage](https://codecov.io/gh/psadil/vtuner/branch/master/graph/badge.svg)](https://codecov.io/gh/psadil/vtuner?branch=master)
-[![R build
-status](https://github.com/psadil/vtuner/workflows/R-CMD-check/badge.svg)](https://github.com/psadil/vtuner/actions)
-<!-- badges: end -->
-
 ## Installation
 
 vtuner relies on the rstan interface to [Stan](https://mc-stan.org). To
