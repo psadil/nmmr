@@ -13,7 +13,7 @@ A DESCRIPTION OF THE PACKAGE
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Patrick Sadil \email{psadil@gmail.com} (\href{https://orcid.org/0000-0003-4141-1343}{ORCID})
 
 }
 \keyword{internal}
