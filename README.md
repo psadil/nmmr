@@ -3,26 +3,31 @@
 
 # nmmr
 
+Experimental package for NeuroModulation Modeling in R. This package
+under active development and not yet released.
+
 ## Installation
 
-nmmr relies on the rstan interface to [Stan](https://mc-stan.org). To
-install nmmr, first [follow instructions for setting up
-rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started).
+`nmmr` relies on the [RStan](https://github.com/stan-dev/rstan)
+interface to [Stan](https://mc-stan.org). To install `nmmr`, first
+[follow instructions for setting up
+RStan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started).
 
-After successfully installing rstan, nmmr can be installed with devtools
+After installing `RStan`, `nmmr` can be installed with the `remotes`
+package.
 
 ``` r
-# install.packages(devtools)
-library(devtools)
-devtools::install_gitlab("psadil/nmmr")
+# install.packages(remotes)
+library(remotes)
+devtools::install_github("psadil/nmmr")
 ```
 
 # Example Analysis
 
 ## Data
 
-A sample dataset is provided with this package. The dataset contains the
-beta values for a single participant, and shows the format expected by
+The package is bundled with a sample dataset. The dataset contains the
+beta values for a single participant and shows the format expected by
 the functions of this package. The dataset can be loaded with the
 following command.
 
@@ -41,27 +46,4 @@ knitr::kable(head(sub02))
 | 2   | 15  | 197906 | low      |   0.7853982 |   2.858387 | 3   |
 | 2   | 15  | 197907 | low      |   0.7853982 |   1.506754 | 3   |
 
-For extra info on the dataset, see the help page for betas (?betas).
-
-## Run Stan
-
-The technique works by comparing separate models, each of which allows
-just a single kind of modulation to the neural tuning functions. The two
-kinds of neuromodulation currently implemented are *Additive* and
-*Multiplicative*. Source for the models can be found on this package’s
-repository. The three models are largely the same, differing only
-slightly in the NTFs for the high contrast.
-
-### Define Stan options
-
-In this simple example, most voxel-wise parameters are not saved (e.g.,
-the weights for each channel in each voxel, the value of the modulation
-parameter for each voxel). Excluding these parameters drastically
-reduces the size of the output and speeds up post-processing. The
-parameter *mu*, which is the distribution of the beta values for each
-trial, might also be worth dropping. *mu* is kept here because it is
-required for model comparison.
-
-A few additional parameters are used to control Stan’s sampling
-behavior. See the help page for rstan::stan. Running one chain may
-require a few hours.
+For extra info on the dataset, see the help page for sub02 (?sub02).
