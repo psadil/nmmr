@@ -63,15 +63,16 @@
 <div id="nmmr" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#nmmr" class="anchor"></a>nmmr</h1></div>
+<p>Experimental package for NeuroModulation Modeling in R. This package under active development and not yet released.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>nmmr relies on the rstan interface to <a href="https://mc-stan.org">Stan</a>. To install nmmr, first <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started">follow instructions for setting up rstan</a>.</p>
-<p>After successfully installing rstan, nmmr can be installed with devtools</p>
+<p><code>nmmr</code> relies on the <a href="https://github.com/stan-dev/rstan">RStan</a> interface to <a href="https://mc-stan.org">Stan</a>. To install <code>nmmr</code>, first <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started">follow instructions for setting up RStan</a>.</p>
+<p>After installing <code>RStan</code>, <code>nmmr</code> can be installed with the <code>remotes</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="co"># install.packages(devtools)</span>
-<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw">devtools</span>)
-<span class="kw">devtools</span>::<span class="fu">install_gitlab</span>(<span class="st">"psadil/nmmr"</span>)
+<span class="co"># install.packages(remotes)</span>
+<span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="kw"><a href="https://remotes.r-lib.org">remotes</a></span>)
+<span class="kw">devtools</span>::<span class="fu">install_github</span>(<span class="st">"psadil/nmmr"</span>)
 </pre></div>
 </div>
 </div>
@@ -81,7 +82,7 @@
 <div id="data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#data" class="anchor"></a>Data</h2>
-<p>A sample dataset is provided with this package. The dataset contains the beta values for a single participant, and shows the format expected by the functions of this package. The dataset can be loaded with the following command.</p>
+<p>The package is bundled with a sample dataset. The dataset contains the beta values for a single participant and shows the format expected by the functions of this package. The dataset can be loaded with the following command.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co"># library(nmmr)</span>
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"sub02"</span>)
@@ -154,18 +155,7 @@
 </tr>
 </tbody>
 </table>
-<p>For extra info on the dataset, see the help page for betas (?betas).</p>
-</div>
-<div id="run-stan" class="section level2">
-<h2 class="hasAnchor">
-<a href="#run-stan" class="anchor"></a>Run Stan</h2>
-<p>The technique works by comparing separate models, each of which allows just a single kind of modulation to the neural tuning functions. The two kinds of neuromodulation currently implemented are <em>Additive</em> and <em>Multiplicative</em>. Source for the models can be found on this package’s repository. The three models are largely the same, differing only slightly in the NTFs for the high contrast.</p>
-<div id="define-stan-options" class="section level3">
-<h3 class="hasAnchor">
-<a href="#define-stan-options" class="anchor"></a>Define Stan options</h3>
-<p>In this simple example, most voxel-wise parameters are not saved (e.g., the weights for each channel in each voxel, the value of the modulation parameter for each voxel). Excluding these parameters drastically reduces the size of the output and speeds up post-processing. The parameter <em>mu</em>, which is the distribution of the beta values for each trial, might also be worth dropping. <em>mu</em> is kept here because it is required for model comparison.</p>
-<p>A few additional parameters are used to control Stan’s sampling behavior. See the help page for rstan::stan. Running one chain may require a few hours.</p>
-</div>
+<p>For extra info on the dataset, see the help page for sub02 (?sub02).</p>
 </div>
 </div>
 
