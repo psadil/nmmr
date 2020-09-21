@@ -1,21 +1,20 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# vtuner
+# nmmr
 
 ## Installation
 
-vtuner relies on the rstan interface to [Stan](https://mc-stan.org). To
-install vtuner, first [follow instructions for setting up
+nmmr relies on the rstan interface to [Stan](https://mc-stan.org). To
+install nmmr, first [follow instructions for setting up
 rstan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started).
 
-After successfully installing rstan, vtuner can be installed with
-devtools
+After successfully installing rstan, nmmr can be installed with devtools
 
 ``` r
 # install.packages(devtools)
 library(devtools)
-devtools::install_gitlab("psadil/vtuner")
+devtools::install_gitlab("psadil/nmmr")
 ```
 
 # Example Analysis
@@ -28,7 +27,7 @@ the functions of this package. The dataset can be loaded with the
 following command.
 
 ``` r
-# library(vtuner)
+# library(nmmr)
 data("sub02")
 knitr::kable(head(sub02))
 ```
@@ -49,10 +48,9 @@ For extra info on the dataset, see the help page for betas (?betas).
 The technique works by comparing separate models, each of which allows
 just a single kind of modulation to the neural tuning functions. The two
 kinds of neuromodulation currently implemented are *Additive* and
-*Multiplicative*. Source for the models can be found on this [package’s
-repository](https://gitlab.com/psadil/vtuner/tree/master/src/stan_files).
-The three models are largely the same, differing only slightly in the
-NTFs for the high contrast.
+*Multiplicative*. Source for the models can be found on this package’s
+repository. The three models are largely the same, differing only
+slightly in the NTFs for the high contrast.
 
 ### Define Stan options
 

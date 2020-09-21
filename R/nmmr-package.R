@@ -1,11 +1,11 @@
-#' The 'vtuner' package.
+#' The 'nmmr' package.
 #'
 #' @description A DESCRIPTION OF THE PACKAGE
 #'
 #' @docType package
-#' @name vtuner-package
-#' @aliases vtuner
-#' @useDynLib vtuner, .registration = TRUE
+#' @name nmmr-package
+#' @aliases nmmr
+#' @useDynLib nmmr, .registration = TRUE
 #' @import methods
 #' @import Rcpp
 #' @importFrom rstan sampling

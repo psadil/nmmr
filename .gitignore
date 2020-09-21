@@ -45,3 +45,11 @@ docs/
 po/*~
 .Rproj.user
 docs
+
+# from rstanarm
+src/stan_files/*.o
+src/stan_files/*.cc
+src/stan_files/*.hpp
+src/nmmr.so
+src/nmmr.dll
+src/init.o
