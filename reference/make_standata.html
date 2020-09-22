@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Make list of data for fitting — make_standata • nmmr</title>
+<title>Prepare data for running model — make_standata • nmmr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Make list of data for fitting — make_standata" />
-<meta property="og:description" content="Make list of data for fitting" />
+<meta property="og:title" content="Prepare data for running model — make_standata" />
+<meta property="og:description" content="Prepare data for running model" />
 
 
 
@@ -108,31 +108,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Make list of data for fitting</h1>
+    <h1>Prepare data for running model</h1>
     <small class="dont-index">Source: <a href='https://github.com/psadil/nmmr/blob/master/R/vtf.R'><code>R/vtf.R</code></a></small>
     <div class="hidden name"><code>make_standata.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Make list of data for fitting</p>
+    <p>Prepare data for running model</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_standata</span>(<span class='kw'>d</span>, <span class='kw'>model</span>, <span class='kw'>priors</span>)</pre>
+    <pre class="usage"><span class='fu'>make_standata</span>(
+  <span class='kw'>d</span>,
+  <span class='kw'>model</span>,
+  priors = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>20</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>0.5</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>2</span>,
+    <span class='fl'>2</span>, <span class='fl'>3</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>d</th>
-      <td><p>tbl_df (see betas)</p></td>
+      <td><p>dataframe from which to make standata. The output of this can be passed to <code><a href='vtf.html'>vtf()</a></code>.</p></td>
     </tr>
     <tr>
       <th>model</th>
-      <td><p>name</p></td>
+      <td><p>Form of neuromodulation. One of "multiplicative" or "additive".</p></td>
     </tr>
     <tr>
       <th>priors</th>
-      <td><p>vector</p></td>
+      <td><p>vector of length 23.</p></td>
     </tr>
     </table>
 

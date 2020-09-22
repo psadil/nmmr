@@ -109,7 +109,7 @@
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>VtuneFit inherits from <a href='https://mc-stan.org/rstan/reference/stanfit-class.html'>rstan::stanfit</a> in the <span class="pkg">rstan</span> package</h1>
-    <small class="dont-index">Source: <a href='https://github.com/psadil/nmmr/blob/master/R/VtuneFit-class.R'><code>R/VtuneFit-class.R</code></a>, <a href='https://github.com/psadil/nmmr/blob/master/R/loo.R'><code>R/loo.R</code></a>, <a href='https://github.com/psadil/nmmr/blob/master/R/posterior_predict.R'><code>R/posterior_predict.R</code></a></small>
+    <small class="dont-index">Source: <a href='https://github.com/psadil/nmmr/blob/master/R/VtuneFit-class.R'><code>R/VtuneFit-class.R</code></a>, <a href='https://github.com/psadil/nmmr/blob/master/R/loo.R'><code>R/loo.R</code></a></small>
     <div class="hidden name"><code>VtuneFit-class.Rd</code></div>
     </div>
 
@@ -127,17 +127,14 @@
 <span class='fu'><a href='bind_fits.html'>bind_fits</a></span>(<span class='kw'>sfitlist</span>)
 
 <span class='co'># S4 method for VtuneFit</span>
-<span class='fu'>loo</span>(<span class='kw'>x</span>, <span class='kw'>...</span>, cores = <span class='fl'>1</span>, vtf0 = <span class='kw'>NULL</span>)
-
-<span class='co'># S4 method for VtuneFit</span>
-<span class='fu'>posterior_predict</span>(<span class='kw'>object</span>, draws = <span class='kw'>NULL</span>, seed = <span class='kw'>NULL</span>)</pre>
+<span class='fu'>loo</span>(<span class='kw'>x</span>, <span class='kw'>...</span>, cores = <span class='fl'>1</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>object</th>
-      <td><p>VtuneFit object</p></td>
+      <td><p>object to grab data from.</p></td>
     </tr>
     <tr>
       <th>sfitlist</th>
@@ -151,19 +148,6 @@
       <th>cores</th>
       <td><p>int</p></td>
     </tr>
-    <tr>
-      <th>draws</th>
-      <td><p>number of draws from the ppd.
-maximum is the number of samples in object. defaults to all samples</p></td>
-    </tr>
-    <tr>
-      <th>seed</th>
-      <td><p>optional seed, passed to <code><a href='https://rdrr.io/r/base/Random.html'>base::set.seed()</a></code></p></td>
-    </tr>
-    <tr>
-      <th>save_psis</th>
-      <td><p>bool</p></td>
-    </tr>
     </table>
 
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
@@ -175,17 +159,16 @@ and maybe <a href='http://rstudio.com'>Rstudio</a></p>
     
 <ul>
 <li><p><code>rawdata</code>: extract data used to construct <code><a href='rawdata.html'>rawdata()</a></code></p></li>
-<li><p><code>standata</code>: extract data passed to stan. can be reused as input to <code>run_stan()</code></p></li>
+<li><p><code>standata</code>: extract data passed to stan. can be reused as input to <code><a href='vtf.html'>vtf()</a></code></p></li>
 <li><p><code>bind_fits</code>: Bind list of VtuneFit objects into single fit</p></li>
 <li><p><code>loo</code>: Leave-one-out cross-validation</p></li>
-<li><p><code>posterior_predict</code>: sample from posterior predictive distribution</p></li>
 </ul>
     <h2 class="hasAnchor" id="slots"><a class="anchor" href="#slots"></a>Slots</h2>
 
     
 
 <dl>
-<dt><code>rawdata</code></dt><dd><p>tbl_df. see example betas</p></dd>
+<dt><code>rawdata</code></dt><dd><p>tbl_df. see example dataset, <a href='sub02.html'>sub02</a></p></dd>
 
 <dt><code>standata</code></dt><dd><p>list.</p></dd>
 

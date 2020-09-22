@@ -117,27 +117,38 @@
     <p>Run One of the Stan Models</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vtf</span>(<span class='kw'>smodel</span>, <span class='kw'>model</span>, <span class='kw'>priors</span>, standata = <span class='kw'>NULL</span>, d = <span class='kw'>NULL</span>, <span class='kw'>...</span>)</pre>
+    <pre class="usage"><span class='fu'>vtf</span>(
+  <span class='kw'>model</span>,
+  d = <span class='kw'>NULL</span>,
+  standata = <span class='kw'>NULL</span>,
+  priors = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>20</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>0.5</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>2</span>,
+    <span class='fl'>2</span>, <span class='fl'>3</span>),
+  <span class='kw'>...</span>
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>smodel</th>
-      <td><p>Which verstion of the Stan model? vtf0 implies simpler version
-vtf implies more complex (hierarchy on participants)</p></td>
+      <th>model</th>
+      <td><p>Form of neuromodulation. One of "multiplicative" or "additive".</p></td>
     </tr>
     <tr>
-      <th>model</th>
-      <td><p>Form of neuromodulation. One of "multiplicative" or "additive</p></td>
+      <th>d</th>
+      <td><p>dataframe from which to make standata. The output of this can be passed to <code>vtf()</code>.</p></td>
+    </tr>
+    <tr>
+      <th>standata</th>
+      <td><p>data to pass directly to stan. Can be produced with <code><a href='make_standata.html'>make_standata()</a></code>. If present,
+this data will be used rather than the data stored in <code>d</code>.</p></td>
     </tr>
     <tr>
       <th>priors</th>
-      <td><p>Vector of doubles.</p></td>
+      <td><p>vector of length 23.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>see <code><a href='https://mc-stan.org/rstan/reference/stanmodel-method-sampling.html'>rstan::sampling()</a></code></p></td>
+      <td><p>further arguments passed to <code><a href='https://mc-stan.org/rstan/reference/stanmodel-method-sampling.html'>rstan::sampling()</a></code>.</p></td>
     </tr>
     </table>
 
