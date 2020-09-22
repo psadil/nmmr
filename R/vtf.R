@@ -1,10 +1,11 @@
 #' Run One of the Stan Models
 #'
-#' @param model Form of neuromodulation. One of "multiplicative" or "additive"
-#' @param priors Vector of doubles.
-#' @param standata
-#' @param d
-#' @param ... see [rstan::sampling()]
+#' @param model Form of neuromodulation. One of "multiplicative" or "additive".
+#' @param priors vector of length 23.
+#' @param d dataframe from which to make standata. The output of this can be passed to [vtf()].
+#' @param standata data to pass directly to stan. Can be produced with [make_standata()]. If present,
+#'      this data will be used rather than the data stored in `d`.
+#' @param ... further arguments passed to [rstan::sampling()].
 #'
 #' @seealso
 #' [rstan::sampling()]
@@ -12,9 +13,15 @@
 #' @return
 #' @export
 vtf <- function(model,
-                priors,
-                standata = NULL,
                 d = NULL,
+                standata = NULL,
+                priors = c(1/2, 5, 2, 1,
+                           5, 2, 1/20,
+                           3, 1, 3, 1,
+                           5, 2, 1/2,
+                           5, 2, 1/2,
+                           0.5, 2, 3,
+                           2, 2, 3),
                 ...){
 
   if(is.null(standata)){
@@ -25,7 +32,7 @@ vtf <- function(model,
   }
 
   stanfit <- rstan::sampling(
-    object = stanmodels[[smodel]],
+    object = stanmodels[["vtf"]],
     data = standata,
     ...
   )
@@ -35,17 +42,24 @@ vtf <- function(model,
 
 
 
-#' Make list of data for fitting
+
+#' Prepare data for running model
 #'
-#' @param d tbl_df (see betas)
-#' @param model name
-#' @param priors vector
+#' @param d dataframe from which to make standata. The output of this can be passed to [vtf()].
+#' @param model Form of neuromodulation. One of "multiplicative" or "additive".
+#' @param priors vector of length 23.
 #'
 #' @export
 make_standata <- function(
   d,
   model,
-  priors){
+  priors = c(1/2, 5, 2, 1,
+             5, 2, 1/20,
+             3, 1, 3, 1,
+             5, 2, 1/2,
+             5, 2, 1/2,
+             0.5, 2, 3,
+             2, 2, 3)){
 
   checkmate::assert_choice(model, c("additive","multiplicative"))
 
@@ -81,9 +95,10 @@ make_standata <- function(
 
   unique_orientations <- sort(unique(tmp$orientation))
 
-  ori_by_vox <- matrix(0,
-                       nrow = dplyr::n_distinct(tmp$voxel),
-                       ncol = length(unique_orientations))
+  ori_by_vox <- matrix(
+    0,
+    nrow = dplyr::n_distinct(tmp$voxel),
+    ncol = length(unique_orientations))
 
   ori_by_vox0 <- tmp %>%
     dplyr::distinct(voxel, orientation_tested) %>%

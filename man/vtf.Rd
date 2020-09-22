@@ -4,17 +4,26 @@
 \alias{vtf}
 \title{Run One of the Stan Models}
 \usage{
-vtf(smodel, model, priors, standata = NULL, d = NULL, ...)
+vtf(
+  model,
+  d = NULL,
+  standata = NULL,
+  priors = c(1/2, 5, 2, 1, 5, 2, 1/20, 3, 1, 3, 1, 5, 2, 1/2, 5, 2, 1/2, 0.5, 2, 3, 2,
+    2, 3),
+  ...
+)
 }
 \arguments{
-\item{smodel}{Which verstion of the Stan model? vtf0 implies simpler version
-vtf implies more complex (hierarchy on participants)}
+\item{model}{Form of neuromodulation. One of "multiplicative" or "additive".}
 
-\item{model}{Form of neuromodulation. One of "multiplicative" or "additive}
+\item{d}{dataframe from which to make standata. The output of this can be passed to \code{\link[=vtf]{vtf()}}.}
 
-\item{priors}{Vector of doubles.}
+\item{standata}{data to pass directly to stan. Can be produced with \code{\link[=make_standata]{make_standata()}}. If present,
+this data will be used rather than the data stored in \code{d}.}
 
-\item{...}{see \code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}}}
+\item{priors}{vector of length 23.}
+
+\item{...}{further arguments passed to \code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}}.}
 }
 \value{
 

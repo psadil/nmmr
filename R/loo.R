@@ -1,15 +1,15 @@
 loo.VtuneFit <- function(x,
                          ...,
-                         cores = 1,
-                         vtf0 = NULL) {
+                         cores = 1) {
 
-  checkmate::assert_integer(cores, lower=1)
+  checkmate::assert_integerish(cores, lower=1)
 
-  if (is.null(vtf0)) vtf0 <- .make_vtf0(x, cores = cores)
+  vtf0 <- .make_vtf0(x, cores = cores)
   stand <- standata(x)
-  data_ <- data.frame(y = stand$y, X = stand$X)
-  if("voxel" %in% names(stand)) data_$voxel <- stand$voxel
-  else data_$voxel <- 1
+  data_ <- data.frame(
+    y = stand$y,
+    X = stand$X,
+    voxel = stand$voxel)
 
   sigma <- rstan::extract(x, pars = "sigma", permuted = FALSE)
   n_draw <- dim(sigma)[1]
@@ -45,13 +45,13 @@ loo.VtuneFit <- function(x,
 
 #' @describeIn VtuneFit Leave-one-out cross-validation
 #'
-#' @param save_psis bool
 #' @param cores int
 #' @param x VtuneFit object, containing parameters "mu" and "sigma"
 #'
 #' @export
 #' @importFrom loo loo
 setMethod("loo", "VtuneFit", loo.VtuneFit)
+
 
 .lfun <- function(data_i, draws){
   # each time called internally within loo the arguments will be equal to:
@@ -108,6 +108,7 @@ setMethod("loo", "VtuneFit", loo.VtuneFit)
     tidyr::pivot_wider(names_from = "idx", values_from = "vtf0") %>%
     dplyr::select(-.chain) %>%
     as.matrix()
+
   out
 }
 

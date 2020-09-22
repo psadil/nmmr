@@ -47,9 +47,10 @@ po/*~
 docs
 
 # from rstanarm
-src/stan_files/*.o
-src/stan_files/*.cc
-src/stan_files/*.hpp
+src/*.o
+src/*.cc
+src/*.cpp
+src/*.h
 src/nmmr.so
 src/nmmr.dll
 src/init.o

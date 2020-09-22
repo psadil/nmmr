@@ -2,7 +2,7 @@
 #' VtuneFit inherits from [rstan::stanfit] in the \pkg{rstan} package
 #'
 #' @aliases VtuneFit
-#' @slot rawdata tbl_df. see example [betas]
+#' @slot rawdata tbl_df. see example dataset, [sub02]
 #' @slot standata list.
 #'
 #' @details
@@ -23,7 +23,7 @@ setClass("VtuneFit",
 
 #' extract raw data
 #'
-#' @param object object to grab rawdata from. [betas]
+#' @param object object to grab rawdata from.
 setGeneric("rawdata", function(object) standardGeneric("rawdata"))
 
 #' @describeIn VtuneFit extract data used to construct [rawdata()]
@@ -40,7 +40,7 @@ setMethod("rawdata", "VtuneFit", function(object) object@rawdata)
 #' see output of [make_standata()]
 setGeneric("standata", function(object) standardGeneric("standata"))
 
-#' @describeIn VtuneFit extract data passed to stan. can be reused as input to [run_stan()]
+#' @describeIn VtuneFit extract data passed to stan. can be reused as input to [vtf()]
 #' @export
 setMethod("standata", "VtuneFit", function(object) object@standata)
 
