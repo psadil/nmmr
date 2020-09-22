@@ -1,7 +1,6 @@
 
 test_that("standata has all necessary elments", {
-  utils::data("sub02")
-  standata <- make_standata(sub02, "additive", rep(0, 23))
+  standata <- make_standata(sub02, "additive")
   expect_identical(
     names(standata),
     c("sub", "n_sub", "voxel", "n_voxel", "contrast", "n_contrast",

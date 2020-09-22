@@ -7,7 +7,7 @@
 rawdata(object)
 }
 \arguments{
-\item{object}{object to grab rawdata from. \link{betas}}
+\item{object}{object to grab rawdata from.}
 }
 \description{
 extract raw data

@@ -2,17 +2,22 @@
 % Please edit documentation in R/vtf.R
 \name{make_standata}
 \alias{make_standata}
-\title{Make list of data for fitting}
+\title{Prepare data for running model}
 \usage{
-make_standata(d, model, priors)
+make_standata(
+  d,
+  model,
+  priors = c(1/2, 5, 2, 1, 5, 2, 1/20, 3, 1, 3, 1, 5, 2, 1/2, 5, 2, 1/2, 0.5, 2, 3, 2,
+    2, 3)
+)
 }
 \arguments{
-\item{d}{tbl_df (see betas)}
+\item{d}{dataframe from which to make standata. The output of this can be passed to \code{\link[=vtf]{vtf()}}.}
 
-\item{model}{name}
+\item{model}{Form of neuromodulation. One of "multiplicative" or "additive".}
 
-\item{priors}{vector}
+\item{priors}{vector of length 23.}
 }
 \description{
-Make list of data for fitting
+Prepare data for running model
 }

@@ -5,24 +5,22 @@
 \alias{sub02}
 \title{Sample beta values}
 \format{
-Objects of class tbl_df (inherits from tbl, data.frame) a minimal tibble for the vtuner analysis (53856 x 7)
+Objects of class tbl_df (inherits from tbl, data.frame) a minimal tibble for the vtuner analysis (53856 x 5)
 
 \describe{
 \item{sub}{factor ID of subject}
-\item{run}{factor ID of run}
 \item{voxel}{factor ID of voxel}
 \item{contrast}{Factor with different values of contrast. Note that the factor \emph{must} have the lower levels of contrast correspond
 to a lower integer representation (e.g., low == 1 and high == 2)}
 \item{orientation}{Orientation presented on trial (-pi,pi)}
 \item{y}{beta values in given condition (corresponds to beta in betas2)}
-\item{ses}{factor id of session in which run was collected}
 }
 }
 \usage{
 sub02
 }
 \value{
-a \link[tibble:tibble-package]{tibble}
+a \link[tibble:tbl_df-class]{tibble}
 }
 \description{
 Example dataset for testing analyses, and to see input structure

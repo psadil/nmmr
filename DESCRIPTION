@@ -29,7 +29,8 @@ Imports:
     rstan (>= 2.18.1),
     rstantools (>= 2.1.1),
     tidybayes,
-    tidyr
+    tidyr,
+    tibble
 Suggests: 
     covr,
     testthat

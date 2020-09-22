@@ -2,7 +2,7 @@
 #' VtuneFit inherits from [rstan::stanfit] in the \pkg{rstan} package
 #'
 #' @aliases VtuneFit
-#' @slot rawdata tbl_df. see example [betas]
+#' @slot rawdata tbl_df. see example dataset, [sub02]
 #' @slot standata list.
 #'
 #' @details
