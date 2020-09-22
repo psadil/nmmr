@@ -45,7 +45,6 @@ loo.VtuneFit <- function(x,
 
 #' @describeIn VtuneFit Leave-one-out cross-validation
 #'
-#' @param save_psis bool
 #' @param cores int
 #' @param x VtuneFit object, containing parameters "mu" and "sigma"
 #'

@@ -2,8 +2,9 @@
 #'
 #' @param model Form of neuromodulation. One of "multiplicative" or "additive"
 #' @param priors Vector of doubles.
-#' @param standata
-#' @param d
+#' @param standata data to pass directly to stan.
+#' @param d dataframe from which to make standata. Will supersede standata. The function [make_standata]
+#'        will be called with this as input
 #' @param ... see [rstan::sampling()]
 #'
 #' @seealso
@@ -25,7 +26,7 @@ vtf <- function(model,
   }
 
   stanfit <- rstan::sampling(
-    object = stanmodels[[smodel]],
+    object = stanmodels[["vtf"]],
     data = standata,
     ...
   )

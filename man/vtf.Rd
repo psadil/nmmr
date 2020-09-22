@@ -4,13 +4,10 @@
 \alias{vtf}
 \title{Run One of the Stan Models}
 \usage{
-vtf(smodel, model, priors, standata = NULL, d = NULL, ...)
+vtf(model, priors, standata = NULL, d = NULL, ...)
 }
 \arguments{
-\item{smodel}{Which verstion of the Stan model? vtf0 implies simpler version
-vtf implies more complex (hierarchy on participants)}
-
-\item{model}{Form of neuromodulation. One of "multiplicative" or "additive}
+\item{model}{Form of neuromodulation. One of "multiplicative" or "additive"}
 
 \item{priors}{Vector of doubles.}
 

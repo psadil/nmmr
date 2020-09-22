@@ -32,5 +32,5 @@ setMethod("posterior_predict", "VtuneFit", posterior_predict.VtuneFit)
 
 .ppfun <- function(mu, sigma){
   n <- length(sigma)
-  rnorm(n, mu, sigma)
+  stats::rnorm(n, mu, sigma)
 }
