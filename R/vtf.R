@@ -1,8 +1,6 @@
 #' Run One of the Stan Models
 #'
-#' @param smodel Which verstion of the Stan model? vtf0 implies simpler version
-#' vtf implies more complex (hierarchy on participants)
-#' @param model Form of neuromodulation. One of "multiplicative" or "additive
+#' @param model Form of neuromodulation. One of "multiplicative" or "additive"
 #' @param priors Vector of doubles.
 #' @param standata
 #' @param d
@@ -13,18 +11,17 @@
 #'
 #' @return
 #' @export
-vtf <- function(
-  smodel,
-  model,
-  priors,
-  standata = NULL,
-  d = NULL,
-  ...){
+vtf <- function(model,
+                priors,
+                standata = NULL,
+                d = NULL,
+                ...){
 
   if(is.null(standata)){
-    standata <- make_standata(d = d,
-                              priors = priors,
-                              model = model)
+    standata <- make_standata(
+      d = d,
+      priors = priors,
+      model = model)
   }
 
   stanfit <- rstan::sampling(
@@ -49,6 +46,8 @@ make_standata <- function(
   d,
   model,
   priors){
+
+  checkmate::assert_choice(model, c("additive","multiplicative"))
 
   stopifnot(exprs = {
     all(c("voxel", "contrast","orientation","y","sub") %in% names(d))

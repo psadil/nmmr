@@ -3,6 +3,12 @@
 
 # nmmr
 
+<!-- badges: start -->
+
+[![Codecov test
+coverage](https://codecov.io/gh/psadil/nmmr/branch/master/graph/badge.svg)](https://codecov.io/gh/psadil/nmmr?branch=master)
+<!-- badges: end -->
+
 Experimental package for NeuroModulation Modeling in R. This package
 under active development and not yet released.
 
@@ -37,13 +43,13 @@ data("sub02")
 knitr::kable(head(sub02))
 ```
 
-| sub | run | voxel  | contrast | orientation |          y | ses |
-| :-- | :-- | :----- | :------- | ----------: | ---------: | :-- |
-| 2   | 15  | 191852 | low      |   0.7853982 |   3.359860 | 3   |
-| 2   | 15  | 197706 | low      |   0.7853982 | \-2.839522 | 3   |
-| 2   | 15  | 197769 | low      |   0.7853982 | \-2.027267 | 3   |
-| 2   | 15  | 197842 | low      |   0.7853982 |   2.234859 | 3   |
-| 2   | 15  | 197906 | low      |   0.7853982 |   2.858387 | 3   |
-| 2   | 15  | 197907 | low      |   0.7853982 |   1.506754 | 3   |
+| sub | voxel  | contrast | orientation |          y |
+| :-- | :----- | :------- | ----------: | ---------: |
+| 2   | 191852 | low      |   0.7853982 |   3.359860 |
+| 2   | 197706 | low      |   0.7853982 | \-2.839522 |
+| 2   | 197769 | low      |   0.7853982 | \-2.027267 |
+| 2   | 197842 | low      |   0.7853982 |   2.234859 |
+| 2   | 197906 | low      |   0.7853982 |   2.858387 |
+| 2   | 197907 | low      |   0.7853982 |   1.506754 |
 
 For extra info on the dataset, see the help page for sub02 (?sub02).

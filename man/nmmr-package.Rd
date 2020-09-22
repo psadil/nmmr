@@ -12,6 +12,15 @@ A DESCRIPTION OF THE PACKAGE
 \references{
 Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://psadil.github.io/nmmr/}
+  \item \url{https://github.com/psadil/nmmr}
+  \item Report bugs at \url{https://github.com/psadil/nmmr/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Patrick Sadil \email{psadil@gmail.com} (\href{https://orcid.org/0000-0003-4141-1343}{ORCID})
 
