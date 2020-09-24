@@ -38,31 +38,31 @@ transformed parameters{
 model{
   lengthOfMeanAngleVector ~ normal(1, .1);
 
-  sigma_loc ~ gamma(2, priors[1]);
-  sigma_scale ~ gamma(2, 0.5);
+  sigma_loc ~ gamma(prior_sigma_loc[1], prior_sigma_loc[2]);
+  sigma_scale ~ gamma(prior_sigma_scale[1], prior_sigma_scale[2]);
   sigma ~ normal(sigma_loc, sigma_scale);
   target += -normal_lccdf(0 | sigma_loc, sigma_scale) * n_voxel;
 
   // --- gamma multiplier --
-  s_gamma_loc ~ normal(0, priors[2]);
-  s_gamma_scale ~ gamma(priors[6], priors[7]);
+  s_gamma_loc ~ normal(0, prior_gamma_loc);
+  s_gamma_scale ~ gamma(prior_gamma_scale[1], prior_gamma_scale[2]);
   v_gamma ~ normal(s_gamma_loc, s_gamma_scale);
   target += -normal_lccdf(0 | s_gamma_loc, s_gamma_scale) * n_voxel;
 
   // -- concentration --
-  v_kappa_loc ~ gamma(priors[8], priors[9]);
-  v_kappa_scale ~ gamma(priors[10], priors[11]);
+  v_kappa_loc ~ gamma(prior_kappa_loc[1], prior_kappa_loc[2]);
+  v_kappa_scale ~ gamma(prior_kappa_scale[1], prior_kappa_scale[2]);
   v_kappa_raw ~ std_normal();
   target += -normal_lccdf((-v_kappa_loc)/v_kappa_scale | 0, 1) * n_voxel;
 
   // -- additive offset
-  s_alpha_loc ~ normal(0, priors[12]);
-  s_alpha_scale ~ gamma(priors[16], priors[17]);
+  s_alpha_loc ~ normal(prior_alpha_loc[1], prior_alpha_loc[2]);
+  s_alpha_scale ~ gamma(prior_alpha_scale[1], prior_alpha_scale[2]);
   v_alpha ~ normal(s_alpha_loc, s_alpha_scale);
 
   // -- NTFP --
-  s_ntfp_loc ~ normal(ntfp_min, priors[18]);
-  s_ntfp_scale ~ gamma(priors[22], priors[23]);
+  s_ntfp_loc ~ normal(ntfp_min, prior_ntfp_loc);
+  s_ntfp_scale ~ gamma(prior_ntfp_scale[1], prior_ntfp_scale[2]);
   v_ntfp ~ normal(s_ntfp_loc, s_ntfp_scale);
   target += -normal_lccdf(ntfp_min | s_ntfp_loc, s_ntfp_scale) * n_voxel;
 

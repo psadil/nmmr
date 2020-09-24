@@ -3,6 +3,7 @@
 export("%>%")
 export(.make_vtf0)
 export(make_standata)
+export(set_priors)
 export(vtf)
 exportMethods(bind_fits)
 exportMethods(loo)

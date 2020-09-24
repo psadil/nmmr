@@ -12,10 +12,7 @@
       vector[no] resp_to_ori = exp(v_kappa[v] * cos(unique_orientations[ori_by_vox[v, 1:no]] - meanAngle[v]));
       if (up > maxX) reject("index should not exceed elements of X. Found up = ", up);
       resp_to_ori /= sum(resp_to_ori);
-      // vector[no] resp_to_ori;
-      // vector[no] resp_to_ori_log;
-      // for(o in 1:no) resp_to_ori_log[o] = von_mises_lpdf(unique_orientations[ori_by_vox[v,o]] | meanAngle[v], v_kappa[v]);
-      // resp_to_ori = exp(resp_to_ori_log);
+
       resp_to_ori *= v_gamma[v];
       if(modulation == 0){
         vtf[i:up] = v_alpha[v] + append_row(resp_to_ori, resp_to_ori + v_ntfp[v]);

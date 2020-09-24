@@ -1,7 +1,7 @@
 #' Run One of the Stan Models
 #'
 #' @param model Form of neuromodulation. One of "multiplicative" or "additive".
-#' @param priors vector of length 23.
+#' @param priors named list. see output of [set_priors()].
 #' @param d dataframe from which to make standata. The output of this can be passed to [vtf()].
 #' @param standata data to pass directly to stan. Can be produced with [make_standata()]. If present,
 #'      this data will be used rather than the data stored in `d`.
@@ -15,13 +15,7 @@
 vtf <- function(model,
                 d = NULL,
                 standata = NULL,
-                priors = c(1/2, 5, 2, 1,
-                           5, 2, 1/20,
-                           3, 1, 3, 1,
-                           5, 2, 1/2,
-                           5, 2, 1/2,
-                           0.5, 2, 3,
-                           2, 2, 3),
+                priors = set_priors(),
                 ...){
 
   if(is.null(standata)){
@@ -47,25 +41,18 @@ vtf <- function(model,
 #'
 #' @param d dataframe from which to make standata. The output of this can be passed to [vtf()].
 #' @param model Form of neuromodulation. One of "multiplicative" or "additive".
-#' @param priors vector of length 23.
+#' @param priors named list. see output of [set_priors()]
 #'
 #' @export
 make_standata <- function(
   d,
   model,
-  priors = c(1/2, 5, 2, 1,
-             5, 2, 1/20,
-             3, 1, 3, 1,
-             5, 2, 1/2,
-             5, 2, 1/2,
-             0.5, 2, 3,
-             2, 2, 3)){
+  priors = set_priors()){
 
   checkmate::assert_choice(model, c("additive","multiplicative"))
 
   stopifnot(exprs = {
     all(c("voxel", "contrast","orientation","y","sub") %in% names(d))
-    length(priors) == 23
     max(d$orientation) < pi # stanmodel will expect orientations in radians
     min(d$orientation) < 0 # from -pi to pi
   })
@@ -113,7 +100,6 @@ make_standata <- function(
   stan_data <- tmp %>%
     tidybayes::compose_data() %>%
     c(.,
-      priors = list(priors),
       n_unique_orientations = length(unique_orientations),
       unique_orientations = list(unique_orientations),
       n_unique_orientations_vox = list(n_unique_orientations_vox),
@@ -126,8 +112,86 @@ make_standata <- function(
   stan_data$orientation_tested <- NULL
   stan_data$orientation <- NULL
 
-  return(stan_data)
+  return( c(stan_data, priors) )
 }
 
 
+#' Set priors for model
+#'
+#' @param prior_sigma_loc vector of length 2
+#' @param prior_sigma_scale vector of length 2
+#' @param prior_gamma_loc real
+#' @param prior_gamma_scale vector of length 2
+#' @param prior_kappa_loc vector of length 2
+#' @param prior_kappa_scale vector of length 2
+#' @param prior_alpha_loc vector of length 2
+#' @param prior_alpha_scale vector of length 2
+#' @param prior_ntfp_loc real
+#' @param prior_ntfp_scale vector of length 2
+#'
+#'
+#' @details
+#'   all values must be greater than 0
+#'
+#'   \eqn{\sigma_loc ~ gamma(prior_sigma_loc[1], prior_sigma_loc[2])}
+#'
+#'   \eqn{\sigma_scale ~ gamma(prior_sigma_scale[1], prior_sigma_scale[2])}
+#'
+#'   \eqn{\gamma_loc ~ normal(0, prior_gamma_loc[2])}
+#'
+#'   \eqn{\gamma_scale ~ gamma(prior_gamma_scale[1], prior_gamma_scale[2])}
+#'
+#'   \eqn{\kappa_loc ~ gamma(prior_kappa_loc[1], prior_kappa_loc[2])}
+#'
+#'   \eqn{\kappa_scale ~ gamma(prior_kappa_scale[1], prior_kappa_scale[2])}
+#'
+#'   \eqn{\alpha_loc ~ normal(prior_alpha_loc[1], prior_alpha_loc[2])}
+#'
+#'   \eqn{\alpha_scale ~ gamma(prior_alpha_scale[1], prior_alpha_scale[2])}
+#'
+#'   \eqn{ntfp_loc ~ normal(prior_ntfp_loc[1], prior_ntfp_loc[2])}
+#'
+#'   \eqn{ntfp_scale ~ gamma(prior_ntfp_scale[1], prior_ntfp_scale[2])}
+#'
+#' @return named list
+#' @export
+#'
+#' @examples
+#'
+#' set_priors()
+#' set_priors(prior_sigma_loc = c(2, 1))
+set_priors <- function(
+  prior_sigma_loc = c(2, 1/2),
+  prior_sigma_scale = c(2, 1/2),
+  prior_gamma_loc = 5,
+  prior_gamma_scale = c(2, 1/20),
+  prior_kappa_loc = c(3, 1),
+  prior_kappa_scale = c(3, 1),
+  prior_alpha_loc = c(0, 5),
+  prior_alpha_scale = c(2, 1/2),
+  prior_ntfp_loc = 0.5,
+  prior_ntfp_scale = c(2, 3)){
 
+  checkmate::assert_numeric(prior_sigma_loc, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_sigma_scale, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_gamma_loc, lower = 0, len = 1)
+  checkmate::assert_numeric(prior_gamma_scale, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_kappa_loc, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_kappa_scale, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_alpha_loc, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_alpha_scale, lower = 0, len = 2)
+  checkmate::assert_numeric(prior_ntfp_loc, lower = 0, len = 1)
+  checkmate::assert_numeric(prior_ntfp_scale, lower = 0, len = 2)
+
+  list(
+    prior_sigma_loc = prior_sigma_loc,
+    prior_sigma_scale = prior_sigma_scale,
+    prior_gamma_loc = prior_gamma_loc,
+    prior_gamma_scale = prior_gamma_scale,
+    prior_kappa_loc = prior_kappa_loc,
+    prior_kappa_scale = prior_kappa_scale,
+    prior_alpha_loc = prior_alpha_loc,
+    prior_alpha_scale = prior_alpha_scale,
+    prior_ntfp_loc = prior_ntfp_loc,
+    prior_ntfp_scale = prior_ntfp_scale)
+}
