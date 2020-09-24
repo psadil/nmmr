@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Prepare data for running model — make_standata • nmmr</title>
+<title>Set priors for model — set_priors • nmmr</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Prepare data for running model — make_standata" />
-<meta property="og:description" content="Prepare data for running model" />
+<meta property="og:title" content="Set priors for model — set_priors" />
+<meta property="og:description" content="Set priors for model" />
 
 
 
@@ -108,35 +108,153 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Prepare data for running model</h1>
+    <h1>Set priors for model</h1>
     <small class="dont-index">Source: <a href='https://github.com/psadil/nmmr/blob/master/R/vtf.R'><code>R/vtf.R</code></a></small>
-    <div class="hidden name"><code>make_standata.Rd</code></div>
+    <div class="hidden name"><code>set_priors.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Prepare data for running model</p>
+    <p>Set priors for model</p>
     </div>
 
-    <pre class="usage"><span class='fu'>make_standata</span>(<span class='kw'>d</span>, <span class='kw'>model</span>, priors = <span class='fu'><a href='set_priors.html'>set_priors</a></span>())</pre>
+    <pre class="usage"><span class='fu'>set_priors</span>(
+  prior_sigma_loc = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>),
+  prior_sigma_scale = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>),
+  prior_gamma_loc = <span class='fl'>5</span>,
+  prior_gamma_scale = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>20</span>),
+  prior_kappa_loc = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>1</span>),
+  prior_kappa_scale = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>3</span>, <span class='fl'>1</span>),
+  prior_alpha_loc = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>0</span>, <span class='fl'>5</span>),
+  prior_alpha_scale = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>),
+  prior_ntfp_loc = <span class='fl'>0.5</span>,
+  prior_ntfp_scale = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>3</span>)
+)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>d</th>
-      <td><p>dataframe from which to make standata. The output of this can be passed to <code><a href='vtf.html'>vtf()</a></code>.</p></td>
+      <th>prior_sigma_loc</th>
+      <td><p>vector of length 2</p></td>
     </tr>
     <tr>
-      <th>model</th>
-      <td><p>Form of neuromodulation. One of "multiplicative" or "additive".</p></td>
+      <th>prior_sigma_scale</th>
+      <td><p>vector of length 2</p></td>
     </tr>
     <tr>
-      <th>priors</th>
-      <td><p>named list. see output of <code><a href='set_priors.html'>set_priors()</a></code></p></td>
+      <th>prior_gamma_loc</th>
+      <td><p>real</p></td>
+    </tr>
+    <tr>
+      <th>prior_gamma_scale</th>
+      <td><p>vector of length 2</p></td>
+    </tr>
+    <tr>
+      <th>prior_kappa_loc</th>
+      <td><p>vector of length 2</p></td>
+    </tr>
+    <tr>
+      <th>prior_kappa_scale</th>
+      <td><p>vector of length 2</p></td>
+    </tr>
+    <tr>
+      <th>prior_alpha_loc</th>
+      <td><p>vector of length 2</p></td>
+    </tr>
+    <tr>
+      <th>prior_alpha_scale</th>
+      <td><p>vector of length 2</p></td>
+    </tr>
+    <tr>
+      <th>prior_ntfp_loc</th>
+      <td><p>real</p></td>
+    </tr>
+    <tr>
+      <th>prior_ntfp_scale</th>
+      <td><p>vector of length 2</p></td>
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>named list</p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>all values must be greater than 0</p>
+<p>\(\sigma_loc ~ gamma(prior_sigma_loc[1], prior_sigma_loc[2])\)</p>
+<p>\(\sigma_scale ~ gamma(prior_sigma_scale[1], prior_sigma_scale[2])\)</p>
+<p>\(\gamma_loc ~ normal(0, prior_gamma_loc[2])\)</p>
+<p>\(\gamma_scale ~ gamma(prior_gamma_scale[1], prior_gamma_scale[2])\)</p>
+<p>\(\kappa_loc ~ gamma(prior_kappa_loc[1], prior_kappa_loc[2])\)</p>
+<p>\(\kappa_scale ~ gamma(prior_kappa_scale[1], prior_kappa_scale[2])\)</p>
+<p>\(\alpha_loc ~ normal(prior_alpha_loc[1], prior_alpha_loc[2])\)</p>
+<p>\(\alpha_scale ~ gamma(prior_alpha_scale[1], prior_alpha_scale[2])\)</p>
+<p>\(ntfp_loc ~ normal(prior_ntfp_loc[1], prior_ntfp_loc[2])\)</p>
+<p>\(ntfp_scale ~ gamma(prior_ntfp_scale[1], prior_ntfp_scale[2])\)</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='fu'>set_priors</span>()
+</div><div class='output co'>#&gt; $prior_sigma_loc
+#&gt; [1] 2.0 0.5
+#&gt; 
+#&gt; $prior_sigma_scale
+#&gt; [1] 2.0 0.5
+#&gt; 
+#&gt; $prior_gamma_loc
+#&gt; [1] 5
+#&gt; 
+#&gt; $prior_gamma_scale
+#&gt; [1] 2.00 0.05
+#&gt; 
+#&gt; $prior_kappa_loc
+#&gt; [1] 3 1
+#&gt; 
+#&gt; $prior_kappa_scale
+#&gt; [1] 3 1
+#&gt; 
+#&gt; $prior_alpha_loc
+#&gt; [1] 0 5
+#&gt; 
+#&gt; $prior_alpha_scale
+#&gt; [1] 2.0 0.5
+#&gt; 
+#&gt; $prior_ntfp_loc
+#&gt; [1] 0.5
+#&gt; 
+#&gt; $prior_ntfp_scale
+#&gt; [1] 2 3
+#&gt; </div><div class='input'><span class='fu'>set_priors</span>(prior_sigma_loc = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>2</span>, <span class='fl'>1</span>))
+</div><div class='output co'>#&gt; $prior_sigma_loc
+#&gt; [1] 2 1
+#&gt; 
+#&gt; $prior_sigma_scale
+#&gt; [1] 2.0 0.5
+#&gt; 
+#&gt; $prior_gamma_loc
+#&gt; [1] 5
+#&gt; 
+#&gt; $prior_gamma_scale
+#&gt; [1] 2.00 0.05
+#&gt; 
+#&gt; $prior_kappa_loc
+#&gt; [1] 3 1
+#&gt; 
+#&gt; $prior_kappa_scale
+#&gt; [1] 3 1
+#&gt; 
+#&gt; $prior_alpha_loc
+#&gt; [1] 0 5
+#&gt; 
+#&gt; $prior_alpha_scale
+#&gt; [1] 2.0 0.5
+#&gt; 
+#&gt; $prior_ntfp_loc
+#&gt; [1] 0.5
+#&gt; 
+#&gt; $prior_ntfp_scale
+#&gt; [1] 2 3
+#&gt; </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

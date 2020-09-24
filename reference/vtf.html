@@ -117,14 +117,7 @@
     <p>Run One of the Stan Models</p>
     </div>
 
-    <pre class="usage"><span class='fu'>vtf</span>(
-  <span class='kw'>model</span>,
-  d = <span class='kw'>NULL</span>,
-  standata = <span class='kw'>NULL</span>,
-  priors = <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>20</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>3</span>, <span class='fl'>1</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>5</span>, <span class='fl'>2</span>, <span class='fl'>1</span><span class='op'>/</span><span class='fl'>2</span>, <span class='fl'>0.5</span>, <span class='fl'>2</span>, <span class='fl'>3</span>, <span class='fl'>2</span>,
-    <span class='fl'>2</span>, <span class='fl'>3</span>),
-  <span class='kw'>...</span>
-)</pre>
+    <pre class="usage"><span class='fu'>vtf</span>(<span class='kw'>model</span>, d = <span class='kw'>NULL</span>, standata = <span class='kw'>NULL</span>, priors = <span class='fu'><a href='set_priors.html'>set_priors</a></span>(), <span class='kw'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,7 +137,7 @@ this data will be used rather than the data stored in <code>d</code>.</p></td>
     </tr>
     <tr>
       <th>priors</th>
-      <td><p>vector of length 23.</p></td>
+      <td><p>named list. see output of <code><a href='set_priors.html'>set_priors()</a></code>.</p></td>
     </tr>
     <tr>
       <th>...</th>
