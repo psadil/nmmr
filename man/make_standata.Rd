@@ -4,19 +4,14 @@
 \alias{make_standata}
 \title{Prepare data for running model}
 \usage{
-make_standata(
-  d,
-  model,
-  priors = c(1/2, 5, 2, 1, 5, 2, 1/20, 3, 1, 3, 1, 5, 2, 1/2, 5, 2, 1/2, 0.5, 2, 3, 2,
-    2, 3)
-)
+make_standata(d, model, priors = set_priors())
 }
 \arguments{
 \item{d}{dataframe from which to make standata. The output of this can be passed to \code{\link[=vtf]{vtf()}}.}
 
 \item{model}{Form of neuromodulation. One of "multiplicative" or "additive".}
 
-\item{priors}{vector of length 23.}
+\item{priors}{named list. see output of \code{\link[=set_priors]{set_priors()}}}
 }
 \description{
 Prepare data for running model

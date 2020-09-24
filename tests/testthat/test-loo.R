@@ -1,8 +1,8 @@
+small <- sub02 %>%
+  dplyr::filter(forcats::fct_match(voxel, c("191852","197706"))) %>%
+  dplyr::mutate(voxel = forcats::fct_drop(voxel))
+
 test_that("loo runs", {
-  # data("sub02")
-  small <- sub02 %>%
-    dplyr::filter(forcats::fct_match(voxel, c("191852","197706"))) %>%
-    dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
   #' not nearly enough samples to avoid warnings
   suppressWarnings(

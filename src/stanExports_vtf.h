@@ -35,17 +35,17 @@ stan::io::program_reader prog_reader__() {
     reader.add_event(0, 0, "start", "model_vtf");
     reader.add_event(1, 1, "include", "data/data.stan");
     reader.add_event(1, 0, "start", "data/data.stan");
-    reader.add_event(17, 16, "end", "data/data.stan");
-    reader.add_event(17, 2, "restart", "model_vtf");
-    reader.add_event(50, 35, "include", "tparameters/donut.stan");
-    reader.add_event(50, 0, "start", "tparameters/donut.stan");
-    reader.add_event(56, 6, "end", "tparameters/donut.stan");
-    reader.add_event(56, 36, "restart", "model_vtf");
-    reader.add_event(88, 68, "include", "model/likelihood.stan");
-    reader.add_event(88, 0, "start", "model/likelihood.stan");
-    reader.add_event(116, 28, "end", "model/likelihood.stan");
-    reader.add_event(116, 69, "restart", "model_vtf");
-    reader.add_event(119, 70, "end", "model_vtf");
+    reader.add_event(26, 25, "end", "data/data.stan");
+    reader.add_event(26, 2, "restart", "model_vtf");
+    reader.add_event(59, 35, "include", "tparameters/donut.stan");
+    reader.add_event(59, 0, "start", "tparameters/donut.stan");
+    reader.add_event(65, 6, "end", "tparameters/donut.stan");
+    reader.add_event(65, 36, "restart", "model_vtf");
+    reader.add_event(97, 68, "include", "model/likelihood.stan");
+    reader.add_event(97, 0, "start", "model/likelihood.stan");
+    reader.add_event(122, 25, "end", "model/likelihood.stan");
+    reader.add_event(122, 69, "restart", "model_vtf");
+    reader.add_event(125, 70, "end", "model_vtf");
     return reader;
 }
 #include <stan_meta_header.hpp>
@@ -65,8 +65,17 @@ private:
         std::vector<int> sub;
         double ntfp_min;
         int modulation;
-        vector_d priors;
         std::vector<int> voxel;
+        vector_d prior_sigma_loc;
+        vector_d prior_sigma_scale;
+        double prior_gamma_loc;
+        vector_d prior_gamma_scale;
+        vector_d prior_kappa_loc;
+        vector_d prior_kappa_scale;
+        vector_d prior_alpha_loc;
+        vector_d prior_alpha_scale;
+        double prior_ntfp_loc;
+        vector_d prior_ntfp_scale;
         int maxX;
 public:
     model_vtf(stan::io::var_context& context__,
@@ -227,16 +236,6 @@ public:
             check_greater_or_equal(function__, "modulation", modulation, 0);
             check_less_or_equal(function__, "modulation", modulation, 1);
             current_statement_begin__ = 15;
-            validate_non_negative_index("priors", "23", 23);
-            context__.validate_dims("data initialization", "priors", "vector_d", context__.to_vec(23));
-            priors = Eigen::Matrix<double, Eigen::Dynamic, 1>(23);
-            vals_r__ = context__.vals_r("priors");
-            pos__ = 0;
-            size_t priors_j_1_max__ = 23;
-            for (size_t j_1__ = 0; j_1__ < priors_j_1_max__; ++j_1__) {
-                priors(j_1__) = vals_r__[pos__++];
-            }
-            current_statement_begin__ = 16;
             validate_non_negative_index("voxel", "n", n);
             context__.validate_dims("data initialization", "voxel", "int", context__.to_vec(n));
             voxel = std::vector<int>(n, int(0));
@@ -251,8 +250,110 @@ public:
                 check_greater_or_equal(function__, "voxel[i_0__]", voxel[i_0__], 1);
                 check_less_or_equal(function__, "voxel[i_0__]", voxel[i_0__], n_voxel);
             }
-            // initialize transformed data variables
+            current_statement_begin__ = 17;
+            validate_non_negative_index("prior_sigma_loc", "2", 2);
+            context__.validate_dims("data initialization", "prior_sigma_loc", "vector_d", context__.to_vec(2));
+            prior_sigma_loc = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_sigma_loc");
+            pos__ = 0;
+            size_t prior_sigma_loc_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_sigma_loc_j_1_max__; ++j_1__) {
+                prior_sigma_loc(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_sigma_loc", prior_sigma_loc, 0);
+            current_statement_begin__ = 18;
+            validate_non_negative_index("prior_sigma_scale", "2", 2);
+            context__.validate_dims("data initialization", "prior_sigma_scale", "vector_d", context__.to_vec(2));
+            prior_sigma_scale = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_sigma_scale");
+            pos__ = 0;
+            size_t prior_sigma_scale_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_sigma_scale_j_1_max__; ++j_1__) {
+                prior_sigma_scale(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_sigma_scale", prior_sigma_scale, 0);
+            current_statement_begin__ = 19;
+            context__.validate_dims("data initialization", "prior_gamma_loc", "double", context__.to_vec());
+            prior_gamma_loc = double(0);
+            vals_r__ = context__.vals_r("prior_gamma_loc");
+            pos__ = 0;
+            prior_gamma_loc = vals_r__[pos__++];
+            check_greater_or_equal(function__, "prior_gamma_loc", prior_gamma_loc, 0);
             current_statement_begin__ = 20;
+            validate_non_negative_index("prior_gamma_scale", "2", 2);
+            context__.validate_dims("data initialization", "prior_gamma_scale", "vector_d", context__.to_vec(2));
+            prior_gamma_scale = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_gamma_scale");
+            pos__ = 0;
+            size_t prior_gamma_scale_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_gamma_scale_j_1_max__; ++j_1__) {
+                prior_gamma_scale(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_gamma_scale", prior_gamma_scale, 0);
+            current_statement_begin__ = 21;
+            validate_non_negative_index("prior_kappa_loc", "2", 2);
+            context__.validate_dims("data initialization", "prior_kappa_loc", "vector_d", context__.to_vec(2));
+            prior_kappa_loc = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_kappa_loc");
+            pos__ = 0;
+            size_t prior_kappa_loc_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_kappa_loc_j_1_max__; ++j_1__) {
+                prior_kappa_loc(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_kappa_loc", prior_kappa_loc, 0);
+            current_statement_begin__ = 22;
+            validate_non_negative_index("prior_kappa_scale", "2", 2);
+            context__.validate_dims("data initialization", "prior_kappa_scale", "vector_d", context__.to_vec(2));
+            prior_kappa_scale = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_kappa_scale");
+            pos__ = 0;
+            size_t prior_kappa_scale_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_kappa_scale_j_1_max__; ++j_1__) {
+                prior_kappa_scale(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_kappa_scale", prior_kappa_scale, 0);
+            current_statement_begin__ = 23;
+            validate_non_negative_index("prior_alpha_loc", "2", 2);
+            context__.validate_dims("data initialization", "prior_alpha_loc", "vector_d", context__.to_vec(2));
+            prior_alpha_loc = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_alpha_loc");
+            pos__ = 0;
+            size_t prior_alpha_loc_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_alpha_loc_j_1_max__; ++j_1__) {
+                prior_alpha_loc(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_alpha_loc", prior_alpha_loc, 0);
+            current_statement_begin__ = 24;
+            validate_non_negative_index("prior_alpha_scale", "2", 2);
+            context__.validate_dims("data initialization", "prior_alpha_scale", "vector_d", context__.to_vec(2));
+            prior_alpha_scale = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_alpha_scale");
+            pos__ = 0;
+            size_t prior_alpha_scale_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_alpha_scale_j_1_max__; ++j_1__) {
+                prior_alpha_scale(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_alpha_scale", prior_alpha_scale, 0);
+            current_statement_begin__ = 25;
+            context__.validate_dims("data initialization", "prior_ntfp_loc", "double", context__.to_vec());
+            prior_ntfp_loc = double(0);
+            vals_r__ = context__.vals_r("prior_ntfp_loc");
+            pos__ = 0;
+            prior_ntfp_loc = vals_r__[pos__++];
+            check_greater_or_equal(function__, "prior_ntfp_loc", prior_ntfp_loc, 0);
+            current_statement_begin__ = 26;
+            validate_non_negative_index("prior_ntfp_scale", "2", 2);
+            context__.validate_dims("data initialization", "prior_ntfp_scale", "vector_d", context__.to_vec(2));
+            prior_ntfp_scale = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            vals_r__ = context__.vals_r("prior_ntfp_scale");
+            pos__ = 0;
+            size_t prior_ntfp_scale_j_1_max__ = 2;
+            for (size_t j_1__ = 0; j_1__ < prior_ntfp_scale_j_1_max__; ++j_1__) {
+                prior_ntfp_scale(j_1__) = vals_r__[pos__++];
+            }
+            check_greater_or_equal(function__, "prior_ntfp_scale", prior_ntfp_scale, 0);
+            // initialize transformed data variables
+            current_statement_begin__ = 29;
             maxX = int(0);
             stan::math::fill(maxX, std::numeric_limits<int>::min());
             stan::math::assign(maxX,max(X));
@@ -261,43 +362,43 @@ public:
             // validate, set parameter ranges
             num_params_r__ = 0U;
             param_ranges_i__.clear();
-            current_statement_begin__ = 24;
+            current_statement_begin__ = 33;
             num_params_r__ += 1;
-            current_statement_begin__ = 25;
+            current_statement_begin__ = 34;
             num_params_r__ += 1;
-            current_statement_begin__ = 26;
+            current_statement_begin__ = 35;
             validate_non_negative_index("sigma", "n_voxel", n_voxel);
             num_params_r__ += n_voxel;
-            current_statement_begin__ = 27;
+            current_statement_begin__ = 36;
             validate_non_negative_index("meanAngleVector", "n_voxel", n_voxel);
             validate_non_negative_index("meanAngleVector", "2", 2);
             num_params_r__ += (n_voxel * 2);
-            current_statement_begin__ = 30;
+            current_statement_begin__ = 39;
             num_params_r__ += 1;
-            current_statement_begin__ = 31;
-            num_params_r__ += 1;
-            current_statement_begin__ = 32;
-            validate_non_negative_index("v_gamma", "n_voxel", n_voxel);
-            num_params_r__ += n_voxel;
-            current_statement_begin__ = 35;
-            num_params_r__ += 1;
-            current_statement_begin__ = 36;
-            num_params_r__ += 1;
-            current_statement_begin__ = 37;
-            validate_non_negative_index("v_kappa_raw", "n_voxel", n_voxel);
-            num_params_r__ += n_voxel;
             current_statement_begin__ = 40;
             num_params_r__ += 1;
             current_statement_begin__ = 41;
-            num_params_r__ += 1;
-            current_statement_begin__ = 42;
-            validate_non_negative_index("v_alpha", "n_voxel", n_voxel);
+            validate_non_negative_index("v_gamma", "n_voxel", n_voxel);
             num_params_r__ += n_voxel;
+            current_statement_begin__ = 44;
+            num_params_r__ += 1;
             current_statement_begin__ = 45;
             num_params_r__ += 1;
             current_statement_begin__ = 46;
+            validate_non_negative_index("v_kappa_raw", "n_voxel", n_voxel);
+            num_params_r__ += n_voxel;
+            current_statement_begin__ = 49;
             num_params_r__ += 1;
-            current_statement_begin__ = 47;
+            current_statement_begin__ = 50;
+            num_params_r__ += 1;
+            current_statement_begin__ = 51;
+            validate_non_negative_index("v_alpha", "n_voxel", n_voxel);
+            num_params_r__ += n_voxel;
+            current_statement_begin__ = 54;
+            num_params_r__ += 1;
+            current_statement_begin__ = 55;
+            num_params_r__ += 1;
+            current_statement_begin__ = 56;
             validate_non_negative_index("v_ntfp", "n_voxel", n_voxel);
             num_params_r__ += n_voxel;
         } catch (const std::exception& e) {
@@ -317,7 +418,7 @@ public:
         (void) pos__; // dummy call to supress warning
         std::vector<double> vals_r__;
         std::vector<int> vals_i__;
-        current_statement_begin__ = 24;
+        current_statement_begin__ = 33;
         if (!(context__.contains_r("sigma_loc")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_loc missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma_loc");
@@ -330,7 +431,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_loc: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 25;
+        current_statement_begin__ = 34;
         if (!(context__.contains_r("sigma_scale")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma_scale missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma_scale");
@@ -343,7 +444,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma_scale: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 26;
+        current_statement_begin__ = 35;
         if (!(context__.contains_r("sigma")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable sigma missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("sigma");
@@ -360,7 +461,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable sigma: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 27;
+        current_statement_begin__ = 36;
         if (!(context__.contains_r("meanAngleVector")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable meanAngleVector missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("meanAngleVector");
@@ -381,7 +482,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable meanAngleVector: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 30;
+        current_statement_begin__ = 39;
         if (!(context__.contains_r("s_gamma_loc")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable s_gamma_loc missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("s_gamma_loc");
@@ -394,7 +495,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable s_gamma_loc: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 31;
+        current_statement_begin__ = 40;
         if (!(context__.contains_r("s_gamma_scale")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable s_gamma_scale missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("s_gamma_scale");
@@ -407,7 +508,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable s_gamma_scale: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 32;
+        current_statement_begin__ = 41;
         if (!(context__.contains_r("v_gamma")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable v_gamma missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("v_gamma");
@@ -424,7 +525,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable v_gamma: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 35;
+        current_statement_begin__ = 44;
         if (!(context__.contains_r("v_kappa_loc")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable v_kappa_loc missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("v_kappa_loc");
@@ -437,7 +538,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable v_kappa_loc: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 36;
+        current_statement_begin__ = 45;
         if (!(context__.contains_r("v_kappa_scale")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable v_kappa_scale missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("v_kappa_scale");
@@ -450,7 +551,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable v_kappa_scale: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 37;
+        current_statement_begin__ = 46;
         if (!(context__.contains_r("v_kappa_raw")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable v_kappa_raw missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("v_kappa_raw");
@@ -467,7 +568,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable v_kappa_raw: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 40;
+        current_statement_begin__ = 49;
         if (!(context__.contains_r("s_alpha_loc")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable s_alpha_loc missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("s_alpha_loc");
@@ -480,7 +581,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable s_alpha_loc: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 41;
+        current_statement_begin__ = 50;
         if (!(context__.contains_r("s_alpha_scale")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable s_alpha_scale missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("s_alpha_scale");
@@ -493,7 +594,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable s_alpha_scale: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 42;
+        current_statement_begin__ = 51;
         if (!(context__.contains_r("v_alpha")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable v_alpha missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("v_alpha");
@@ -510,7 +611,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable v_alpha: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 45;
+        current_statement_begin__ = 54;
         if (!(context__.contains_r("s_ntfp_loc")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable s_ntfp_loc missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("s_ntfp_loc");
@@ -523,7 +624,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable s_ntfp_loc: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 46;
+        current_statement_begin__ = 55;
         if (!(context__.contains_r("s_ntfp_scale")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable s_ntfp_scale missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("s_ntfp_scale");
@@ -536,7 +637,7 @@ public:
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable s_ntfp_scale: ") + e.what()), current_statement_begin__, prog_reader__());
         }
-        current_statement_begin__ = 47;
+        current_statement_begin__ = 56;
         if (!(context__.contains_r("v_ntfp")))
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable v_ntfp missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("v_ntfp");
@@ -578,112 +679,112 @@ public:
         try {
             stan::io::reader<local_scalar_t__> in__(params_r__, params_i__);
             // model parameters
-            current_statement_begin__ = 24;
+            current_statement_begin__ = 33;
             local_scalar_t__ sigma_loc;
             (void) sigma_loc;  // dummy to suppress unused var warning
             if (jacobian__)
                 sigma_loc = in__.scalar_lb_constrain(0, lp__);
             else
                 sigma_loc = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 25;
+            current_statement_begin__ = 34;
             local_scalar_t__ sigma_scale;
             (void) sigma_scale;  // dummy to suppress unused var warning
             if (jacobian__)
                 sigma_scale = in__.scalar_lb_constrain(0, lp__);
             else
                 sigma_scale = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 26;
+            current_statement_begin__ = 35;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> sigma;
             (void) sigma;  // dummy to suppress unused var warning
             if (jacobian__)
                 sigma = in__.vector_lb_constrain(0, n_voxel, lp__);
             else
                 sigma = in__.vector_lb_constrain(0, n_voxel);
-            current_statement_begin__ = 27;
+            current_statement_begin__ = 36;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> meanAngleVector;
             (void) meanAngleVector;  // dummy to suppress unused var warning
             if (jacobian__)
                 meanAngleVector = in__.matrix_constrain(n_voxel, 2, lp__);
             else
                 meanAngleVector = in__.matrix_constrain(n_voxel, 2);
-            current_statement_begin__ = 30;
+            current_statement_begin__ = 39;
             local_scalar_t__ s_gamma_loc;
             (void) s_gamma_loc;  // dummy to suppress unused var warning
             if (jacobian__)
                 s_gamma_loc = in__.scalar_lb_constrain(0, lp__);
             else
                 s_gamma_loc = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 31;
+            current_statement_begin__ = 40;
             local_scalar_t__ s_gamma_scale;
             (void) s_gamma_scale;  // dummy to suppress unused var warning
             if (jacobian__)
                 s_gamma_scale = in__.scalar_lb_constrain(0, lp__);
             else
                 s_gamma_scale = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 32;
+            current_statement_begin__ = 41;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> v_gamma;
             (void) v_gamma;  // dummy to suppress unused var warning
             if (jacobian__)
                 v_gamma = in__.vector_lb_constrain(0, n_voxel, lp__);
             else
                 v_gamma = in__.vector_lb_constrain(0, n_voxel);
-            current_statement_begin__ = 35;
+            current_statement_begin__ = 44;
             local_scalar_t__ v_kappa_loc;
             (void) v_kappa_loc;  // dummy to suppress unused var warning
             if (jacobian__)
                 v_kappa_loc = in__.scalar_lb_constrain(0, lp__);
             else
                 v_kappa_loc = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 36;
+            current_statement_begin__ = 45;
             local_scalar_t__ v_kappa_scale;
             (void) v_kappa_scale;  // dummy to suppress unused var warning
             if (jacobian__)
                 v_kappa_scale = in__.scalar_lb_constrain(0, lp__);
             else
                 v_kappa_scale = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 37;
+            current_statement_begin__ = 46;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> v_kappa_raw;
             (void) v_kappa_raw;  // dummy to suppress unused var warning
             if (jacobian__)
                 v_kappa_raw = in__.vector_lb_constrain((-(v_kappa_loc) / v_kappa_scale), n_voxel, lp__);
             else
                 v_kappa_raw = in__.vector_lb_constrain((-(v_kappa_loc) / v_kappa_scale), n_voxel);
-            current_statement_begin__ = 40;
+            current_statement_begin__ = 49;
             local_scalar_t__ s_alpha_loc;
             (void) s_alpha_loc;  // dummy to suppress unused var warning
             if (jacobian__)
                 s_alpha_loc = in__.scalar_constrain(lp__);
             else
                 s_alpha_loc = in__.scalar_constrain();
-            current_statement_begin__ = 41;
+            current_statement_begin__ = 50;
             local_scalar_t__ s_alpha_scale;
             (void) s_alpha_scale;  // dummy to suppress unused var warning
             if (jacobian__)
                 s_alpha_scale = in__.scalar_lb_constrain(0, lp__);
             else
                 s_alpha_scale = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 42;
+            current_statement_begin__ = 51;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> v_alpha;
             (void) v_alpha;  // dummy to suppress unused var warning
             if (jacobian__)
                 v_alpha = in__.vector_constrain(n_voxel, lp__);
             else
                 v_alpha = in__.vector_constrain(n_voxel);
-            current_statement_begin__ = 45;
+            current_statement_begin__ = 54;
             local_scalar_t__ s_ntfp_loc;
             (void) s_ntfp_loc;  // dummy to suppress unused var warning
             if (jacobian__)
                 s_ntfp_loc = in__.scalar_lb_constrain(ntfp_min, lp__);
             else
                 s_ntfp_loc = in__.scalar_lb_constrain(ntfp_min);
-            current_statement_begin__ = 46;
+            current_statement_begin__ = 55;
             local_scalar_t__ s_ntfp_scale;
             (void) s_ntfp_scale;  // dummy to suppress unused var warning
             if (jacobian__)
                 s_ntfp_scale = in__.scalar_lb_constrain(0, lp__);
             else
                 s_ntfp_scale = in__.scalar_lb_constrain(0);
-            current_statement_begin__ = 47;
+            current_statement_begin__ = 56;
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> v_ntfp;
             (void) v_ntfp;  // dummy to suppress unused var warning
             if (jacobian__)
@@ -691,34 +792,34 @@ public:
             else
                 v_ntfp = in__.vector_lb_constrain(ntfp_min, n_voxel);
             // transformed parameters
-            current_statement_begin__ = 50;
+            current_statement_begin__ = 59;
             validate_non_negative_index("v_kappa", "n_voxel", n_voxel);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> v_kappa(n_voxel);
             stan::math::initialize(v_kappa, DUMMY_VAR__);
             stan::math::fill(v_kappa, DUMMY_VAR__);
             stan::math::assign(v_kappa,add(v_kappa_loc, multiply(v_kappa_raw, v_kappa_scale)));
-            current_statement_begin__ = 51;
+            current_statement_begin__ = 60;
             validate_non_negative_index("lengthOfMeanAngleVector", "n_voxel", n_voxel);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> lengthOfMeanAngleVector(n_voxel);
             stan::math::initialize(lengthOfMeanAngleVector, DUMMY_VAR__);
             stan::math::fill(lengthOfMeanAngleVector, DUMMY_VAR__);
             stan::math::assign(lengthOfMeanAngleVector,stan::math::sqrt(rows_dot_self(meanAngleVector)));
-            current_statement_begin__ = 52;
+            current_statement_begin__ = 61;
             validate_non_negative_index("meanAngleUnitVector", "n_voxel", n_voxel);
             validate_non_negative_index("meanAngleUnitVector", "2", 2);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, Eigen::Dynamic> meanAngleUnitVector(n_voxel, 2);
             stan::math::initialize(meanAngleUnitVector, DUMMY_VAR__);
             stan::math::fill(meanAngleUnitVector, DUMMY_VAR__);
             stan::math::assign(meanAngleUnitVector,append_col(elt_divide(stan::model::rvalue(meanAngleVector, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list())), "meanAngleVector"), lengthOfMeanAngleVector), elt_divide(stan::model::rvalue(meanAngleVector, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(2), stan::model::nil_index_list())), "meanAngleVector"), lengthOfMeanAngleVector)));
-            current_statement_begin__ = 54;
+            current_statement_begin__ = 63;
             validate_non_negative_index("meanAngle", "n_voxel", n_voxel);
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> meanAngle(n_voxel);
             stan::math::initialize(meanAngle, DUMMY_VAR__);
             stan::math::fill(meanAngle, DUMMY_VAR__);
             // transformed parameters block statements
-            current_statement_begin__ = 56;
+            current_statement_begin__ = 65;
             for (int v = 1; v <= n_voxel; ++v) {
-                current_statement_begin__ = 56;
+                current_statement_begin__ = 65;
                 stan::model::assign(meanAngle, 
                             stan::model::cons_list(stan::model::index_uni(v), stan::model::nil_index_list()), 
                             atan2(get_base1(meanAngleUnitVector, v, 2, "meanAngleUnitVector", 1), get_base1(meanAngleUnitVector, v, 1, "meanAngleUnitVector", 1)), 
@@ -727,7 +828,7 @@ public:
             // validate transformed parameters
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 50;
+            current_statement_begin__ = 59;
             size_t v_kappa_j_1_max__ = n_voxel;
             for (size_t j_1__ = 0; j_1__ < v_kappa_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(v_kappa(j_1__))) {
@@ -737,7 +838,7 @@ public:
                 }
             }
             check_greater_or_equal(function__, "v_kappa", v_kappa, 0);
-            current_statement_begin__ = 51;
+            current_statement_begin__ = 60;
             size_t lengthOfMeanAngleVector_j_1_max__ = n_voxel;
             for (size_t j_1__ = 0; j_1__ < lengthOfMeanAngleVector_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(lengthOfMeanAngleVector(j_1__))) {
@@ -747,7 +848,7 @@ public:
                 }
             }
             check_greater_or_equal(function__, "lengthOfMeanAngleVector", lengthOfMeanAngleVector, 0);
-            current_statement_begin__ = 52;
+            current_statement_begin__ = 61;
             size_t meanAngleUnitVector_j_1_max__ = n_voxel;
             size_t meanAngleUnitVector_j_2_max__ = 2;
             for (size_t j_1__ = 0; j_1__ < meanAngleUnitVector_j_1_max__; ++j_1__) {
@@ -759,7 +860,7 @@ public:
                     }
                 }
             }
-            current_statement_begin__ = 54;
+            current_statement_begin__ = 63;
             size_t meanAngle_j_1_max__ = n_voxel;
             for (size_t j_1__ = 0; j_1__ < meanAngle_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(meanAngle(j_1__))) {
@@ -771,112 +872,112 @@ public:
             check_greater_or_equal(function__, "meanAngle", meanAngle, -(stan::math::pi()));
             check_less_or_equal(function__, "meanAngle", meanAngle, stan::math::pi());
             // model body
-            current_statement_begin__ = 59;
-            lp_accum__.add(normal_log<propto__>(lengthOfMeanAngleVector, 1, .1));
-            current_statement_begin__ = 61;
-            lp_accum__.add(gamma_log<propto__>(sigma_loc, 2, get_base1(priors, 1, "priors", 1)));
-            current_statement_begin__ = 62;
-            lp_accum__.add(gamma_log<propto__>(sigma_scale, 2, 0.5));
-            current_statement_begin__ = 63;
-            lp_accum__.add(normal_log<propto__>(sigma, sigma_loc, sigma_scale));
-            current_statement_begin__ = 64;
-            lp_accum__.add((-(normal_ccdf_log(0, sigma_loc, sigma_scale)) * n_voxel));
-            current_statement_begin__ = 67;
-            lp_accum__.add(normal_log<propto__>(s_gamma_loc, 0, get_base1(priors, 2, "priors", 1)));
             current_statement_begin__ = 68;
-            lp_accum__.add(gamma_log<propto__>(s_gamma_scale, get_base1(priors, 6, "priors", 1), get_base1(priors, 7, "priors", 1)));
-            current_statement_begin__ = 69;
-            lp_accum__.add(normal_log<propto__>(v_gamma, s_gamma_loc, s_gamma_scale));
+            lp_accum__.add(normal_log<propto__>(lengthOfMeanAngleVector, 1, .1));
             current_statement_begin__ = 70;
-            lp_accum__.add((-(normal_ccdf_log(0, s_gamma_loc, s_gamma_scale)) * n_voxel));
+            lp_accum__.add(gamma_log<propto__>(sigma_loc, get_base1(prior_sigma_loc, 1, "prior_sigma_loc", 1), get_base1(prior_sigma_loc, 2, "prior_sigma_loc", 1)));
+            current_statement_begin__ = 71;
+            lp_accum__.add(gamma_log<propto__>(sigma_scale, get_base1(prior_sigma_scale, 1, "prior_sigma_scale", 1), get_base1(prior_sigma_scale, 2, "prior_sigma_scale", 1)));
+            current_statement_begin__ = 72;
+            lp_accum__.add(normal_log<propto__>(sigma, sigma_loc, sigma_scale));
             current_statement_begin__ = 73;
-            lp_accum__.add(gamma_log<propto__>(v_kappa_loc, get_base1(priors, 8, "priors", 1), get_base1(priors, 9, "priors", 1)));
-            current_statement_begin__ = 74;
-            lp_accum__.add(gamma_log<propto__>(v_kappa_scale, get_base1(priors, 10, "priors", 1), get_base1(priors, 11, "priors", 1)));
-            current_statement_begin__ = 75;
-            lp_accum__.add(std_normal_log<propto__>(v_kappa_raw));
+            lp_accum__.add((-(normal_ccdf_log(0, sigma_loc, sigma_scale)) * n_voxel));
             current_statement_begin__ = 76;
-            lp_accum__.add((-(normal_ccdf_log((-(v_kappa_loc) / v_kappa_scale), 0, 1)) * n_voxel));
+            lp_accum__.add(normal_log<propto__>(s_gamma_loc, 0, prior_gamma_loc));
+            current_statement_begin__ = 77;
+            lp_accum__.add(gamma_log<propto__>(s_gamma_scale, get_base1(prior_gamma_scale, 1, "prior_gamma_scale", 1), get_base1(prior_gamma_scale, 2, "prior_gamma_scale", 1)));
+            current_statement_begin__ = 78;
+            lp_accum__.add(normal_log<propto__>(v_gamma, s_gamma_loc, s_gamma_scale));
             current_statement_begin__ = 79;
-            lp_accum__.add(normal_log<propto__>(s_alpha_loc, 0, get_base1(priors, 12, "priors", 1)));
-            current_statement_begin__ = 80;
-            lp_accum__.add(gamma_log<propto__>(s_alpha_scale, get_base1(priors, 16, "priors", 1), get_base1(priors, 17, "priors", 1)));
-            current_statement_begin__ = 81;
-            lp_accum__.add(normal_log<propto__>(v_alpha, s_alpha_loc, s_alpha_scale));
+            lp_accum__.add((-(normal_ccdf_log(0, s_gamma_loc, s_gamma_scale)) * n_voxel));
+            current_statement_begin__ = 82;
+            lp_accum__.add(gamma_log<propto__>(v_kappa_loc, get_base1(prior_kappa_loc, 1, "prior_kappa_loc", 1), get_base1(prior_kappa_loc, 2, "prior_kappa_loc", 1)));
+            current_statement_begin__ = 83;
+            lp_accum__.add(gamma_log<propto__>(v_kappa_scale, get_base1(prior_kappa_scale, 1, "prior_kappa_scale", 1), get_base1(prior_kappa_scale, 2, "prior_kappa_scale", 1)));
             current_statement_begin__ = 84;
-            lp_accum__.add(normal_log<propto__>(s_ntfp_loc, ntfp_min, get_base1(priors, 18, "priors", 1)));
+            lp_accum__.add(std_normal_log<propto__>(v_kappa_raw));
             current_statement_begin__ = 85;
-            lp_accum__.add(gamma_log<propto__>(s_ntfp_scale, get_base1(priors, 22, "priors", 1), get_base1(priors, 23, "priors", 1)));
-            current_statement_begin__ = 86;
+            lp_accum__.add((-(normal_ccdf_log((-(v_kappa_loc) / v_kappa_scale), 0, 1)) * n_voxel));
+            current_statement_begin__ = 88;
+            lp_accum__.add(normal_log<propto__>(s_alpha_loc, get_base1(prior_alpha_loc, 1, "prior_alpha_loc", 1), get_base1(prior_alpha_loc, 2, "prior_alpha_loc", 1)));
+            current_statement_begin__ = 89;
+            lp_accum__.add(gamma_log<propto__>(s_alpha_scale, get_base1(prior_alpha_scale, 1, "prior_alpha_scale", 1), get_base1(prior_alpha_scale, 2, "prior_alpha_scale", 1)));
+            current_statement_begin__ = 90;
+            lp_accum__.add(normal_log<propto__>(v_alpha, s_alpha_loc, s_alpha_scale));
+            current_statement_begin__ = 93;
+            lp_accum__.add(normal_log<propto__>(s_ntfp_loc, ntfp_min, prior_ntfp_loc));
+            current_statement_begin__ = 94;
+            lp_accum__.add(gamma_log<propto__>(s_ntfp_scale, get_base1(prior_ntfp_scale, 1, "prior_ntfp_scale", 1), get_base1(prior_ntfp_scale, 2, "prior_ntfp_scale", 1)));
+            current_statement_begin__ = 95;
             lp_accum__.add(normal_log<propto__>(v_ntfp, s_ntfp_loc, s_ntfp_scale));
-            current_statement_begin__ = 87;
+            current_statement_begin__ = 96;
             lp_accum__.add((-(normal_ccdf_log(ntfp_min, s_ntfp_loc, s_ntfp_scale)) * n_voxel));
             {
-            current_statement_begin__ = 93;
+            current_statement_begin__ = 102;
             validate_non_negative_index("vtf", "((n_unique_orientations * 2) * n_voxel)", ((n_unique_orientations * 2) * n_voxel));
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> vtf(((n_unique_orientations * 2) * n_voxel));
             stan::math::initialize(vtf, DUMMY_VAR__);
             stan::math::fill(vtf, DUMMY_VAR__);
-            current_statement_begin__ = 94;
+            current_statement_begin__ = 103;
             int i(0);
             (void) i;  // dummy to suppress unused var warning
             stan::math::fill(i, std::numeric_limits<int>::min());
             stan::math::assign(i,1);
-            current_statement_begin__ = 96;
+            current_statement_begin__ = 105;
             for (int v = 1; v <= n_voxel; ++v) {
                 {
-                current_statement_begin__ = 97;
+                current_statement_begin__ = 106;
                 int no(0);
                 (void) no;  // dummy to suppress unused var warning
                 stan::math::fill(no, std::numeric_limits<int>::min());
                 stan::math::assign(no,get_base1(n_unique_orientations_vox, v, "n_unique_orientations_vox", 1));
-                current_statement_begin__ = 98;
+                current_statement_begin__ = 107;
                 int no2(0);
                 (void) no2;  // dummy to suppress unused var warning
                 stan::math::fill(no2, std::numeric_limits<int>::min());
                 stan::math::assign(no2,(no * 2));
-                current_statement_begin__ = 99;
+                current_statement_begin__ = 108;
                 int up(0);
                 (void) up;  // dummy to suppress unused var warning
                 stan::math::fill(up, std::numeric_limits<int>::min());
                 stan::math::assign(up,((i + no2) - 1));
-                current_statement_begin__ = 100;
+                current_statement_begin__ = 109;
                 validate_non_negative_index("resp_to_ori", "no", no);
                 Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> resp_to_ori(no);
                 stan::math::initialize(resp_to_ori, DUMMY_VAR__);
                 stan::math::fill(resp_to_ori, DUMMY_VAR__);
                 stan::math::assign(resp_to_ori,stan::math::exp(multiply(get_base1(v_kappa, v, "v_kappa", 1), stan::math::cos(subtract(stan::model::rvalue(unique_orientations, stan::model::cons_list(stan::model::index_multi(stan::model::rvalue(ori_by_vox, stan::model::cons_list(stan::model::index_uni(v), stan::model::cons_list(stan::model::index_min_max(1, no), stan::model::nil_index_list())), "ori_by_vox")), stan::model::nil_index_list()), "unique_orientations"), get_base1(meanAngle, v, "meanAngle", 1))))));
-                current_statement_begin__ = 101;
+                current_statement_begin__ = 110;
                 if (as_bool(logical_gt(up, maxX))) {
-                    current_statement_begin__ = 101;
+                    current_statement_begin__ = 110;
                     std::stringstream errmsg_stream__;
                     errmsg_stream__ << "index should not exceed elements of X. Found up = ";
                     errmsg_stream__ << up;
                     throw std::domain_error(errmsg_stream__.str());
                 }
-                current_statement_begin__ = 102;
+                current_statement_begin__ = 111;
                 stan::math::assign(resp_to_ori, divide(resp_to_ori, sum(resp_to_ori)));
-                current_statement_begin__ = 107;
+                current_statement_begin__ = 113;
                 stan::math::assign(resp_to_ori, multiply(resp_to_ori, get_base1(v_gamma, v, "v_gamma", 1)));
-                current_statement_begin__ = 108;
+                current_statement_begin__ = 114;
                 if (as_bool(logical_eq(modulation, 0))) {
-                    current_statement_begin__ = 109;
+                    current_statement_begin__ = 115;
                     stan::model::assign(vtf, 
                                 stan::model::cons_list(stan::model::index_min_max(i, up), stan::model::nil_index_list()), 
                                 add(get_base1(v_alpha, v, "v_alpha", 1), append_row(resp_to_ori, add(resp_to_ori, get_base1(v_ntfp, v, "v_ntfp", 1)))), 
                                 "assigning variable vtf");
                 } else if (as_bool(logical_eq(modulation, 1))) {
-                    current_statement_begin__ = 111;
+                    current_statement_begin__ = 117;
                     stan::model::assign(vtf, 
                                 stan::model::cons_list(stan::model::index_min_max(i, up), stan::model::nil_index_list()), 
                                 add(get_base1(v_alpha, v, "v_alpha", 1), append_row(resp_to_ori, multiply(resp_to_ori, get_base1(v_ntfp, v, "v_ntfp", 1)))), 
                                 "assigning variable vtf");
                 }
-                current_statement_begin__ = 113;
+                current_statement_begin__ = 119;
                 stan::math::assign(i, (i + no2));
                 }
             }
-            current_statement_begin__ = 115;
+            current_statement_begin__ = 121;
             lp_accum__.add(normal_log<propto__>(y, stan::model::rvalue(vtf, stan::model::cons_list(stan::model::index_multi(X), stan::model::nil_index_list()), "vtf"), stan::model::rvalue(sigma, stan::model::cons_list(stan::model::index_multi(voxel), stan::model::nil_index_list()), "sigma")));
             }
         } catch (const std::exception& e) {
@@ -1051,34 +1152,34 @@ public:
         if (!include_tparams__ && !include_gqs__) return;
         try {
             // declare and define transformed parameters
-            current_statement_begin__ = 50;
+            current_statement_begin__ = 59;
             validate_non_negative_index("v_kappa", "n_voxel", n_voxel);
             Eigen::Matrix<double, Eigen::Dynamic, 1> v_kappa(n_voxel);
             stan::math::initialize(v_kappa, DUMMY_VAR__);
             stan::math::fill(v_kappa, DUMMY_VAR__);
             stan::math::assign(v_kappa,add(v_kappa_loc, multiply(v_kappa_raw, v_kappa_scale)));
-            current_statement_begin__ = 51;
+            current_statement_begin__ = 60;
             validate_non_negative_index("lengthOfMeanAngleVector", "n_voxel", n_voxel);
             Eigen::Matrix<double, Eigen::Dynamic, 1> lengthOfMeanAngleVector(n_voxel);
             stan::math::initialize(lengthOfMeanAngleVector, DUMMY_VAR__);
             stan::math::fill(lengthOfMeanAngleVector, DUMMY_VAR__);
             stan::math::assign(lengthOfMeanAngleVector,stan::math::sqrt(rows_dot_self(meanAngleVector)));
-            current_statement_begin__ = 52;
+            current_statement_begin__ = 61;
             validate_non_negative_index("meanAngleUnitVector", "n_voxel", n_voxel);
             validate_non_negative_index("meanAngleUnitVector", "2", 2);
             Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic> meanAngleUnitVector(n_voxel, 2);
             stan::math::initialize(meanAngleUnitVector, DUMMY_VAR__);
             stan::math::fill(meanAngleUnitVector, DUMMY_VAR__);
             stan::math::assign(meanAngleUnitVector,append_col(elt_divide(stan::model::rvalue(meanAngleVector, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list())), "meanAngleVector"), lengthOfMeanAngleVector), elt_divide(stan::model::rvalue(meanAngleVector, stan::model::cons_list(stan::model::index_omni(), stan::model::cons_list(stan::model::index_uni(2), stan::model::nil_index_list())), "meanAngleVector"), lengthOfMeanAngleVector)));
-            current_statement_begin__ = 54;
+            current_statement_begin__ = 63;
             validate_non_negative_index("meanAngle", "n_voxel", n_voxel);
             Eigen::Matrix<double, Eigen::Dynamic, 1> meanAngle(n_voxel);
             stan::math::initialize(meanAngle, DUMMY_VAR__);
             stan::math::fill(meanAngle, DUMMY_VAR__);
             // do transformed parameters statements
-            current_statement_begin__ = 56;
+            current_statement_begin__ = 65;
             for (int v = 1; v <= n_voxel; ++v) {
-                current_statement_begin__ = 56;
+                current_statement_begin__ = 65;
                 stan::model::assign(meanAngle, 
                             stan::model::cons_list(stan::model::index_uni(v), stan::model::nil_index_list()), 
                             atan2(get_base1(meanAngleUnitVector, v, 2, "meanAngleUnitVector", 1), get_base1(meanAngleUnitVector, v, 1, "meanAngleUnitVector", 1)), 
@@ -1088,11 +1189,11 @@ public:
             // validate transformed parameters
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
-            current_statement_begin__ = 50;
+            current_statement_begin__ = 59;
             check_greater_or_equal(function__, "v_kappa", v_kappa, 0);
-            current_statement_begin__ = 51;
+            current_statement_begin__ = 60;
             check_greater_or_equal(function__, "lengthOfMeanAngleVector", lengthOfMeanAngleVector, 0);
-            current_statement_begin__ = 54;
+            current_statement_begin__ = 63;
             check_greater_or_equal(function__, "meanAngle", meanAngle, -(stan::math::pi()));
             check_less_or_equal(function__, "meanAngle", meanAngle, stan::math::pi());
             // write transformed parameters
