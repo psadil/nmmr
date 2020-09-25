@@ -9,6 +9,9 @@ bind_fits(ModelFits)
 \arguments{
 \item{ModelFits}{list of ModelFit objects}
 }
+\value{
+\code{\link[=deg]{deg()}} converts radian to degree, \code{\link[=rad]{rad()}} converts degress to radian
+}
 \description{
 ModelFit Bind list of \code{\link{ModelFit}} objects into single fit
 }

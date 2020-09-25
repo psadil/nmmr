@@ -54,3 +54,4 @@ src/*.h
 src/nmmr.so
 src/nmmr.dll
 src/init.o
+inst/doc

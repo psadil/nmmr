@@ -8,6 +8,9 @@ ModelFit object, output from sampling
 
 ModelFit object, output from sampling
 }
+\seealso{
+\code{\link[=bind_fits]{bind_fits()}}
+}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{

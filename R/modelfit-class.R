@@ -1,6 +1,7 @@
 #' ModelFit object, output from sampling
 #'
 #' @export
+#' @seealso [bind_fits()]
 ModelFit <- R6::R6Class(
   "ModelFit",
   public = list(
