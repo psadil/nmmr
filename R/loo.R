@@ -46,7 +46,7 @@ loo.VtuneFit <- function(x,
 #' @describeIn VtuneFit Leave-one-out cross-validation
 #'
 #' @param cores int
-#' @param x VtuneFit object, containing parameters "mu" and "sigma"
+#' @param x [VtuneFit] object
 #'
 #' @export
 #' @importFrom loo loo
@@ -73,40 +73,42 @@ setMethod("loo", "VtuneFit", loo.VtuneFit)
 
   d0 <- xx %>%
     dplyr::mutate(
-      ori = purrr::map(voxel, ~stand$unique_orientations[stand$ori_by_vox[.x, 1:stand$n_unique_orientations_vox[.x]]])) %>%
-    tidyr::unnest(ori) %>%
-    dplyr::mutate(resp_to_ori = exp(v_kappa * cos(ori - meanAngle))) %>%
-    dplyr::select(-meanAngle, -v_kappa) %>%
-    dplyr::group_by(voxel, .chain) %>%
-    dplyr::mutate(resp_to_ori = v_gamma * (resp_to_ori / sum(resp_to_ori))) %>%
+      ori = purrr::map(
+        .data$voxel,
+        ~stand$unique_orientations[stand$ori_by_vox[.x, 1:stand$n_unique_orientations_vox[.x]]])) %>%
+    tidyr::unnest(.data$ori) %>%
+    dplyr::mutate(resp_to_ori = exp(.data$v_kappa * cos(.data$ori - .data$meanAngle))) %>%
+    dplyr::select(-.data$meanAngle, -.data$v_kappa) %>%
+    dplyr::group_by(.data$voxel, .data$.chain) %>%
+    dplyr::mutate(resp_to_ori = .data$v_gamma * (.data$resp_to_ori / sum(.data$resp_to_ori))) %>%
     dplyr::ungroup() %>%
-    dplyr::select(-v_gamma) %>%
+    dplyr::select(-.data$v_gamma) %>%
     tidyr::crossing(contrast = factor(c("low", "high"), levels = c("low", "high")))
 
   if(stand$modulation == 0){
     d2 <- d0 %>%
       dplyr::mutate(
         vtf0 = dplyr::if_else(
-          forcats::fct_match(contrast, "low"),
-          resp_to_ori,
-          resp_to_ori + v_ntfp),
-        vtf0 = vtf0 + v_alpha)
+          forcats::fct_match(.data$contrast, "low"),
+          .data$resp_to_ori,
+          .data$resp_to_ori + .data$v_ntfp),
+        vtf0 = .data$vtf0 + .data$v_alpha)
   }else if(stand$modulation == 1){
     d2 <- d0 %>%
       dplyr::mutate(
         vtf0 = dplyr::if_else(
-          forcats::fct_match(contrast, "low"),
-          resp_to_ori,
-          resp_to_ori * v_ntfp),
-        vtf0 = vtf0 + v_alpha)
+          forcats::fct_match(.data$contrast, "low"),
+          .data$resp_to_ori,
+          .data$resp_to_ori * .data$v_ntfp),
+        vtf0 = .data$vtf0 + .data$v_alpha)
   }
 
   out <- d2 %>%
-    dplyr::mutate(idx = interaction(ori, contrast, voxel)) %>%
-    dplyr::arrange(.chain, idx) %>%
-    dplyr::select(idx, .chain, vtf0) %>%
+    dplyr::mutate(idx = interaction(.data$ori, .data$contrast, .data$voxel)) %>%
+    dplyr::arrange(.data$.chain, .data$idx) %>%
+    dplyr::select(.data$idx, .data$.chain, .data$vtf0) %>%
     tidyr::pivot_wider(names_from = "idx", values_from = "vtf0") %>%
-    dplyr::select(-.chain) %>%
+    dplyr::select(-.data$.chain) %>%
     as.matrix()
 
   out
@@ -128,13 +130,13 @@ setMethod("loo", "VtuneFit", loo.VtuneFit)
     pars = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) %>%
     posterior::as_draws_df() %>%
     tidyr::pivot_longer(
-      cols = c(-.iteration, -.chain, -.draw),
+      cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
       names_to = c(".variable","voxel"),
       names_pattern = "(.*)\\[(.*)\\]",
       values_to = ".estimate") %>%
-    dplyr::mutate(voxel = as.numeric(voxel)) %>%
+    dplyr::mutate(voxel = as.numeric(.data$voxel)) %>%
     tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") %>%
-    dplyr::group_nest(.iteration)
+    dplyr::group_nest(.data$.iteration)
 
   n_chain <- dplyr::n_distinct(x$data[[1]]$.chain)
   n_iter <- dplyr::n_distinct(x$.iteration)

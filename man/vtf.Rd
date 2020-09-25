@@ -19,7 +19,7 @@ this data will be used rather than the data stored in \code{d}.}
 \item{...}{further arguments passed to \code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}}.}
 }
 \value{
-
+\link{VtuneFit}
 }
 \description{
 Run One of the Stan Models

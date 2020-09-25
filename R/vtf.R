@@ -10,7 +10,7 @@
 #' @seealso
 #' [rstan::sampling()]
 #'
-#' @return
+#' @return [VtuneFit]
 #' @export
 vtf <- function(model,
                 d = NULL,
@@ -50,12 +50,12 @@ make_standata <- function(
   priors = set_priors()){
 
   checkmate::assert_choice(model, c("additive","multiplicative"))
-
-  stopifnot(exprs = {
-    all(c("voxel", "contrast","orientation","y","sub") %in% names(d))
-    max(d$orientation) < pi # stanmodel will expect orientations in radians
-    min(d$orientation) < 0 # from -pi to pi
-  })
+  checkmate::assert_data_frame(
+    d,
+    any.missing = FALSE
+  )
+  checkmate::assert_subset(c("sub", "voxel", "contrast", "orientation", "y"), names(d))
+  checkmate::assert_numeric(d$orientation, lower = -pi, upper = pi)
 
   if(model == "additive"){
     ntfp_min <- 0
@@ -67,18 +67,18 @@ make_standata <- function(
 
   tmp <- d %>%
     dplyr::mutate(
-      orientation_tested = as.numeric(factor(round(orientation,3)))) %>%
-    dplyr::arrange(voxel,contrast,orientation)
+      orientation_tested = as.numeric(factor(round(.data$orientation,3)))) %>%
+    dplyr::arrange(.data$voxel, .data$contrast, .data$orientation)
 
   sub_by_vox <- tmp %>%
-    dplyr::distinct(sub, voxel) %>%
-    magrittr::use_series(sub) %>%
+    dplyr::distinct(.data$sub, .data$voxel) %>%
+    magrittr::use_series("sub") %>%
     as.numeric()
 
   n_unique_orientations_vox <- tmp %>%
-    dplyr::group_by(voxel) %>%
-    dplyr::summarise(n = dplyr::n_distinct(orientation_tested)) %>%
-    magrittr::use_series(n)
+    dplyr::group_by(.data$voxel) %>%
+    dplyr::summarise(n = dplyr::n_distinct(.data$orientation_tested)) %>%
+    magrittr::use_series("n")
 
   unique_orientations <- sort(unique(tmp$orientation))
 
@@ -88,8 +88,8 @@ make_standata <- function(
     ncol = length(unique_orientations))
 
   ori_by_vox0 <- tmp %>%
-    dplyr::distinct(voxel, orientation_tested) %>%
-    dplyr::group_nest(voxel)
+    dplyr::distinct(.data$voxel, .data$orientation_tested) %>%
+    dplyr::group_nest(.data$voxel)
   for(v in 1:nrow(ori_by_vox0))
     ori_by_vox[v,1:n_unique_orientations_vox[v]] <- ori_by_vox0$data[[v]]$orientation_tested
 
@@ -99,7 +99,7 @@ make_standata <- function(
 
   stan_data <- tmp %>%
     tidybayes::compose_data() %>%
-    c(.,
+    c(.data,
       n_unique_orientations = length(unique_orientations),
       unique_orientations = list(unique_orientations),
       n_unique_orientations_vox = list(n_unique_orientations_vox),
