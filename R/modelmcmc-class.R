@@ -1,47 +1,25 @@
 #' ModelFit object, output from sampling
 #'
 #' @export
-ModelFit <- R6::R6Class(
-  "ModelFit",
+ModelMCMC <- R6::R6Class(
+  "ModelMCMC",
   public = list(
 
-    #' @field rawdata The original data that was used to prepare the model
-    rawdata = NULL,
+    #' @field standata The original data that was used to prepare the model
+    standata = NULL,
 
-    #' @field prior The [`Prior`] that was used to fit the model
-    prior = NULL,
-
-    #' @field stanfit [`rstan::stanfit-class`] output
-    stanfit = NULL,
-
-    #' @field model [`Model`] object used to generate the fit
-    model = NULL,
+    #' @field cmdstanmcmc [`CmdStanMCMC`][cmdstanr::CmdStanMCMC] object
+    cmdstanmcmc = NULL,
 
     #' @description
     #' Create a new ModelFit
-    #' @param rawdata dataframe from which to make standata
-    #' @param prior [`Prior`] that was used to fit the model
-    #' @param model [`Model`] used to draw samples
-    #' @param stanfit [`rstan::stanfit-class`] output by model
+    #' You probably don't want to call this
+    #' @param standata Data that were used to generate the samples
+    #' @param cmdstanmcmc [`cmdstanr::CmdStanMCMC`] output by model
     #' @return A new `ModelFit` object.
-    initialize = function(
-      rawdata,
-      prior,
-      model,
-      stanfit) {
-
-      checkmate::assert_class(model, "Model")
-
-      self$rawdata <- rawdata
-      self$prior <- prior
-      self$model <- model
-      self$stanfit <- stanfit
-    },
-
-    #' @description Reconstruct the list of data that was passed to Stan
-    #' @return A named list
-    standata = function(){
-      return(self$model$make_standata(d = self$rawdata, prior = self$prior))
+    initialize = function(standata, cmdstanmcmc) {
+      self$cmdstanmcmc <- cmdstanmcmc
+      self$standata <- standata
     },
 
     #' Estimate the LOO score
@@ -51,26 +29,22 @@ ModelFit <- R6::R6Class(
       checkmate::assert_integerish(cores, lower=1)
 
       vtf0 <- self$make_vtf0(cores = cores)
-      stand <- self$standata()
-      data_ <- data.frame(
-        y = stand$y,
-        X = stand$X,
-        voxel = stand$voxel)
-
-      sigma <- rstan::extract(self$stanfit, pars = "sigma", permuted = FALSE)
-      n_draw <- dim(sigma)[1]
-      n_chain <- dim(sigma)[2]
 
       draws <- list(
-        vtf0 = do.call(
-          rbind,
-          lapply(1:n_chain, function(i) vtf0[,i,])),
-        sigma = do.call(
-          rbind,
-          lapply(1:n_chain, function(i) sigma[,i,])))
-      chain_id <- rep(1:n_chain, each = n_draw)
+        vtf0 = posterior::as_draws_matrix(vtf0),
+        sigma = self$cmdstanmcmc$draws(variables = "sigma") %>%
+          posterior::as_draws_matrix())
 
-      rm(sigma, vtf0, x, stand)
+      chain_id <- rep(
+        1:self$cmdstanmcmc$num_chains(),
+        each = self$cmdstanmcmc$metadata()$iter_sampling)
+
+      rm(sigma, vtf0)
+
+      data_ <- data.frame(
+        y = self$standata$y,
+        X = self$standata$X,
+        voxel = self$standata$voxel)
 
       r_eff <- loo::relative_eff(
         self$.lfun,
@@ -94,13 +68,10 @@ ModelFit <- R6::R6Class(
     #'
     #' @param cores integer number of cores over which to parallelize
     #'
-    #' @return array n_draws x n_chains x n_unique obs. for use in [ModelFit$loo()]
+    #' @return [`posterior::draws_array`],
     make_vtf0 = function(cores = 1){
-      stand <- self$standata()
 
-      x <- rstan::As.mcmc.list(
-        self$stanfit,
-        pars = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) %>%
+      x <- self$cmdstanmcmc$draws(variables = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) %>%
         posterior::as_draws_df() %>%
         tidyr::pivot_longer(
           cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
@@ -113,18 +84,18 @@ ModelFit <- R6::R6Class(
 
       n_chain <- dplyr::n_distinct(x$data[[1]]$.chain)
       n_iter <- dplyr::n_distinct(x$.iteration)
-      vtf <- array(dim = c(n_iter, n_chain, max(stand$X) ))
+      vtf <- array(dim = c(n_iter, n_chain, max(self$standata$X) ))
 
       xx <- parallel::mclapply(
         1:nrow(x),
-        FUN = function(i) private$.make_vtf0_iter(x$data[[i]], stand),
+        FUN = function(i) private$.make_vtf0_iter(x$data[[i]]),
         mc.cores = cores)
 
       for(i in 1:n_iter){
         vtf[i,,] <- xx[[i]]
       }
 
-      return(vtf)
+      return(posterior::as_draws(vtf))
     },
 
 
@@ -157,13 +128,14 @@ ModelFit <- R6::R6Class(
     }
   ),
   private = list(
-    .make_vtf0_iter = function(xx, stand){
+    .make_vtf0_iter = function(xx){
 
       d0 <- xx %>%
         dplyr::mutate(
           ori = purrr::map(
             .data$voxel,
-            ~stand$unique_orientations[stand$ori_by_vox[.x, 1:stand$n_unique_orientations_vox[.x]]])) %>%
+            ~self$standata$unique_orientations[
+              self$standata$ori_by_vox[.x, 1:self$standata$n_unique_orientations_vox[.x]]])) %>%
         tidyr::unnest(.data$ori) %>%
         dplyr::mutate(resp_to_ori = exp(.data$v_kappa * cos(.data$ori - .data$meanAngle))) %>%
         dplyr::select(-.data$meanAngle, -.data$v_kappa) %>%
@@ -173,7 +145,7 @@ ModelFit <- R6::R6Class(
         dplyr::select(-.data$v_gamma) %>%
         tidyr::crossing(contrast = factor(c("low", "high"), levels = c("low", "high")))
 
-      if(stand$modulation == 0){
+      if(self$standata$modulation == 0){
         d2 <- d0 %>%
           dplyr::mutate(
             vtf0 = dplyr::if_else(
@@ -181,7 +153,7 @@ ModelFit <- R6::R6Class(
               .data$resp_to_ori,
               .data$resp_to_ori + .data$v_ntfp),
             vtf0 = .data$vtf0 + .data$v_alpha)
-      }else if(stand$modulation == 1){
+      }else if(self$standata$modulation == 1){
         d2 <- d0 %>%
           dplyr::mutate(
             vtf0 = dplyr::if_else(

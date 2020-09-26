@@ -4,28 +4,31 @@ small <- sub02 %>%
 
 test_that("loo runs", {
 
-  m <- Model$new(form = "multiplicative")
-  a <- Model$new(form = "additive")
+  m <- make_standata(small, form = "multiplicative")
+  a <- make_standata(small, form = "additive")
 
-  #' not nearly enough samples to avoid warnings
-  suppressWarnings(
-    fit_a <- a$sample(
-      d=small,
-      chains = 1,
-      iter = 10,
-      warmup = 1,
-      refresh = 0))
+  suppressMessages(
+    f_m <- stanmodels$vtf$sample(
+      data = m,
+      iter_warmup = 5,
+      iter_sampling = 5,
+      chains = 2,
+      refresh = 0,
+      show_messages = FALSE)
+  )
 
-  suppressWarnings(
-    fit_m <- m$sample(
-      d=small,
-      chains = 1,
-      iter = 10,
-      warmup = 1,
-      refresh = 0))
+  suppressMessages(
+    f_a <- stanmodels$vtf$sample(
+      data = a,
+      iter_warmup = 5,
+      iter_sampling = 5,
+      chains = 2,
+      refresh = 0,
+      show_messages = FALSE)
+  )
 
-  suppressWarnings(elpd_m <- fit_m$loo(cores=1))
-  suppressWarnings(elpd_a <- fit_a$loo(cores=1))
+  suppressWarnings(elpd_m <- f_m$loo(cores=1))
+  suppressWarnings(elpd_a <- f_a$loo(cores=1))
 
   expect_s3_class(elpd_m, "psis_loo")
   expect_s3_class(elpd_a, "psis_loo")

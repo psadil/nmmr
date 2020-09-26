@@ -2,36 +2,22 @@ small <- sub02 %>%
   dplyr::filter(forcats::fct_match(voxel, c("191852","197706"))) %>%
   dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
-m <- Model$new(form = "multiplicative")
+standata <- make_standata(sub02, "multiplicative")
 
-suppressWarnings(
-  fit1 <- m$sample(
-  d=small,
-  chains = 1,
-  iter = 2,
-  warmup = 1,
-  refresh = 0))
+suppressMessages(
+  f <- stanmodels$vtf$sample(
+    data = standata,
+    iter_warmup = 5,
+    iter_sampling = 5,
+    chains = 2,
+    refresh = 0,
+    show_messages = FALSE)
+)
 
-suppressWarnings(
-  fit2 <- m$sample(
-    d=small,
-    chains = 1,
-    iter = 2,
-    warmup = 1,
-    refresh = 0))
-
-fit <- bind_fits(list(fit1, fit2))
-
-test_that("multiplicative model ran", {
-
-  checkmate::expect_r6(fit1, classes = c("ModelFit"))
-  checkmate::expect_r6(fit, classes = c("ModelFit"))
-
+test_that("multiplicative model runs", {
+  checkmate::expect_r6(f, classes = c("ModelMCMC"))
 })
 
-
-test_that("ModelFit object contains the original data", {
-
-  expect_identical(small, fit$rawdata)
-
+test_that("ModelFit object contains the data", {
+  expect_identical(standata, f$standata)
 })
