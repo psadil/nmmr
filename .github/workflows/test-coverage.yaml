@@ -32,9 +32,11 @@ jobs:
         with:
           path: |
             ${{ env.R_LIBS_USER }}
-            ${{ env.HOME/.cmdstanr }}
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}-${{ hashFiles('env.HOME/.cmdstanr') }}
-          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+            ${{ env.HOME }}/.cmdstanr
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}-${{ hashFiles('${{ env.HOME }}/.cmdstanr') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}-
+            ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install external libs
         run: sudo apt-get install libcurl4-openssl-dev libv8-dev
