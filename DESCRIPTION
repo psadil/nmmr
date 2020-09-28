@@ -21,14 +21,15 @@ Imports:
     forcats,
     loo,
     magrittr,
-    posterior,
     purrr,
     R6,
     rlang (>= 0.1.2),
     tibble,
     tidybayes,
-    tidyr,
-    cmdstanr
+    tidyr
+Remotes: 
+    stan-dev/cmdstanr,
+    stan-dev/posterior
 Suggests: 
     covr,
     roxygen2,
