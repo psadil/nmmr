@@ -16,6 +16,13 @@ m <- Model$new(small, form = "multiplicative")
   sink()
 }
 
+test_that("read-only fields cannot be modified", {
+  testthat::expect_error(m$form <- "new")
+  testthat::expect_error(m$prior <- Prior$new())
+  testthat::expect_error(m$standata <- list())
+  testthat::expect_error(m$cmdstanmodel <- NULL)
+})
+
 test_that("multiplicative model runs", {
   checkmate::expect_r6(f, classes = c("ModelMCMC"))
 })
