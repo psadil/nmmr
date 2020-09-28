@@ -30,13 +30,9 @@ jobs:
       - name: Cache R packages
         uses: actions/cache@v2
         with:
-          path: |
-            ${{ env.R_LIBS_USER }}
-            ${{ env.HOME }}/.cmdstanr
-          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}-${{ hashFiles('${{ env.HOME }}/.cmdstanr') }}
-          restore-keys: |
-            ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}-
-            ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
+          path: ${{ env.R_LIBS_USER }}
+          key: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-${{ hashFiles('.github/depends.Rds') }}
+          restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install external libs
         run: sudo apt-get install libcurl4-openssl-dev libv8-dev
