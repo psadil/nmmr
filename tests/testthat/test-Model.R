@@ -47,3 +47,7 @@ test_that("new data can be passed during sampling", {
 test_that("ModelFit object contains the data", {
   expect_identical(m$standata, f$standata)
 })
+
+test_that("Prior is accessible", {
+  expect_equal(m$prior, Prior$new())
+})
