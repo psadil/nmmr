@@ -9,10 +9,8 @@ Model object, ready for sampling
 Model object, ready for sampling
 }
 \seealso{
-\code{\link[=make_standata]{make_standata()}}
-}
-\section{Super class}{
-\code{\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}} -> \code{Model}
+\link[cmdstanr:model-method-sample]{cmdstanr::sample()}
+Prepare data for running model
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -23,31 +21,47 @@ Model object, ready for sampling
 }
 \if{html}{\out{</div>}}
 }
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{standata}}{used to fit model}
+
+\item{\code{form}}{used to fit model}
+
+\item{\code{prior}}{used to fit model}
+
+\item{\code{cmdstanmodel}}{Underlying \code{\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}}}
+}
+\if{html}{\out{</div>}}
+}
 \section{Methods}{
 \subsection{Public methods}{
 \itemize{
+\item \href{#method-new}{\code{Model$new()}}
 \item \href{#method-sample}{\code{Model$sample()}}
+\item \href{#method-make_standata}{\code{Model$make_standata()}}
 \item \href{#method-clone}{\code{Model$clone()}}
 }
 }
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="check_syntax">}\href{../../cmdstanr/html/CmdStanModel.html#method-check_syntax}{\code{cmdstanr::CmdStanModel$check_syntax()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="code">}\href{../../cmdstanr/html/CmdStanModel.html#method-code}{\code{cmdstanr::CmdStanModel$code()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="compile">}\href{../../cmdstanr/html/CmdStanModel.html#method-compile}{\code{cmdstanr::CmdStanModel$compile()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="cpp_options">}\href{../../cmdstanr/html/CmdStanModel.html#method-cpp_options}{\code{cmdstanr::CmdStanModel$cpp_options()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="exe_file">}\href{../../cmdstanr/html/CmdStanModel.html#method-exe_file}{\code{cmdstanr::CmdStanModel$exe_file()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="generate_quantities">}\href{../../cmdstanr/html/CmdStanModel.html#method-generate_quantities}{\code{cmdstanr::CmdStanModel$generate_quantities()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="hpp_file">}\href{../../cmdstanr/html/CmdStanModel.html#method-hpp_file}{\code{cmdstanr::CmdStanModel$hpp_file()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="initialize">}\href{../../cmdstanr/html/CmdStanModel.html#method-initialize}{\code{cmdstanr::CmdStanModel$initialize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="optimize">}\href{../../cmdstanr/html/CmdStanModel.html#method-optimize}{\code{cmdstanr::CmdStanModel$optimize()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="print">}\href{../../cmdstanr/html/CmdStanModel.html#method-print}{\code{cmdstanr::CmdStanModel$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="save_hpp_file">}\href{../../cmdstanr/html/CmdStanModel.html#method-save_hpp_file}{\code{cmdstanr::CmdStanModel$save_hpp_file()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="stan_file">}\href{../../cmdstanr/html/CmdStanModel.html#method-stan_file}{\code{cmdstanr::CmdStanModel$stan_file()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanModel" data-id="variational">}\href{../../cmdstanr/html/CmdStanModel.html#method-variational}{\code{cmdstanr::CmdStanModel$variational()}}\out{</span>}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-new"></a>}}
+\if{latex}{\out{\hypertarget{method-new}{}}}
+\subsection{Method \code{new()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Model$new(d, form, prior = Prior$new())}\if{html}{\out{</div>}}
 }
-\out{</details>}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{d}}{dataframe from which to make standata.}
+
+\item{\code{form}}{Form of the neuromodulation (additive or multiplicative)}
+
+\item{\code{prior}}{A \code{\link{Prior}}}
+}
+\if{html}{\out{</div>}}
+}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-sample"></a>}}
@@ -55,17 +69,37 @@ Model object, ready for sampling
 \subsection{Method \code{sample()}}{
 Draw samples from the posterior of the model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$sample(data, ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$sample(data = NULL, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{data}}{data to pass directly to stan. Can be produced with \code{\link[=make_standata]{make_standata()}}.}
+\item{\code{data}}{optional new data. If present, this will be used instead
+of the internally stored data (created when the object was initialized)}
 
-\item{\code{...}}{further arguments passed to \code{\link[cmdstanr:model-method-sample]{cmdstanr::model-method-sample()}}.}
+\item{\code{...}}{arguments passed to \link[cmdstanr:model-method-sample]{cmdstanr::sample()}.}
 }
 \if{html}{\out{</div>}}
+}
+}
+\if{html}{\out{<hr>}}
+\if{html}{\out{<a id="method-make_standata"></a>}}
+\if{latex}{\out{\hypertarget{method-make_standata}{}}}
+\subsection{Method \code{make_standata()}}{
+\subsection{Usage}{
+\if{html}{\out{<div class="r">}}\preformatted{Model$make_standata(d)}\if{html}{\out{</div>}}
+}
+
+\subsection{Arguments}{
+\if{html}{\out{<div class="arguments">}}
+\describe{
+\item{\code{d}}{dataframe from which to make standata.}
+}
+\if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+named list
 }
 }
 \if{html}{\out{<hr>}}

@@ -8,13 +8,12 @@ ModelFit object, output from sampling
 
 ModelFit object, output from sampling
 }
-\section{Super classes}{
-\code{\link[cmdstanr:CmdStanFit]{cmdstanr::CmdStanFit}} -> \code{\link[cmdstanr:CmdStanMCMC]{cmdstanr::CmdStanMCMC}} -> \code{ModelMCMC}
-}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
 \item{\code{standata}}{The original data that was used to prepare the model}
+
+\item{\code{cmdstanmcmc}}{\code{\link[cmdstanr:CmdStanMCMC]{CmdStanMCMC}} object}
 }
 \if{html}{\out{</div>}}
 }
@@ -28,33 +27,6 @@ ModelFit object, output from sampling
 \item \href{#method-.llfun}{\code{ModelMCMC$.llfun()}}
 \item \href{#method-clone}{\code{ModelMCMC$clone()}}
 }
-}
-\if{html}{
-\out{<details ><summary>Inherited methods</summary>}
-\itemize{
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="cmdstan_diagnose">}\href{../../cmdstanr/html/CmdStanFit.html#method-cmdstan_diagnose}{\code{cmdstanr::CmdStanFit$cmdstan_diagnose()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="cmdstan_summary">}\href{../../cmdstanr/html/CmdStanFit.html#method-cmdstan_summary}{\code{cmdstanr::CmdStanFit$cmdstan_summary()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="data_file">}\href{../../cmdstanr/html/CmdStanFit.html#method-data_file}{\code{cmdstanr::CmdStanFit$data_file()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="init">}\href{../../cmdstanr/html/CmdStanFit.html#method-init}{\code{cmdstanr::CmdStanFit$init()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="latent_dynamics_files">}\href{../../cmdstanr/html/CmdStanFit.html#method-latent_dynamics_files}{\code{cmdstanr::CmdStanFit$latent_dynamics_files()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="lp">}\href{../../cmdstanr/html/CmdStanFit.html#method-lp}{\code{cmdstanr::CmdStanFit$lp()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="metadata">}\href{../../cmdstanr/html/CmdStanFit.html#method-metadata}{\code{cmdstanr::CmdStanFit$metadata()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="num_procs">}\href{../../cmdstanr/html/CmdStanFit.html#method-num_procs}{\code{cmdstanr::CmdStanFit$num_procs()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="output_files">}\href{../../cmdstanr/html/CmdStanFit.html#method-output_files}{\code{cmdstanr::CmdStanFit$output_files()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="print">}\href{../../cmdstanr/html/CmdStanFit.html#method-print}{\code{cmdstanr::CmdStanFit$print()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="save_data_file">}\href{../../cmdstanr/html/CmdStanFit.html#method-save_data_file}{\code{cmdstanr::CmdStanFit$save_data_file()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="save_latent_dynamics_files">}\href{../../cmdstanr/html/CmdStanFit.html#method-save_latent_dynamics_files}{\code{cmdstanr::CmdStanFit$save_latent_dynamics_files()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="save_object">}\href{../../cmdstanr/html/CmdStanFit.html#method-save_object}{\code{cmdstanr::CmdStanFit$save_object()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="save_output_files">}\href{../../cmdstanr/html/CmdStanFit.html#method-save_output_files}{\code{cmdstanr::CmdStanFit$save_output_files()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="summary">}\href{../../cmdstanr/html/CmdStanFit.html#method-summary}{\code{cmdstanr::CmdStanFit$summary()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanFit" data-id="time">}\href{../../cmdstanr/html/CmdStanFit.html#method-time}{\code{cmdstanr::CmdStanFit$time()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanMCMC" data-id="draws">}\href{../../cmdstanr/html/CmdStanMCMC.html#method-draws}{\code{cmdstanr::CmdStanMCMC$draws()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanMCMC" data-id="inv_metric">}\href{../../cmdstanr/html/CmdStanMCMC.html#method-inv_metric}{\code{cmdstanr::CmdStanMCMC$inv_metric()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanMCMC" data-id="num_chains">}\href{../../cmdstanr/html/CmdStanMCMC.html#method-num_chains}{\code{cmdstanr::CmdStanMCMC$num_chains()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanMCMC" data-id="output">}\href{../../cmdstanr/html/CmdStanMCMC.html#method-output}{\code{cmdstanr::CmdStanMCMC$output()}}\out{</span>}
-\item \out{<span class="pkg-link" data-pkg="cmdstanr" data-topic="CmdStanMCMC" data-id="sampler_diagnostics">}\href{../../cmdstanr/html/CmdStanMCMC.html#method-sampler_diagnostics}{\code{cmdstanr::CmdStanMCMC$sampler_diagnostics()}}\out{</span>}
-}
-\out{</details>}
 }
 \if{html}{\out{<hr>}}
 \if{html}{\out{<a id="method-new"></a>}}
@@ -116,7 +88,7 @@ create voxel tuning function posterior
 \if{html}{\out{</div>}}
 }
 \subsection{Returns}{
-array n_draws x n_chains x n_unique obs. for use in \code{\link[=ModelFit$loo]{ModelFit$loo()}}
+\code{\link[posterior:draws_array]{posterior::draws_array}},
 Likelihood function
 }
 }

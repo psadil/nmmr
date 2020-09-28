@@ -5,12 +5,9 @@
 \alias{nmmr-package}
 \alias{_PACKAGE}
 \alias{nmmr}
-\title{The 'nmmr' package.}
+\title{nmmr.}
 \description{
-A DESCRIPTION OF THE PACKAGE
-}
-\references{
-Stan Development Team (2020). RStan: the R interface to Stan. R package version 2.21.2. https://mc-stan.org
+Implement NeuroModulation Modelling in R
 }
 \seealso{
 Useful links:

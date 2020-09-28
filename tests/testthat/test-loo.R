@@ -4,28 +4,33 @@ small <- sub02 %>%
 
 test_that("loo runs", {
 
-  m <- make_standata(small, form = "multiplicative")
-  a <- make_standata(small, form = "additive")
+  m <- Model$new(small, form = "multiplicative")
+  a <- Model$new(small, form = "additive")
 
-  suppressMessages(
-    f_m <- stanmodels$vtf$sample(
-      data = m,
-      iter_warmup = 5,
-      iter_sampling = 5,
-      chains = 2,
-      refresh = 0,
-      show_messages = FALSE)
-  )
 
-  suppressMessages(
-    f_a <- stanmodels$vtf$sample(
-      data = a,
-      iter_warmup = 5,
-      iter_sampling = 5,
-      chains = 2,
-      refresh = 0,
-      show_messages = FALSE)
-  )
+  {
+    sink("/dev/null")
+    suppressMessages(
+      f_m <- m$sample(
+        iter_warmup = 5,
+        iter_sampling = 5,
+        chains = 2,
+        refresh = 0,
+        show_messages = FALSE))
+    sink()
+  }
+
+  {
+    sink("/dev/null")
+    suppressMessages(
+      f_a <- a$sample(
+        iter_warmup = 5,
+        iter_sampling = 5,
+        chains = 2,
+        refresh = 0,
+        show_messages = FALSE))
+    sink()
+  }
 
   suppressWarnings(elpd_m <- f_m$loo(cores=1))
   suppressWarnings(elpd_a <- f_a$loo(cores=1))
