@@ -39,8 +39,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
+          cmdstanr::install_cmdstan()
         shell: Rscript {0}
 
       - name: Install package
