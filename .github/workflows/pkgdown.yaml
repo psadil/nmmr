@@ -45,7 +45,7 @@ jobs:
       - name: Cache CmdStan
         uses: actions/cache@v2
         with:
-          path: ${{ env.HOME }}/.cmdstanr
+          path: /home/runner/.cmdstanr
           key: ${{ runner.os }}-${{ hashFiles('.github/cmdstan-version') }}
 
       - name: Install package
