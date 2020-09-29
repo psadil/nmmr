@@ -37,18 +37,18 @@ jobs:
       - name: Install external libs
         run: sudo apt-get install libcurl4-openssl-dev libv8-dev
 
-      - name: Install dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE)
-          cmdstanr::install_cmdstan()
-          writeLines(sprintf("cmdstan-%s", cmdstanr::cmdstan_version()), ".github/cmdstan-version")
-        shell: Rscript {0}
-
       - name: Cache CmdStan
         uses: actions/cache@v2
         with:
           path: /home/runner/.cmdstanr
           key: ${{ runner.os }}-${{ hashFiles('.github/cmdstan-version') }}
+
+      - name: Install dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE)
+          cmdstanr::install_cmdstan(dir = ".cmdstanr")
+          writeLines(sprintf("cmdstan-%s", cmdstanr::cmdstan_version()), ".github/cmdstan-version")
+        shell: Rscript {0}
 
       - name: Install package
         run: R CMD INSTALL .
