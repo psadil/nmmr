@@ -23,7 +23,6 @@ jobs:
       - name: Query dependencies
         run: |
           install.packages('remotes')
-          remotes::install_github('stan-dev/posterior')
           saveRDS(remotes::dev_package_deps(dependencies = TRUE), ".github/depends.Rds", version = 2)
           writeLines(sprintf("R-%i.%i", getRversion()$major, getRversion()$minor), ".github/R-version")
         shell: Rscript {0}
@@ -38,12 +37,21 @@ jobs:
       - name: Install external libs
         run: sudo apt-get install libcurl4-openssl-dev libv8-dev
 
+      - name: Cache CmdStan
+        uses: actions/cache@v2
+        with:
+          path: /home/runner/.cmdstanr
+          key: ${{ runner.os }}-${{ hashFiles('.github/cmdstan-version') }}
+
       - name: Install dependencies
         run: |
-          install.packages(c("remotes"))
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_cran("covr")
+          cmdstanr::install_cmdstan()
+          writeLines(sprintf("cmdstan-%s", cmdstanr::cmdstan_version()), ".github/cmdstan-version")
         shell: Rscript {0}
+
+      - name: Install package
+        run: R CMD INSTALL .
 
       - name: Test coverage
         env:

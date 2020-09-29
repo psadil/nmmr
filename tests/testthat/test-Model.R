@@ -2,36 +2,52 @@ small <- sub02 %>%
   dplyr::filter(forcats::fct_match(voxel, c("191852","197706"))) %>%
   dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
-m <- Model$new(form = "multiplicative")
+m <- Model$new(small, form = "multiplicative")
 
-suppressWarnings(
-  fit1 <- m$sample(
-  d=small,
-  chains = 1,
-  iter = 2,
-  warmup = 1,
-  refresh = 0))
+{
+  sink("/dev/null")
+  suppressMessages(
+    f <- m$sample(
+      iter_warmup = 5,
+      iter_sampling = 5,
+      chains = 2,
+      refresh = 0,
+      show_messages = FALSE))
+  sink()
+}
 
-suppressWarnings(
-  fit2 <- m$sample(
-    d=small,
-    chains = 1,
-    iter = 2,
-    warmup = 1,
-    refresh = 0))
-
-fit <- bind_fits(list(fit1, fit2))
-
-test_that("multiplicative model ran", {
-
-  checkmate::expect_r6(fit1, classes = c("ModelFit"))
-  checkmate::expect_r6(fit, classes = c("ModelFit"))
-
+test_that("read-only fields cannot be modified", {
+  testthat::expect_error(m$form <- "new")
+  testthat::expect_error(m$prior <- Prior$new())
+  testthat::expect_error(m$standata <- list())
+  testthat::expect_error(m$cmdstanmodel <- NULL)
 })
 
+test_that("multiplicative model runs", {
+  checkmate::expect_r6(f, classes = c("ModelMCMC"))
+})
 
-test_that("ModelFit object contains the original data", {
+test_that("new data can be passed during sampling", {
+  {
+    sink("/dev/null")
+    suppressMessages(
+      f2 <- m$sample(
+        data = small,
+        iter_warmup = 5,
+        iter_sampling = 5,
+        chains = 2,
+        refresh = 0,
+        show_messages = FALSE))
+    sink()
+    }
+  checkmate::expect_r6(f2, classes = c("ModelMCMC"))
+  testthat::expect_identical(f$standata, f2$standata)
+})
 
-  expect_identical(small, fit$rawdata)
+test_that("ModelFit object contains the data", {
+  expect_identical(m$standata, f$standata)
+})
 
+test_that("Prior is accessible", {
+  expect_equal(m$prior, Prior$new())
 })
