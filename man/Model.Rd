@@ -9,12 +9,28 @@ Model object, ready for sampling
 Model object, ready for sampling
 }
 \seealso{
-\code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}}
+\link[cmdstanr:model-method-sample]{cmdstanr::sample()}
+Prepare data for running model
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{form}}{Form of the neuromodulation (additive or multiplicative)}
+\item{\code{cmdstanr_version}}{Version of cmdstanr used to build models}
+
+\item{\code{cmdstan_version}}{Version of cmdstan used to build models}
+}
+\if{html}{\out{</div>}}
+}
+\section{Active bindings}{
+\if{html}{\out{<div class="r6-active-bindings">}}
+\describe{
+\item{\code{standata}}{used to fit model}
+
+\item{\code{form}}{used to fit model}
+
+\item{\code{prior}}{used to fit model}
+
+\item{\code{cmdstanmodel}}{Underlying \code{\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}}}
 }
 \if{html}{\out{</div>}}
 }
@@ -31,20 +47,20 @@ Model object, ready for sampling
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Create a new Model object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$new(form)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$new(d, form, prior = Prior$new())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{form}}{Form of neuromodulation in the model.}
+\item{\code{d}}{dataframe from which to make standata.}
+
+\item{\code{form}}{Form of the neuromodulation (additive or multiplicative)}
+
+\item{\code{prior}}{A \code{\link{Prior}}}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new \code{Model} object.
 }
 }
 \if{html}{\out{<hr>}}
@@ -53,26 +69,18 @@ A new \code{Model} object.
 \subsection{Method \code{sample()}}{
 Draw samples from the posterior of the model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$sample(d = NULL, standata = NULL, prior = Prior$new(), ...)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$sample(data = NULL, ...)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{d}}{dataframe from which to make standata}
+\item{\code{data}}{optional new data. If present, this will be used instead
+of the internally stored data (created when the object was initialized)}
 
-\item{\code{standata}}{data to pass directly to stan. Can be produced with \code{\link[=make_standata]{make_standata()}}. If present,
-this data will be used rather than the data stored in \code{d}.}
-
-\item{\code{prior}}{An object of class \code{\link{Prior}}}
-
-\item{\code{...}}{further arguments passed to \code{\link[rstan:stanmodel-method-sampling]{rstan::sampling()}}.}
+\item{\code{...}}{arguments passed to \link[cmdstanr:model-method-sample]{cmdstanr::sample()}.}
 }
 \if{html}{\out{</div>}}
-}
-\subsection{Returns}{
-A new \code{\link{ModelFit}}.
-Prepare data for running model
 }
 }
 \if{html}{\out{<hr>}}
@@ -80,15 +88,13 @@ Prepare data for running model
 \if{latex}{\out{\hypertarget{method-make_standata}{}}}
 \subsection{Method \code{make_standata()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$make_standata(d, prior = Prior$new())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$make_standata(d)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{d}}{dataframe from which to make standata. The output of this can be passed to \code{\link[=vtf]{vtf()}}.}
-
-\item{\code{prior}}{A \code{\link{Prior}}}
+\item{\code{d}}{dataframe from which to make standata.}
 }
 \if{html}{\out{</div>}}
 }

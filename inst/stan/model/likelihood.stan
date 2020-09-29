@@ -1,7 +1,7 @@
   {
-    # unless all voxels were tested with the same number of orientations,
-    # not every element of vtf should be filled. The int array X should
-    # end up plucking out just those values which are filled
+    // unless all voxels were tested with the same number of orientations,
+    // not every element of vtf should be filled. The int array X should
+    // end up plucking out just those values which are filled
     vector[n_unique_orientations * 2 * n_voxel] vtf;
     int i = 1;
 

@@ -2,71 +2,64 @@
 #'
 #' @export
 Model <- R6::R6Class(
-  "Model",
-  public = list(
-    #' @field form Form of the neuromodulation (additive or multiplicative)
-    form = NULL,
+  # TODO: implement prior predictive checks
 
-    #' @description
-    #' Create a new Model object.
-    #' @param form Form of neuromodulation in the model.
-    #' @return A new `Model` object.
-    initialize = function(form) {
+  "Model",
+  # inherit = cmdstanr:::CmdStanModel,
+  public = list(
+
+    #' @field cmdstanr_version Version of cmdstanr used to build models
+    cmdstanr_version = packageVersion("cmdstanr"),
+
+    #' @field cmdstan_version Version of cmdstan used to build models
+    cmdstan_version = cmdstanr::cmdstan_version(),
+
+    #' @param d dataframe from which to make standata.
+    #' @param form Form of the neuromodulation (additive or multiplicative)
+    #' @param prior A [`Prior`]
+    initialize = function(
+      d,
+      form,
+      prior = Prior$new()){
 
       checkmate::assert_choice(form, c("additive","multiplicative"))
+      checkmate::assert_class(prior, "Prior")
 
-      self$form <- form
+      private$.cmdstanmodel <- stanmodels$vtf
+      private$.form <- form
+      private$.prior <- prior
+      private$.standata <- self$make_standata(d=d)
     },
 
     #' @description
     #' Draw samples from the posterior of the model
     #'
-    #' @param prior An object of class [`Prior`]
-    #' @param d dataframe from which to make standata
-    #' @param standata data to pass directly to stan. Can be produced with [make_standata()]. If present,
-    #'      this data will be used rather than the data stored in `d`.
-    #' @param ... further arguments passed to [rstan::sampling()].
+    #' @param data optional new data. If present, this will be used instead
+    #' of the internally stored data (created when the object was initialized)
+    #' @param ... arguments passed to [cmdstanr::sample()][cmdstanr::model-method-sample()].
     #'
-    #' @seealso
-    #' [rstan::sampling()]
-    #'
-    #' @return A new [`ModelFit`].
-    sample = function(
-      d = NULL,
-      standata = NULL,
-      prior = Prior$new(),
-      ...){
-
-      if(is.null(standata))
-        standata <- self$make_standata(d=d, prior=prior)
-
-      stanfit <- rstan::sampling(
-        object = stanmodels[["vtf"]],
-        data = standata,
-        ...
-      )
-
-      modelfit <- ModelFit$new(
-        rawdata = d,
-        prior = prior,
-        stanfit = stanfit,
-        model = self
-      )
-
+    #' @seealso [cmdstanr::sample()][cmdstanr::model-method-sample]
+    sample = function(data = NULL, ...){
+      if(!is.null(data)){
+        standata <- self$make_standata(d=data)
+      }else{
+        standata <- self$standata
+      }
+      fit <- self$cmdstanmodel$sample(data = standata, ...)
+      modelfit <- ModelMCMC$new(standata = standata, cmdstanmcmc=fit)
       return(modelfit)
     },
 
     #' Prepare data for running model
     #'
-    #' @param d dataframe from which to make standata. The output of this can be passed to [vtf()].
-    #' @param prior A [`Prior`]
+    #' @param d dataframe from which to make standata.
+    #'
     #' @return named list
-    make_standata = function(d, prior = Prior$new()){
+    make_standata = function(d){
 
       checkmate::assert_data_frame(d, any.missing = FALSE)
       checkmate::assert_subset(c("sub", "voxel", "contrast", "orientation", "y"), names(d))
       checkmate::assert_numeric(d$orientation, lower = -pi, upper = pi)
-      checkmate::assert_class(prior, "Prior")
 
       if(self$form == "additive"){
         ntfp_min <- 0
@@ -123,8 +116,52 @@ Model <- R6::R6Class(
       stan_data$orientation_tested <- NULL
       stan_data$orientation <- NULL
 
-      return( c(stan_data, prior$as_list()) )
+      return(c(stan_data, private$.prior$as_list()))
     }
+  ),
+  active = list(
+
+    #' @field standata used to fit model
+    standata = function(value){
+      if (missing(value)) {
+        private$.standata
+      } else {
+        stop("`$standata` is read only", call. = FALSE)
+      }
+    },
+
+    #' @field form used to fit model
+    form = function(value){
+      if (missing(value)) {
+        private$.form
+      } else {
+        stop("`$form` is read only", call. = FALSE)
+      }
+    },
+
+    #' @field prior used to fit model
+    prior = function(value){
+      if (missing(value)) {
+        private$.prior
+      } else {
+        stop("`$prior` is read only", call. = FALSE)
+      }
+    },
+
+    #' @field cmdstanmodel Underlying [`cmdstanr::CmdStanModel`]
+    cmdstanmodel = function(value){
+      if (missing(value)) {
+        private$.cmdstanmodel
+      } else {
+        stop("`$cmdstanmodel` is read only", call. = FALSE)
+      }
+    }
+  ),
+  private = list(
+    .standata = list(),
+    .form = NA_character_,
+    .prior = NULL,
+    .cmdstanmodel = NULL
   )
 )
 

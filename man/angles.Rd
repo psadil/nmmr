@@ -9,10 +9,16 @@
 deg(radian)
 
 rad(degree)
+
+deg(radian)
+
+rad(degree)
 }
 \arguments{
 \item{radian, degree}{angles with different units}
 }
 \description{
+Convert between angles and radians
+
 Convert between angles and radians
 }
