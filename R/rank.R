@@ -19,12 +19,7 @@ NULL
 #' @export
 build_ranks <- function(d, quantiles = c(0, 0.5, 0.75, 0.9)){
 
-  rawd <- d %>%
-    dplyr::mutate(
-      orientation = (deg(.data$orientation) + 180)/2,
-      orientation = round(.data$orientation, digits = 2))
-
-  ranks <- rawd %>%
+  ranks <- d %>%
     dplyr::group_by(.data$voxel, .data$orientation, .data$contrast) %>%
     dplyr::summarise(
       avg0 = mean(.data$y),
@@ -51,7 +46,7 @@ build_ranks <- function(d, quantiles = c(0, 0.5, 0.75, 0.9)){
     dplyr::select(.data$voxel, .data$orientation, .data$sep, .data$rank, .data$Quantile)
 
 
-  out <- rawd %>%
+  out <- d %>%
     dplyr::inner_join(ranks, by = c("voxel","orientation")) %>%
     dplyr::group_by(.data$rank, .data$contrast, .data$Quantile) %>%
     dplyr::summarise(

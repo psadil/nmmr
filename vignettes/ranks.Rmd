@@ -1,5 +1,5 @@
 ---
-title: "ranks"
+title: "Rank-Ordered Visualization"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{ranks}
@@ -18,11 +18,20 @@ knitr::opts_chunk$set(
 library(nmmr)
 ```
 
+The formal decision between different forms of neuromodulation is made with model comparison. However, it is useful to visualize the specific features of the data that likely drive model comparison, features that are only captured by one but not the other model. A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. That is, with multiplicative neuromodulation, contrast has a greater magnifying effect for the peak than the tails of the voxel tuning function, whereas with additive neuromodulation, contrast has the same effect on the peak and the tails. Under the multiplicative model, the betas that are highest at low-contrast -- those betas at orientations closest to the voxel's preferred orientation -- are more affected by increasing contrast than betas for other orientations (Figure, bottom left). Under the additive model, the beta values for a single voxel are greater at high than low contrast to the same extent for all orientations (Figure , top left). The models can be differentiated by plotting the high-contrast betas against the low-contrast betas and calculating the slope of the best fitting line (Figure, right). A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.   
 
+To aggregate across the empirical voxels, beta values were sorted and grouped by a rank-ordering of their magnitudes across orientations. That is, the average beta value for each voxel was first calculated at each orientation (i.e., averaged across runs and levels of contrast). Then, the resulting average values at each orientation were ranked according to magnitude within each voxel (e.g., ranked from 1-8, for each of the 8 presented orientations). Importantly, this scheme ranks the orientations without regard to contrast, forcing the ranking of orientations within each voxel to be the same at high and low contrast. Next, the original beta values, kept separate by contrast but grouped together to determine rank, were averaged over voxels and runs. For example, if the stimulus orientation of 0$^\circ$ was rank-1 in one voxel, the orientation of 45$^\circ$ was rank-1 in another voxel, and the orientation of 90$^\circ$ was rank-1 in a third voxel (etc.) the beta values at all of these rank-1 orientations were averaged, disregarding orientation but keeping the average values separate for the high and low-contrast conditions. This produced a beta value for rank 1 at high contrast and a yoked beta value for rank 1 at low contrast, without regard to the value of the presented stimulus orientation. 
+
+Many voxels were only weakly responsive to stimulation or were only weakly affected by contrast. Such voxels will necessarily have a slope near one. Including these voxels in the visualization would produce a plot that necessarily appears to favoring the additive model, even if multiplicative gain wasere the true form of neuromodulation. Therefore, thise high- versus low-contrast  analysis plot was repeated was constructed four times, using an excluding increasingly stringent criterion to exclude numbers of voxels that were weakly affected by contrast. The exclusion criterion was based on the average effect of contrast for each voxel, without regard to averaged across orientations and runs (i.e., average across runs and orientations). Voxels were included only if they surpassed a specified quantile The four analyses employed an exclusion criteria at the quantiles of: 0 (i.e., include all voxels), 0.5, 0.75, and 0.9 (Figure 5B). 
+
+When all voxels are included in the rank-ordered visualization technique (threshold 0), the results show a slope near one, which is to be expected because the majority of voxels produced very low beta values and thus showed , correspondingly, relatively less low sensitivity to the contrast manipulation. However, when only considering only the top 10 % of voxels in terms of the contrast manipulation (threshold .9), the for which beta values are in general larger, and the slope is clearly greater than one. This result is . as predicted by the multiplicative (but not the additive) model. It is this feature of the data that favors the multiplicative model over the additive model. 
 
 ```{r build}
-ranks <- build_ranks(sub02)
-ranks
+ranks <- build_ranks(sub02, quantiles = c(0, 0.9))
+```
+
+```{r showranks, echo=FALSE}
+knitr::kable(ranks)
 ```
 
 

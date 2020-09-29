@@ -59,7 +59,11 @@ Model <- R6::R6Class(
 
       checkmate::assert_data_frame(d, any.missing = FALSE)
       checkmate::assert_subset(c("sub", "voxel", "contrast", "orientation", "y"), names(d))
-      checkmate::assert_numeric(d$orientation, lower = -pi, upper = pi)
+      checkmate::assert_numeric(d$orientation, lower = -180, upper = 180)
+      if(all(dplyr::between(d$orientation, -2*pi, 2*pi)))
+        stop("Orientation is in radians, but must be degrees")
+      checkmate::assert_true(dplyr::between(min(d$orientation), -180, 0))
+      checkmate::assert_true(dplyr::between(max(d$orientation), 0, 180))
 
       if(self$form == "additive"){
         ntfp_min <- 0
@@ -70,8 +74,7 @@ Model <- R6::R6Class(
       }
 
       tmp <- d %>%
-        dplyr::mutate(
-          orientation_tested = as.numeric(factor(round(.data$orientation,3)))) %>%
+        dplyr::mutate(orientation_tested = as.numeric(factor(.data$orientation))) %>%
         dplyr::arrange(.data$voxel, .data$contrast, .data$orientation)
 
       sub_by_vox <- tmp %>%
@@ -84,7 +87,10 @@ Model <- R6::R6Class(
         dplyr::summarise(n = dplyr::n_distinct(.data$orientation_tested)) %>%
         magrittr::use_series("n")
 
-      unique_orientations <- sort(unique(tmp$orientation))
+      unique_orientations <- tmp$orientation %>%
+        rad() %>%
+        unique() %>%
+        sort()
 
       ori_by_vox <- matrix(
         0,

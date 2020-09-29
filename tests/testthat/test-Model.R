@@ -39,7 +39,7 @@ test_that("new data can be passed during sampling", {
         refresh = 0,
         show_messages = FALSE))
     sink()
-    }
+  }
   checkmate::expect_r6(f2, classes = c("ModelMCMC"))
   testthat::expect_identical(f$standata, f2$standata)
 })
@@ -50,4 +50,24 @@ test_that("ModelFit object contains the data", {
 
 test_that("Prior is accessible", {
   expect_equal(m$prior, Prior$new())
+})
+
+test_that("Model complains when orientations are in the wrong space", {
+  expect_error(
+    m <- Model$new(
+      d = small %>%
+        dplyr::mutate(orientation = rad(orientation)),
+      form = "multiplicative"))
+  expect_error(
+    m <- Model$new(
+      d = small %>%
+        dplyr::mutate(orientation = orientation + 180),
+      form = "multiplicative"))
+
+  expect_error(
+    m <- Model$new(
+      d = small %>%
+        dplyr::mutate(orientation = orientation - 180),
+      form = "multiplicative"))
+
 })
