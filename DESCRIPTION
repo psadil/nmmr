@@ -33,7 +33,8 @@ Imports:
 Suggests: 
     covr,
     roxygen2,
-    testthat
+    testthat,
+    knitr
 VignetteBuilder: 
     knitr
 Remotes: 

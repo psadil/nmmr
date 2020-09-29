@@ -6,7 +6,7 @@
 #'
 #' [build_ranks()] constructs a data.frame which can be passed on to [visualize_ranks()]
 #'
-#' [visualise_ranks()] uses that output to make a basic [`ggplot2`][`ggplot2::ggplot2-package`] figure
+#' [visualize_ranks()] uses that output to make a basic [`ggplot2`][`ggplot2::ggplot2-package`] figure
 #'
 NULL
 
@@ -27,13 +27,13 @@ build_ranks <- function(d, quantiles = c(0, 0.5, 0.75, 0.9)){
   ranks <- rawd %>%
     dplyr::group_by(.data$voxel, .data$orientation, .data$contrast) %>%
     dplyr::summarise(
-      avg0 = mean(y),
+      avg0 = mean(.data$y),
       .groups = "drop") %>%
     tidyr::pivot_wider(names_from = .data$contrast, values_from = .data$avg0) %>%
     dplyr::mutate(di = .data$high - .data$low) %>%
     tidyr::crossing(Quantile = quantiles) %>%
     dplyr::group_by(.data$Quantile) %>%
-    dplyr::filter(.data$di > quantile(.data$di, .data$Quantile)) %>%
+    dplyr::filter(.data$di > stats::quantile(.data$di, .data$Quantile)) %>%
     dplyr::select(-.data$di) %>%
     tidyr::pivot_longer(c(.data$low, .data$high), names_to = "contrast", values_to = "y") %>%
     dplyr::group_by(.data$voxel, .data$orientation, .data$Quantile) %>%

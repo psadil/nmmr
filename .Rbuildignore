@@ -11,3 +11,5 @@
 
 ^\.covrignore$
 ^\.gitignore$
+^doc$
+^Meta$

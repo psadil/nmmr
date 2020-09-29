@@ -20,7 +20,7 @@ visualize_ranks(ranks)
 \value{
 \code{\link[=build_ranks]{build_ranks()}} constructs a data.frame which can be passed on to \code{\link[=visualize_ranks]{visualize_ranks()}}
 
-\code{\link[=visualise_ranks]{visualise_ranks()}} uses that output to make a basic \code{\link[ggplot2:ggplot2-package]{ggplot2}} figure
+\code{\link[=visualize_ranks]{visualize_ranks()}} uses that output to make a basic \code{\link[ggplot2:ggplot2-package]{ggplot2}} figure
 }
 \description{
 Prepare and visualize rank-ordered beta values
