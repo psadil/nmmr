@@ -18,6 +18,15 @@ knitr::opts_chunk$set(
 library(nmmr)
 ```
 
+
+
+After loading the library, you will have access to a dataset, `sub02`. 
+
+```{r, data}
+sub02[1:10,]
+```
+
+
 The formal decision between different forms of neuromodulation is made with model comparison. However, it is useful to visualize the specific features of the data that likely drive model comparison, features that are only captured by one but not the other model. A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. That is, with multiplicative neuromodulation, contrast has a greater magnifying effect for the peak than the tails of the voxel tuning function, whereas with additive neuromodulation, contrast has the same effect on the peak and the tails. Under the multiplicative model, the betas that are highest at low-contrast -- those betas at orientations closest to the voxel's preferred orientation -- are more affected by increasing contrast than betas for other orientations (Figure, bottom left). Under the additive model, the beta values for a single voxel are greater at high than low contrast to the same extent for all orientations (Figure , top left). The models can be differentiated by plotting the high-contrast betas against the low-contrast betas and calculating the slope of the best fitting line (Figure, right). A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.   
 
 To aggregate across the empirical voxels, beta values were sorted and grouped by a rank-ordering of their magnitudes across orientations. That is, the average beta value for each voxel was first calculated at each orientation (i.e., averaged across runs and levels of contrast). Then, the resulting average values at each orientation were ranked according to magnitude within each voxel (e.g., ranked from 1-8, for each of the 8 presented orientations). Importantly, this scheme ranks the orientations without regard to contrast, forcing the ranking of orientations within each voxel to be the same at high and low contrast. Next, the original beta values, kept separate by contrast but grouped together to determine rank, were averaged over voxels and runs. For example, if the stimulus orientation of 0$^\circ$ was rank-1 in one voxel, the orientation of 45$^\circ$ was rank-1 in another voxel, and the orientation of 90$^\circ$ was rank-1 in a third voxel (etc.) the beta values at all of these rank-1 orientations were averaged, disregarding orientation but keeping the average values separate for the high and low-contrast conditions. This produced a beta value for rank 1 at high contrast and a yoked beta value for rank 1 at low contrast, without regard to the value of the presented stimulus orientation. 
@@ -31,7 +40,7 @@ ranks <- build_ranks(sub02, quantiles = c(0, 0.9))
 ```
 
 ```{r showranks, echo=FALSE}
-knitr::kable(ranks)
+ranks
 ```
 
 

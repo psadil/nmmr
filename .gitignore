@@ -58,3 +58,5 @@ inst/doc
 doc
 Meta
 
+inst/stan/*
+!inst/stan/*.stan
