@@ -2,28 +2,456 @@
 title: "Rank-Ordered Visualization"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{ranks}
+%\VignetteIndexEntry{ranks}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
----
-
-```{r, include = FALSE}
+  ---
+  
+  ```{r, include = FALSE}
 knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
+collapse = TRUE,
+comment = "#>"
 )
 ```
 
-```{r setup}
+```{r setup, message=FALSE}
+library(dplyr)
+library(ggplot2)
 library(nmmr)
 ```
 
+# Introduction
 
+NMM involves two techniques for looking at neuromodulation. One of them is based on model comparison, quantitatively looking at the difference between models. The other is based on a visualization, attempting to look directly at neuromodulation in the data. That visualization is the focus of this vignette.
+
+# Data
 
 After loading the library, you will have access to a dataset, `sub02`. 
 
 ```{r, data}
 sub02[1:10,]
+```
+
+## The Challenge
+
+Ideally, we could look at neuromodulation by plotting the voxel tuning function, for each voxel separately. That is an easy enough plot to generate, but it is insufficient. Here are the tuning functions for 12 voxels.
+
+```{r}
+sub02 %>%
+  group_by(contrast, orientation, run, ses) %>%
+  slice_head(n=12) %>%
+  whoppeR::WISEsummary(
+    dependentvars = "y",
+    withinvars = c("orientation", "contrast"),
+    idvar = "voxel",
+    betweenvars = "voxel") %>%
+  ggplot(aes(x=orientation, y=y_mean, color = contrast)) +
+  facet_wrap(~voxel) +
+  geom_line() +
+  geom_errorbar(aes(ymin=y_mean-y_sem, ymax=y_mean+y_sem)) +
+  scale_color_viridis_d(option="inferno", end=.8)
+```
+
+The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps.
+
+# Rank-Ordering
+
+First, we need some way to focus on the neuromodulation itself, rather than the tuning. 
+
+```{r, add_mult}
+size_shape <- 2
+
+make_d <- function(raw,
+                   kv = 0.5,
+                   center = -pi/16,
+                   m = 1.4,
+                   a = 0.1) {
+  d <- tibble(raw = raw) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Additive", "Multiplicative"),
+        levels = c("Additive", "Multiplicative"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Additive") ~ 0.1 + CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Multiplicative") ~ 1.4*CircStats::dvm(raw, center, kv)),
+      orientation = CircStats::deg(raw / 2))
+  return(d)
+}
+
+d <- tibble(
+  raw = seq(-pi, pi-2*pi/8, length.out = 8),
+  p = 0.6,
+  kv = 1,
+  center = -pi/16) %>%
+  crossing(
+    Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+    VTF = factor(
+      c("Additive", "Multiplicative", "Sharpening", "Shift"),
+      levels = c("Additive", "Multiplicative", "Sharpening", "Shift"))) %>%
+  mutate(
+    y = case_when(
+      fct_match(Contrast, "Low") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+      fct_match(VTF, "Additive") ~ 0.1 + CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+      fct_match(VTF, "Multiplicative") ~ 1.4*CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+      fct_match(VTF, "Multiplicative") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+      fct_match(VTF, "Multiplicative") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p)),
+    orientation = CircStats::deg(raw / 2))
+
+test_oris <-  make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(orientation, VTF) %>%
+  mutate(
+    high = max(y),
+    higher = high + 0.025,
+    highest = 0.6) %>%
+  filter(fct_match(Contrast, "Low"))
+
+a <- make_d(seq(-pi, pi, length.out = 1000)) %>%
+  ggplot(aes(x=orientation)) +
+  facet_wrap(~VTF, nrow=2, strip.position = "left") +
+  geom_segment(
+    aes(
+      xend = orientation,
+      y = y,
+      yend = high),
+    data = test_oris,
+    show.legend = FALSE,
+    size = .4) +
+  geom_point(
+    aes(
+      x = orientation,
+      y = highest,
+      shape = factor(orientation)),
+    data = test_oris %>%filter(fct_match(VTF, "Multiplicative")),
+    show.legend = FALSE,
+    size = size_shape) +
+  geom_segment(
+    aes(
+      xend = orientation,
+      y = 0),
+    yend = 0.6,
+    alpha = 0.25,
+    data = test_oris,
+    size = 0.25) +
+  geom_line(
+    aes(
+      y = y,
+      linetype = Contrast)) +
+  scale_x_continuous(
+    name = "Orientation",
+    breaks = seq(-90, 90, length.out = 3),
+    labels = seq(-90, 90, length.out = 3)) +
+  scale_y_continuous(
+    name = 'y',
+    labels = NULL,
+    breaks = NULL) +
+  coord_cartesian(ylim = c(0, 0.6)) +
+  scale_color_viridis_c(option = "inferno", end = .8) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  scale_shape_manual(values = c(1:8)) +
+  theme_classic(base_size = 10) +
+  theme(
+    axis.line.y = element_blank(),
+    rect = element_blank(),
+    legend.position = "bottom") 
+
+b <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  mutate(rank = rank(y)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+  ggplot(aes(x = Low, y = High)) +
+  facet_wrap(~VTF, nrow = 2) +
+  geom_abline(
+    slope = 1,
+    intercept = 0) +
+  geom_line(alpha = 0.25) +
+  geom_point(
+    aes(shape = factor(orientation)),
+    show.legend = FALSE,
+    size = size_shape) +
+  scale_x_continuous(
+    name = "Low Contrast y",
+    labels = NULL,
+    breaks = NULL) +
+  scale_y_continuous(
+    name = "High Contrast y",
+    labels = NULL,
+    breaks = NULL) +
+  coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+  scale_color_viridis_c(option = "inferno", end = .8) +
+  scale_linetype_manual(values = c("dotted", "dashed")) +
+  scale_shape_manual(values = 1:8) +
+  theme_classic(base_size = 10) +
+  theme(
+    rect = element_blank(),
+    legend.position = "none",
+    strip.text = element_blank()) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
+
+leg <- cowplot::get_legend(a + theme(legend.justification = "left"))
+
+cowplot::plot_grid(
+  a + theme(legend.position = "none"),
+  b,
+  nrow = 1,
+  axis = "tblr",
+  align = "hv") %>% 
+  cowplot::plot_grid(
+    leg, 
+    nrow=2,
+    rel_heights = c(1,0.01)) +
+  theme(plot.margin = unit(c(0,0,12,0), units ="points"))
+```
+
+```{r}
+make_d2 <- function(raw,
+                    kv = 1,
+                    center = -pi/16,
+                    m = 1.4,
+                    a = 0.1) {
+  d <- tibble(raw = raw) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Sharpening", "Shift"),
+        levels = c("Sharpening", "Shift"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Sharpening") ~ CircStats::dvm(raw, center, kv*2),
+        fct_match(VTF, "Shift") ~ CircStats::dvm(raw, center+pi/2, kv)),
+      orientation = CircStats::deg(raw / 2))
+  return(d)
+}
+
+test_oris <- make_d2(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(orientation, VTF) %>%
+  mutate(
+    high = max(y),
+    higher = high + 0.025,
+    highest = 0.6) %>%
+  filter(fct_match(Contrast, "Low"))
+
+a <- make_d2(seq(-pi, pi, length.out = 1000)) %>%
+  ggplot(aes(x=orientation)) +
+  facet_wrap(~VTF, nrow=2, strip.position = "left") +
+  geom_point(
+    aes(
+      x = orientation,
+      y = highest,
+      shape = factor(orientation)),
+    data = test_oris %>%filter(fct_match(VTF, "Shift")),
+    show.legend = FALSE,
+    size = size_shape) +
+  geom_segment(
+    aes(
+      xend = orientation,
+      y = 0),
+    yend = 0.6,
+    alpha = 0.25,
+    data = test_oris,
+    size = 0.25) +
+  geom_line(
+    aes(
+      y = y,
+      linetype = Contrast)) +
+  scale_x_continuous(
+    name = "Orientation",
+    breaks = seq(-90, 90, length.out = 3),
+    labels = seq(-90, 90, length.out = 3)) +
+  scale_y_continuous(
+    name = 'y',
+    labels = NULL,
+    breaks = NULL) +
+  coord_cartesian(ylim = c(0, 0.6)) +
+  scale_color_viridis_c(option = "inferno", end = .8) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  scale_shape_manual(values = c(1:8)) +
+  theme_classic(base_size = 10) +
+  theme(
+    axis.line.y = element_blank(),
+    rect = element_blank(),
+    legend.position = "bottom") 
+
+b <- make_d2(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  # mutate(rank = rank(y)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+  ggplot(aes(x = Low, y = High)) +
+  facet_wrap(~VTF, nrow = 2) +
+  geom_abline(
+    slope = 1,
+    intercept = 0) +
+  geom_line(alpha = 0.25) +
+  geom_point(
+    aes(shape = factor(orientation)),
+    show.legend = FALSE,
+    size = size_shape) +
+  scale_x_continuous(
+    name = "Low Contrast y",
+    labels = NULL,
+    breaks = NULL) +
+  scale_y_continuous(
+    name = "High Contrast y",
+    labels = NULL,
+    breaks = NULL) +
+  coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+  scale_color_viridis_c(option = "inferno", end = .8) +
+  scale_linetype_manual(values = c("dotted", "dashed")) +
+  scale_shape_manual(values = 1:8) +
+  theme_classic(base_size = 10) +
+  theme(
+    rect = element_blank(),
+    legend.position = "none",
+    strip.text = element_blank()) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
+
+leg <- cowplot::get_legend(a + theme(legend.justification = "left"))
+
+cowplot::plot_grid(
+  a + theme(legend.position = "none"),
+  b,
+  nrow = 1,
+  axis = "tblr",
+  align = "hv") %>% 
+  cowplot::plot_grid(
+    leg, 
+    nrow=2,
+    rel_heights = c(1,0.01)) +
+  theme(plot.margin = unit(c(0,0,12,0), units ="points"))
+```
+
+
+
+```{r, shift_sharp}
+
+make_d2 <- function(raw,
+                    kv = 2,
+                    center = -pi/16,
+                    m = 1.4,
+                    a = 0.1,
+                    p = 0.6) {
+  d <- tibble(raw = raw) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Sharpening", "Shift"),
+        levels = c("Sharpening", "Shift"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+        fct_match(VTF, "Sharpening") ~ CircStats::dmixedvm(raw, center, center+pi, kv*2, kv*2, p),
+        fct_match(VTF, "Shift") ~ CircStats::dmixedvm(raw, center+pi/2, center+pi+pi/2, kv, kv, p)),
+      orientation = CircStats::deg(raw / 2))
+  return(d)
+}
+
+test_oris <- make_d2(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(orientation, VTF) %>%
+  mutate(
+    high = max(y),
+    higher = high + 0.025,
+    highest = 0.6) %>%
+  filter(fct_match(Contrast, "Low"))
+
+a <- make_d2(seq(-pi, pi, length.out = 1000)) %>%
+  ggplot(aes(x=orientation)) +
+  facet_wrap(~VTF, nrow=2, strip.position = "left") +
+  geom_point(
+    aes(
+      x = orientation,
+      y = highest,
+      shape = factor(orientation)),
+    data = test_oris %>%filter(fct_match(VTF, "Shift")),
+    show.legend = FALSE,
+    size = size_shape) +
+  geom_segment(
+    aes(
+      xend = orientation,
+      y = 0),
+    yend = 0.6,
+    alpha = 0.25,
+    data = test_oris,
+    size = 0.25) +
+  geom_line(
+    aes(
+      y = y,
+      linetype = Contrast)) +
+  scale_x_continuous(
+    name = "Orientation",
+    breaks = seq(-90, 90, length.out = 3),
+    labels = seq(-90, 90, length.out = 3)) +
+  scale_y_continuous(
+    name = 'y',
+    labels = NULL,
+    breaks = NULL) +
+  coord_cartesian(ylim = c(0, 0.6)) +
+  scale_color_viridis_c(option = "inferno", end = .8) +
+  scale_linetype_manual(values = c("solid", "dashed")) +
+  scale_shape_manual(values = c(1:8)) +
+  theme_classic(base_size = 10) +
+  theme(
+    axis.line.y = element_blank(),
+    rect = element_blank(),
+    legend.position = "bottom") 
+
+b <- make_d2(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  # mutate(rank = rank(y)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+  ggplot(aes(x = Low, y = High)) +
+  facet_wrap(~VTF, nrow = 2) +
+  geom_abline(
+    slope = 1,
+    intercept = 0) +
+  geom_line(alpha = 0.25) +
+  geom_point(
+    aes(shape = factor(orientation)),
+    show.legend = FALSE,
+    size = size_shape) +
+  scale_x_continuous(
+    name = "Low Contrast y",
+    labels = NULL,
+    breaks = NULL) +
+  scale_y_continuous(
+    name = "High Contrast y",
+    labels = NULL,
+    breaks = NULL) +
+  coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+  scale_color_viridis_c(option = "inferno", end = .8) +
+  scale_linetype_manual(values = c("dotted", "dashed")) +
+  scale_shape_manual(values = 1:8) +
+  theme_classic(base_size = 10) +
+  theme(
+    rect = element_blank(),
+    legend.position = "none",
+    strip.text = element_blank()) +
+  annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
+
+leg <- cowplot::get_legend(a + theme(legend.justification = "left"))
+
+cowplot::plot_grid(
+  a + theme(legend.position = "none"),
+  b,
+  nrow = 1,
+  axis = "tblr",
+  align = "hv") %>% 
+  cowplot::plot_grid(
+    leg, 
+    nrow=2,
+    rel_heights = c(1,0.01)) +
+  theme(plot.margin = unit(c(0,0,12,0), units ="points"))
 ```
 
 

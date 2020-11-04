@@ -7,7 +7,6 @@ sub02 <- fst::read_fst(here::here("data-raw", "sub-02_task-con_area-V1_space-T1w
     voxel = factor(voxel),
     run = factor(run),
     ses = factor(ses),
-    orientation = deg(orientation)) %>%
-  select(sub, voxel, contrast, orientation, y)
+    orientation = deg(orientation))
 
 usethis::use_data(sub02, overwrite = TRUE)

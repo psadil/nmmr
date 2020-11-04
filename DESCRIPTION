@@ -34,7 +34,8 @@ Suggests:
     covr,
     roxygen2,
     testthat,
-    knitr
+    knitr,
+    whoppeR
 VignetteBuilder: 
     knitr
 Remotes: 
