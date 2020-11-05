@@ -3,21 +3,122 @@ title: "Rank-Ordered Visualization"
 output: rmarkdown::html_vignette
 vignette: >
 %\VignetteIndexEntry{ranks}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
-  ---
-  
-  ```{r, include = FALSE}
+%\VignetteEngine{knitr::rmarkdown}
+%\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
 knitr::opts_chunk$set(
-collapse = TRUE,
-comment = "#>"
-)
+  collapse = TRUE,
+  comment = "#>")
 ```
+
 
 ```{r setup, message=FALSE}
 library(dplyr)
 library(ggplot2)
-library(nmmr)
+library(tidyr)
+library(forcats)
+devtools::load_all()
+
+
+plot_a <- function(d, test_oris){
+  
+  p <- d %>%
+    ggplot(aes(x=orientation)) +
+    facet_wrap(~VTF, nrow=2) +
+    geom_point(
+      aes(
+        x = orientation,
+        y = highest,
+        shape = factor(orientation)),
+      data = test_oris %>%filter(fct_match(VTF, "Right")),
+      show.legend = FALSE,
+      size = size_shape) +
+    geom_segment(
+      aes(
+        xend = orientation,
+        y = 0),
+      yend = 0.6,
+      alpha = 0.25,
+      data = test_oris,
+      size = 0.25) +
+    geom_line(
+      aes(
+        y = y,
+        linetype = Contrast)) +
+    scale_x_continuous(
+      name = "Orientation",
+      breaks = seq(-90, 90, length.out = 3),
+      labels = seq(-90, 90, length.out = 3)) +
+    scale_y_continuous(
+      name = 'y',
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian(ylim = c(0, 0.6)) +
+    scale_linetype_manual(values = c("solid", "dashed")) +
+    scale_shape_manual(values = c(1:8)) +
+    theme_classic(base_size = 10) +
+    theme(
+      axis.line.y = element_blank(),
+      rect = element_blank(),
+      legend.position = "bottom") 
+  
+  return(p)
+}
+
+plot_b <- function(d){
+  
+  p <- d %>%
+    ggplot(aes(x = Low, y = High)) +
+    facet_wrap(~VTF, nrow = 2) +
+    geom_abline(
+      slope = 1,
+      intercept = 0) +
+    geom_line(alpha = 0.25) +
+    geom_point(
+      aes(shape = factor(orientation)),
+      show.legend = FALSE,
+      size = size_shape) +
+    scale_x_continuous(
+      name = "Low Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    scale_y_continuous(
+      name = "High Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+    scale_linetype_manual(values = c("dotted", "dashed")) +
+    scale_shape_manual(values = 1:8) +
+    theme_classic(base_size = 10) +
+    theme(
+      rect = element_blank(),
+      legend.position = "none",
+      strip.text = element_blank()) +
+    annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
+  
+  return(p)
+}
+
+plot_ab <- function(a, b){
+  leg <- cowplot::get_legend(a + theme(legend.justification = "left"))
+  
+  p <- cowplot::plot_grid(
+    a + theme(legend.position = "none"),
+    b,
+    nrow = 1,
+    axis = "tblr",
+    align = "hv") %>% 
+    cowplot::plot_grid(
+      leg, 
+      nrow=2,
+      rel_heights = c(1,0.01)) +
+    theme(plot.margin = unit(c(0,0,12,0), units ="points"))
+  
+  return(p)
+}
+
 ```
 
 # Introduction
@@ -58,6 +159,26 @@ The relevant effects are hard to parse in individual voxels. There are two issue
 
 First, we need some way to focus on the neuromodulation itself, rather than the tuning. 
 
+
+```{r, all}
+
+
+d <- tibble(raw = raw) %>%
+  crossing(
+    Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+    VTF = factor(
+      c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"),
+      levels = c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"))) %>%
+  mutate(
+    y = case_when(
+      fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv),
+      fct_match(VTF, "Additive") ~ 0.1 + CircStats::dvm(raw, center, kv),
+      fct_match(VTF, "Multiplicative") ~ 1.4*CircStats::dvm(raw, center, kv)))
+
+```
+
+
+
 ```{r, add_mult}
 size_shape <- 2
 
@@ -81,44 +202,13 @@ make_d <- function(raw,
   return(d)
 }
 
-d <- tibble(
-  raw = seq(-pi, pi-2*pi/8, length.out = 8),
-  p = 0.6,
-  kv = 1,
-  center = -pi/16) %>%
-  crossing(
-    Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
-    VTF = factor(
-      c("Additive", "Multiplicative", "Sharpening", "Shift"),
-      levels = c("Additive", "Multiplicative", "Sharpening", "Shift"))) %>%
-  mutate(
-    y = case_when(
-      fct_match(Contrast, "Low") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
-      fct_match(VTF, "Additive") ~ 0.1 + CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
-      fct_match(VTF, "Multiplicative") ~ 1.4*CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
-      fct_match(VTF, "Multiplicative") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
-      fct_match(VTF, "Multiplicative") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p)),
-    orientation = CircStats::deg(raw / 2))
-
-test_oris <-  make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
-  group_by(orientation, VTF) %>%
-  mutate(
-    high = max(y),
-    higher = high + 0.025,
-    highest = 0.6) %>%
+test_oris <- make_d0(modulation = c("Additive", "Multiplicative"),
+                     x = seq(-pi, pi-2*pi/8, length.out = 8)) %>%
   filter(fct_match(Contrast, "Low"))
 
 a <- make_d(seq(-pi, pi, length.out = 1000)) %>%
   ggplot(aes(x=orientation)) +
   facet_wrap(~VTF, nrow=2, strip.position = "left") +
-  geom_segment(
-    aes(
-      xend = orientation,
-      y = y,
-      yend = high),
-    data = test_oris,
-    show.legend = FALSE,
-    size = .4) +
   geom_point(
     aes(
       x = orientation,
@@ -193,19 +283,8 @@ b <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
     strip.text = element_blank()) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
 
-leg <- cowplot::get_legend(a + theme(legend.justification = "left"))
+plot_ab(a,b)
 
-cowplot::plot_grid(
-  a + theme(legend.position = "none"),
-  b,
-  nrow = 1,
-  axis = "tblr",
-  align = "hv") %>% 
-  cowplot::plot_grid(
-    leg, 
-    nrow=2,
-    rel_heights = c(1,0.01)) +
-  theme(plot.margin = unit(c(0,0,12,0), units ="points"))
 ```
 
 ```{r}
@@ -455,13 +534,407 @@ cowplot::plot_grid(
 ```
 
 
-The formal decision between different forms of neuromodulation is made with model comparison. However, it is useful to visualize the specific features of the data that likely drive model comparison, features that are only captured by one but not the other model. A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. That is, with multiplicative neuromodulation, contrast has a greater magnifying effect for the peak than the tails of the voxel tuning function, whereas with additive neuromodulation, contrast has the same effect on the peak and the tails. Under the multiplicative model, the betas that are highest at low-contrast -- those betas at orientations closest to the voxel's preferred orientation -- are more affected by increasing contrast than betas for other orientations (Figure, bottom left). Under the additive model, the beta values for a single voxel are greater at high than low contrast to the same extent for all orientations (Figure , top left). The models can be differentiated by plotting the high-contrast betas against the low-contrast betas and calculating the slope of the best fitting line (Figure, right). A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.   
+```{r}
 
-To aggregate across the empirical voxels, beta values were sorted and grouped by a rank-ordering of their magnitudes across orientations. That is, the average beta value for each voxel was first calculated at each orientation (i.e., averaged across runs and levels of contrast). Then, the resulting average values at each orientation were ranked according to magnitude within each voxel (e.g., ranked from 1-8, for each of the 8 presented orientations). Importantly, this scheme ranks the orientations without regard to contrast, forcing the ranking of orientations within each voxel to be the same at high and low contrast. Next, the original beta values, kept separate by contrast but grouped together to determine rank, were averaged over voxels and runs. For example, if the stimulus orientation of 0$^\circ$ was rank-1 in one voxel, the orientation of 45$^\circ$ was rank-1 in another voxel, and the orientation of 90$^\circ$ was rank-1 in a third voxel (etc.) the beta values at all of these rank-1 orientations were averaged, disregarding orientation but keeping the average values separate for the high and low-contrast conditions. This produced a beta value for rank 1 at high contrast and a yoked beta value for rank 1 at low contrast, without regard to the value of the presented stimulus orientation. 
+make_d1 <- function(raw,
+                    kv = 2,
+                    center = -pi/16) {
+  d <- tibble(raw = raw) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"),
+        levels = c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Additive") ~ 0.1 + CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Multiplicative") ~ 1.2*CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Sharpening") ~ CircStats::dvm(raw, center,  kv*2),
+        fct_match(VTF, "Widening") ~ CircStats::dvm(raw, center,  kv/2),
+        fct_match(VTF, "Right") ~ CircStats::dvm(raw, center+pi/2,  kv),
+        fct_match(VTF, "Left") ~ CircStats::dvm(raw, center-pi/2, kv)),
+      orientation = CircStats::deg(raw / 2))
+  return(d)
+}
 
-Many voxels were only weakly responsive to stimulation or were only weakly affected by contrast. Such voxels will necessarily have a slope near one. Including these voxels in the visualization would produce a plot that necessarily appears to favoring the additive model, even if multiplicative gain wasere the true form of neuromodulation. Therefore, thise high- versus low-contrast  analysis plot was repeated was constructed four times, using an excluding increasingly stringent criterion to exclude numbers of voxels that were weakly affected by contrast. The exclusion criterion was based on the average effect of contrast for each voxel, without regard to averaged across orientations and runs (i.e., average across runs and orientations). Voxels were included only if they surpassed a specified quantile The four analyses employed an exclusion criteria at the quantiles of: 0 (i.e., include all voxels), 0.5, 0.75, and 0.9 (Figure 5B). 
+test_oris <- make_d1(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(orientation, VTF) %>%
+  mutate(
+    high = max(y),
+    higher = high + 0.025,
+    highest = 0.6) %>%
+  filter(fct_match(Contrast, "Low"))
 
-When all voxels are included in the rank-ordered visualization technique (threshold 0), the results show a slope near one, which is to be expected because the majority of voxels produced very low beta values and thus showed , correspondingly, relatively less low sensitivity to the contrast manipulation. However, when only considering only the top 10 % of voxels in terms of the contrast manipulation (threshold .9), the for which beta values are in general larger, and the slope is clearly greater than one. This result is . as predicted by the multiplicative (but not the additive) model. It is this feature of the data that favors the multiplicative model over the additive model. 
+a <- make_d1(seq(-pi, pi, length.out = 1000)) %>%
+  plot_a(test_oris)
+
+b <- make_d1(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  # mutate(rank = rank(y)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+  plot_b()
+
+plot_ab(a,b)
+
+```
+
+```{r}
+
+make_d1 <- function(raw,
+                    kv = 2,
+                    center = -pi/16) {
+  d <- tibble(raw = raw) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"),
+        levels = c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Additive") ~ 0.1 + CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Multiplicative") ~ 1.2*CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Sharpening") ~ CircStats::dvm(raw, center,  kv*2),
+        fct_match(VTF, "Widening") ~ CircStats::dvm(raw, center,  kv/2),
+        fct_match(VTF, "Right") ~ CircStats::dvm(raw, center+pi/2,  kv),
+        fct_match(VTF, "Left") ~ CircStats::dvm(raw, center-pi/2, kv)),
+      orientation = CircStats::deg(raw / 2))
+  return(d)
+}
+
+test_oris <- make_d1(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(orientation, VTF) %>%
+  mutate(
+    high = max(y),
+    higher = high + 0.025,
+    highest = 0.6) %>%
+  filter(fct_match(Contrast, "Low"))
+
+a <- make_d1(seq(-pi, pi, length.out = 1000)) %>%
+  plot_a(test_oris)
+
+b <- make_d1(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  # mutate(rank = rank(y)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+  plot_b()
+
+
+plot_ab(a,b)
+
+```
+
+
+```{r}
+
+make_d2 <- function(raw,
+                    kv = 2,
+                    center = -pi/16,
+                    p = 0.6) {
+  d <- tibble(raw = raw) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"),
+        levels = c("Additive", "Multiplicative", "Sharpening", "Widening", "Left", "Right"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+        fct_match(VTF, "Additive") ~ 0.1 + CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+        fct_match(VTF, "Multiplicative") ~ 1.2*CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+        fct_match(VTF, "Sharpening") ~ CircStats::dmixedvm(raw, center, center+pi, kv*2, kv*2, p),
+        fct_match(VTF, "Widening") ~ CircStats::dmixedvm(raw, center, center+pi, kv/2, kv/2, p),
+        fct_match(VTF, "Right") ~ CircStats::dmixedvm(raw, center+pi/2, center+pi+pi/2, kv, kv, p),
+        fct_match(VTF, "Left") ~ CircStats::dmixedvm(raw, center-pi/2, center+pi-pi/2, kv, kv, p)),
+      orientation = CircStats::deg(raw / 2))
+  return(d)
+}
+
+test_oris <- make_d2(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(orientation, VTF) %>%
+  mutate(
+    high = max(y),
+    higher = high + 0.025,
+    highest = 0.6) %>%
+  filter(fct_match(Contrast, "Low"))
+
+a <- make_d2(seq(-pi, pi, length.out = 1000)) %>%
+  plot_a(test_oris)
+
+b <- make_d2(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  # mutate(rank = rank(y)) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+  plot_b()
+
+plot_ab(a,b)
+
+
+```
+
+```{r, d1_100l}
+
+N <- 100
+
+make_d1(seq(-pi, pi-2*pi/N, length.out = N)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+      ggplot(aes(x = Low, y = High)) +
+    facet_wrap(~VTF, nrow = 2) +
+    geom_abline(
+      slope = 1,
+      intercept = 0) +
+    # geom_line(alpha = 0.25) +
+    geom_point() +
+    scale_x_continuous(
+      name = "Low Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    scale_y_continuous(
+      name = "High Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+    scale_color_viridis_c(option = "inferno", end = .8) +
+    scale_linetype_manual(values = c("dotted", "dashed")) +
+    theme(
+      legend.position = "none") +
+    annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
+
+```
+
+
+```{r, d1_100_levels}
+
+N <- 100
+kv <- 2
+center <- -pi/16
+
+tibble(raw = seq(-pi, pi-2*pi/N, length.out = N)) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Sharpening", "Widening", "Left"),
+        levels = c("Sharpening", "Widening", "Left")),
+      magnitude = factor(1:2)) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv),
+        fct_match(VTF, "Sharpening") & fct_match(magnitude, "1") ~ CircStats::dvm(raw, center,  kv*2),
+        fct_match(VTF, "Sharpening") & fct_match(magnitude, "2") ~ CircStats::dvm(raw, center,  kv*4),
+        fct_match(VTF, "Widening") & fct_match(magnitude, "1") ~ CircStats::dvm(raw, center,  kv/2),
+        fct_match(VTF, "Widening") & fct_match(magnitude, "2") ~ CircStats::dvm(raw, center,  kv/4),
+        fct_match(VTF, "Left") & fct_match(magnitude, "1") ~ CircStats::dvm(raw, center-pi/4, kv),
+        fct_match(VTF, "Left") & fct_match(magnitude, "2") ~ CircStats::dvm(raw, center-pi/2, kv)),
+      orientation = CircStats::deg(raw / 2)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+      ggplot(aes(x = Low, y = High)) +
+    facet_wrap(~VTF) +
+    geom_abline(
+      slope = 1,
+      intercept = 0) +
+    geom_line(aes(color=magnitude), alpha = 0.2) +
+    geom_point(aes(color = magnitude)) +
+    scale_x_continuous(
+      name = "Low Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    scale_y_continuous(
+      name = "High Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+    theme(legend.position = "bottom")
+  
+
+```
+
+```{r, d2_100}
+
+N <- 100
+
+make_d2(seq(-pi, pi-2*pi/N, length.out = N)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+      ggplot(aes(x = Low, y = High)) +
+    facet_wrap(~VTF, nrow = 2) +
+    geom_abline(
+      slope = 1,
+      intercept = 0) +
+    # geom_line(alpha = 0.25) +
+    geom_point() +
+    scale_x_continuous(
+      name = "Low Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    scale_y_continuous(
+      name = "High Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian(xlim = c(0,0.5), ylim = c(0,0.5)) +
+    scale_color_viridis_c(option = "inferno", end = .8) +
+    scale_linetype_manual(values = c("dotted", "dashed")) +
+    theme(
+      legend.position = "none") +
+    annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
+
+```
+
+It looks like there are distinct "groups", perhaps associated with each of the modes.
+
+```{r make_d3}
+
+make_d3 <- function(raw,
+                    kv = 2,
+                    center = -pi/16) {
+  
+  d <- tibble(raw = seq(-pi, pi-2*pi/N, length.out = N)) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Sharpening", "Widening", "Left"),
+        levels = c("Sharpening", "Widening", "Left"))) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dvm(raw, center, kv) + CircStats::dvm(raw, center+2/3*pi, kv) + CircStats::dvm(raw, center+4/3*pi, kv),
+        fct_match(VTF, "Sharpening") ~ CircStats::dvm(raw, center, kv*2) + CircStats::dvm(raw, center+2/3*pi, kv*2) + CircStats::dvm(raw, center+4/3*pi, kv*2),
+        fct_match(VTF, "Widening") ~ CircStats::dvm(raw, center, kv/2) + CircStats::dvm(raw, center+2/3*pi, kv/2) + CircStats::dvm(raw, center+4/3*pi, kv/2),
+        fct_match(VTF, "Left")  ~ CircStats::dvm(raw, center+pi/2, kv) + CircStats::dvm(raw, center+2/3*pi+pi/2, kv) + CircStats::dvm(raw, center+4/3*pi+pi/2, kv)),
+      orientation = CircStats::deg(raw / 2))
+  
+  return(d)
+}
+
+
+make_d3(seq(-pi, pi, length.out = 1000)) %>%
+  ggplot(aes(x=orientation)) +
+    facet_wrap(~VTF) +
+    geom_line(
+      aes(
+        y = y,
+        linetype = Contrast)) +
+    scale_x_continuous(
+      name = "Orientation",
+      breaks = seq(-90, 90, length.out = 3),
+      labels = seq(-90, 90, length.out = 3)) +
+    scale_y_continuous(
+      name = 'y',
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian() +
+    scale_linetype_manual(values = c("solid", "dashed")) +
+    theme(
+      axis.line.y = element_blank(),
+      legend.position = "bottom") 
+
+```
+
+
+```{r, d3}
+
+N <- 100
+
+make_d3(seq(-pi, pi-2*pi/N, length.out = N)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+      ggplot(aes(x = Low, y = High)) +
+    facet_wrap(~VTF) +
+    geom_abline(
+      slope = 1,
+      intercept = 0) +
+    geom_line(alpha = 0.2) +
+    geom_point() +
+    scale_x_continuous(
+      name = "Low Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    scale_y_continuous(
+      name = "High Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian() +
+    theme(legend.position = "bottom")
+
+```
+
+
+
+```{r, d2_100_levels}
+
+N <- 100
+kv <- 2
+center <- -pi/16
+p <- 0.6
+
+tibble(raw = seq(-pi, pi-2*pi/N, length.out = N)) %>%
+    crossing(
+      Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
+      VTF = factor(
+        c("Sharpening", "Widening", "Left"),
+        levels = c("Sharpening", "Widening", "Left")),
+      magnitude = factor(1:2)) %>%
+    mutate(
+      y = case_when(
+        fct_match(Contrast, "Low") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
+        fct_match(VTF, "Sharpening") & fct_match(magnitude, "1") ~ CircStats::dmixedvm(raw, center, center+pi, kv*2, kv*2, p),
+        fct_match(VTF, "Sharpening") & fct_match(magnitude, "2") ~ CircStats::dmixedvm(raw, center, center+pi, kv*4, kv*4, p),
+        fct_match(VTF, "Widening") & fct_match(magnitude, "1") ~ CircStats::dmixedvm(raw, center, center+pi, kv/2, kv/2, p),
+        fct_match(VTF, "Widening") & fct_match(magnitude, "2") ~ CircStats::dmixedvm(raw, center, center+pi, kv/4, kv/4, p),
+        fct_match(VTF, "Left") & fct_match(magnitude, "1") ~ CircStats::dmixedvm(raw, center-pi/4, center+pi-pi/4, kv, kv, p),
+        fct_match(VTF, "Left") & fct_match(magnitude, "2") ~ CircStats::dmixedvm(raw, center-pi/2, center+pi-pi/2, kv, kv, p)),
+      orientation = CircStats::deg(raw / 2)) %>%
+  group_by(VTF, orientation) %>%
+  mutate(avg = mean(y)) %>%
+  group_by(VTF, Contrast) %>%
+  ungroup() %>%
+  pivot_wider(names_from = Contrast, values_from = y) %>%
+      ggplot(aes(x = Low, y = High)) +
+    facet_wrap(~VTF) +
+    geom_abline(
+      slope = 1,
+      intercept = 0) +
+    geom_line(aes(color=magnitude), alpha = 0.2) +
+    geom_point(aes(color = magnitude)) +
+    scale_x_continuous(
+      name = "Low Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    scale_y_continuous(
+      name = "High Contrast y",
+      labels = NULL,
+      breaks = NULL) +
+    coord_cartesian() +
+    theme(legend.position = "bottom")
+  
+
+```
+
+
+
+# Application on Data
 
 ```{r build}
 ranks <- build_ranks(sub02, quantiles = c(0, 0.9))
