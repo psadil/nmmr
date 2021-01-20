@@ -1,7 +1,7 @@
 Package: nmmr
 Title: NeuroModulation Modeling in R
 Version: 0.0.0.9000
-Authors@R: 
+Authors@R:
     person(given = "Patrick",
            family = "Sadil",
            role = c("aut", "cre"),
@@ -13,9 +13,9 @@ License: GPL-3
 URL: https://psadil.github.io/nmmr/,
     https://github.com/psadil/nmmr
 BugReports: https://github.com/psadil/nmmr/issues
-Depends: 
+Depends:
     R (>= 3.4.0)
-Imports: 
+Imports:
     checkmate,
     cmdstanr,
     dplyr,
@@ -29,11 +29,17 @@ Imports:
     tibble,
     tidybayes,
     tidyr
-Suggests: 
+Suggests:
     covr,
+    devtools,
+    git2r,
+    knitr,
+    rmarkdown,
     roxygen2,
     testthat
-Remotes: 
+VignetteBuilder:
+    knitr
+Remotes:
     stan-dev/cmdstanr,
     stan-dev/posterior
 Config/testthat/edition: 3
