@@ -5,7 +5,7 @@
 \alias{sub02}
 \title{Sample beta values}
 \format{
-Objects of class tbl_df (inherits from tbl, data.frame) a minimal tibble for the vtuner analysis (53856 x 5)
+Objects of class tbl_df (inherits from tbl, data.frame) a minimal tibble for the vtuner analysis (53856 x 7)
 
 \describe{
 \item{sub}{factor ID of subject}

@@ -26,10 +26,11 @@ of vertical and horizontal differences.
 n <- 1000
 z <- rnorm(n)
 x <- rnorm(n, z)
-y <- rnorm(n, 2*x + 1)
+y <- rnorm(n, 2*z + 1)
 get_slope(x,y)
 
 }
 \seealso{
+\code{\link[=sum_squares]{sum_squares()}}, \code{\link[=get_slope_by_group]{get_slope_by_group()}}
 For a more general function (including one that returns the intercept), see \code{\link[pracma:odregress]{pracma::odregress()}}
 }

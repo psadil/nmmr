@@ -50,13 +50,14 @@ sum_squares <- function(x, y=x){
 #' of vertical and horizontal differences.
 #'
 #' @seealso
+#' [sum_squares()], [get_slope_by_group()]
 #' For a more general function (including one that returns the intercept), see [pracma::odregress()]
 #'
 #' @examples
 #' n <- 1000
 #' z <- rnorm(n)
 #' x <- rnorm(n, z)
-#' y <- rnorm(n, 2*x + 1)
+#' y <- rnorm(n, 2*z + 1)
 #' get_slope(x,y)
 #'
 get_slope <- function(x,y){
@@ -70,3 +71,40 @@ get_slope <- function(x,y){
   (-(s_xx - s_yy) + sqrt((s_xx - s_yy)^2 + 4*s_xy^2)) / (2*s_xy)
 }
 
+
+#' Title
+#'
+#' @param d dataframe containing the
+#' @param group name of column (bare only)
+#' @param x,y names of column (bare or quoted) in d with which to do the regression
+#'
+#' @return
+#' a dataframe with two columns, one containing the group id and
+#' one containing the estimated slope for that group
+#' @export
+#' @seealso [get_slope()]
+#'
+#' @examples
+#' sub02 %>%
+#'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
+#'   get_slope_by_group(voxel, low, high)
+#' @importFrom rlang .data
+get_slope_by_group <- function(d, group, x, y) {
+
+  x_name <- as_name(enquo(x))
+  y_name <- as_name(enquo(y))
+
+  checkmate::assert_data_frame(d)
+  checkmate::assert_subset(x_name, names(d))
+  checkmate::assert_subset(y_name, names(d))
+  checkmate::assert_subset(as_name(enquo(group)), names(d))
+
+  d %>%
+    dplyr::group_nest({{group}}) %>%
+    dplyr::rowwise() %>%
+    dplyr::mutate(
+      slope = get_slope(.data$data[[x_name]], .data$data[[y_name]])) %>%
+    dplyr::ungroup() %>%
+    dplyr::select({{group}}, .data$slope)
+
+}
