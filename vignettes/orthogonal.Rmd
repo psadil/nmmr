@@ -290,7 +290,7 @@ fits %>%
 
 When your data are formatted according to the 
 
-```{r}
+```{r, pivot}
 
 sub02_wide <- sub02 %>%
   pivot_wider(names_from = contrast, values_from = y)
@@ -299,7 +299,49 @@ sub02_wide[1:10,]
 ```
 
 
-```{r}
+```{r, group}
 
+slopes <- sub02_wide %>%
+  get_slope_by_group(voxel, low, high)
+
+```
+
+
+```{r, voxel_slopes, fig.cap="When looking at all of the voxels, some of the slopes are spuriously high."}
+
+slopes %>%
+  ggplot(aes(x=slope)) +
+  geom_histogram(bins = 200) +
+  geom_vline(xintercept = 1)
+
+```
+
+
+## Thresholding
+
+An issue with the above is that many voxels are only weakly affected by contrast, meaning
+
+```{r, circle, fig.cap="When voxels are poorly tuned, the best-fitting line can easily be one that is nearly vertical."}
+
+sub02_wide %>%
+  filter(forcats::fct_match(voxel, "209671")) %>%
+  ggplot(aes(x=low, y = high)) +
+  geom_point() +
+  coord_fixed() 
+
+```
+
+
+```{r}
+ranks <- cross_threshold(sub02_wide, voxel, low, high, participant = sub)
+```
+
+
+```{r}
+left_join(ranks, slopes, by = c("voxel")) %>%
+  ggplot(aes(x=slope)) +
+  facet_wrap(~Threshold, scales = "free") +
+  geom_histogram(bins = 20) +
+  geom_vline(xintercept = 1)
 ```
 

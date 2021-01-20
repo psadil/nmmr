@@ -2,12 +2,12 @@
 % Please edit documentation in R/total-least-squares.R
 \name{get_slope_by_group}
 \alias{get_slope_by_group}
-\title{Title}
+\title{Calculate slopes by groups}
 \usage{
 get_slope_by_group(d, group, x, y)
 }
 \arguments{
-\item{d}{dataframe containing the}
+\item{d}{wide,dataframe containing the}
 
 \item{group}{name of column (bare only)}
 
@@ -18,7 +18,7 @@ a dataframe with two columns, one containing the group id and
 one containing the estimated slope for that group
 }
 \description{
-Title
+Calculate slopes by groups
 }
 \examples{
 sub02 \%>\%
@@ -26,5 +26,5 @@ sub02 \%>\%
   get_slope_by_group(voxel, low, high)
 }
 \seealso{
-\code{\link[=get_slope]{get_slope()}}
+\code{\link[=get_slope]{get_slope()}}, \code{\link[=cross_threshold]{cross_threshold()}}
 }

@@ -72,22 +72,22 @@ get_slope <- function(x,y){
 }
 
 
-#' Title
+#' Calculate slopes by groups
 #'
-#' @param d dataframe containing the
+#' @param d wide,dataframe containing the
 #' @param group name of column (bare only)
 #' @param x,y names of column (bare or quoted) in d with which to do the regression
 #'
 #' @return
 #' a dataframe with two columns, one containing the group id and
 #' one containing the estimated slope for that group
-#' @export
-#' @seealso [get_slope()]
+#' @seealso [get_slope()], [cross_threshold()]
 #'
 #' @examples
 #' sub02 %>%
 #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
 #'   get_slope_by_group(voxel, low, high)
+#' @export
 #' @importFrom rlang .data
 get_slope_by_group <- function(d, group, x, y) {
 
@@ -97,10 +97,9 @@ get_slope_by_group <- function(d, group, x, y) {
   checkmate::assert_data_frame(d)
   checkmate::assert_subset(x_name, names(d))
   checkmate::assert_subset(y_name, names(d))
-  checkmate::assert_subset(as_name(enquo(group)), names(d))
 
   d %>%
-    dplyr::group_nest({{group}}) %>%
+    dplyr::group_nest(across({{group}})) %>%
     dplyr::rowwise() %>%
     dplyr::mutate(
       slope = get_slope(.data$data[[x_name]], .data$data[[y_name]])) %>%
@@ -108,3 +107,47 @@ get_slope_by_group <- function(d, group, x, y) {
     dplyr::select({{group}}, .data$slope)
 
 }
+
+
+#' Title
+#'
+#' @param d wide,dataframe containing the
+#' @param group name of column (bare only)
+#' @param x,y names of column (bare or quoted) in d with which to do the regression
+#' @param quantiles threshold to apply.
+#' @param participant optional secondary grouping column. Can be used to nest thresholding
+#'       (e.g., calculate the quantiles within each participant separately)
+#'
+#' @return
+#'   data frame object with one column for the `group`, potentially another index
+#'   column for `participant`, and a new column called Threshold. A group will be
+#'   repeated as many times as it passes the threshold.
+#' @seealso [get_slope()], [get_slope_by_group()]
+#' @examples
+#' sub02 %>%
+#'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
+#'   cross_threshold(voxel, low, high)
+#'
+#' @export
+#' @importFrom rlang .data
+cross_threshold <- function(d, group, x, y, quantiles = c(0, 0.9), participant = NULL) {
+
+  checkmate::assert_numeric(quantiles, lower=0, upper = 1, any.missing = FALSE, min.len = 1, unique = TRUE)
+  checkmate::assert_data_frame(d)
+  checkmate::assert_subset(as_name(enquo(x)), names(d))
+  checkmate::assert_subset(as_name(enquo(y)), names(d))
+
+  d %>%
+    dplyr::group_by(across({{group}}), {{participant}}) %>%
+    dplyr::summarise(
+      y = mean({{y}}),
+      x = mean({{x}}),
+      .groups = "drop") %>%
+    dplyr::mutate(di = .data$y - .data$x) %>%
+    tidyr::crossing(Threshold = quantiles) %>%
+    dplyr::group_by(.data$Threshold, {{participant}}) %>%
+    dplyr::filter(di >= quantile(.data$di, .data$Threshold)) %>%
+    dplyr::select({{group}}, Threshold, {{participant}}) %>%
+    dplyr::ungroup()
+}
+
