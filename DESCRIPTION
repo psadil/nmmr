@@ -26,15 +26,20 @@ Imports:
     purrr,
     R6,
     rlang (>= 0.1.2),
+    stats,
     tibble,
     tidybayes,
-    tidyr,
-    stats
+    tidyr
 Suggests:
+    CircStats,
+    cowplot,
+    ggplot2,
+    glue,
     knitr,
     rmarkdown,
     roxygen2,
-    testthat
+    testthat,
+    whoppeR
 VignetteBuilder:
     knitr
 Remotes:
