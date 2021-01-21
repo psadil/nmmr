@@ -34,7 +34,7 @@ sub02 \%>\%
 # can also calculate within groups
 sub02 \%>\%
   tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
-  cross_threshold(sub02_wide, c(voxel, run), low, high, participant = sub)
+  cross_threshold(c(voxel, run), low, high, participant = sub)
 
 
 }
