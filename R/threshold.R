@@ -20,7 +20,7 @@
 #' # can also calculate within groups
 #' sub02 %>%
 #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
-#'   cross_threshold(sub02_wide, c(voxel, run), low, high, participant = sub)
+#'   cross_threshold(c(voxel, run), low, high, participant = sub)
 #'
 #'
 #' @export
@@ -41,7 +41,7 @@ cross_threshold <- function(d, group, x, y, quantiles = c(0, 0.9), participant =
     dplyr::mutate(di = .data$y - .data$x) %>%
     tidyr::crossing(Threshold = quantiles) %>%
     dplyr::group_by(.data$Threshold, dplyr::across({{participant}})) %>%
-    dplyr::filter(di >= quantile(.data$di, .data$Threshold)) %>%
-    dplyr::select({{group}}, Threshold, {{participant}}) %>%
+    dplyr::filter(.data$di >= stats::quantile(.data$di, .data$Threshold)) %>%
+    dplyr::select({{group}}, .data$Threshold, {{participant}}) %>%
     dplyr::ungroup()
 }
