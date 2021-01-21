@@ -81,18 +81,30 @@ Model object, ready for sampling" />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+    <li>
+      <a href="../articles/orthogonal.html">orthogonal</a>
+    </li>
+  </ul>
+</li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/psadil/nmmr/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -160,7 +172,7 @@ Prepare data for running model</p></div>
 <a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='kw'>Model</span><span class='op'>$</span><span class='fu'>new</span>(<span class='kw'>d</span>, <span class='kw'>form</span>, prior = <span class='kw'>Prior</span><span class='op'>$</span><span class='fu'>new</span>())</pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>form</span>, prior <span class='op'>=</span> <span class='va'><a href='Prior.html'>Prior</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
@@ -174,7 +186,7 @@ Prepare data for running model</p></div>
 <p><hr>
 <a id="method-sample"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/sample.html'>sample()</a></code></h3>
 <p>Draw samples from the posterior of the model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='kw'>Model</span><span class='op'>$</span><span class='fu'><a href='https://rdrr.io/r/base/sample.html'>sample</a></span>(data = <span class='kw'>NULL</span>, <span class='kw'>...</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>sample</span><span class='op'>(</span>data <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
@@ -188,7 +200,7 @@ of the internally stored data (created when the object was initialized)</p></dd>
 <a id="method-make_standata"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>make_standata()</code></h3>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='kw'>Model</span><span class='op'>$</span><span class='fu'>make_standata</span>(<span class='kw'>d</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>make_standata</span><span class='op'>(</span><span class='va'>d</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
@@ -200,7 +212,7 @@ of the internally stored data (created when the object was initialized)</p></dd>
 <p><hr>
 <a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='kw'>Model</span><span class='op'>$</span><span class='fu'>clone</span>(deep = <span class='fl'>FALSE</span>)</pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
