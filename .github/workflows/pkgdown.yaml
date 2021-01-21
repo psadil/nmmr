@@ -34,13 +34,13 @@ jobs:
           restore-keys: ${{ runner.os }}-${{ hashFiles('.github/R-version') }}-1-
 
       - name: Install external libs
-        run: sudo apt-get install libcurl4-openssl-dev libv8-dev
+        run: sudo apt-get install libcurl4-openssl-dev libv8-dev libharfbuzz-dev libfribidi-dev
 
       - name: Install dependencies
         run: |
           install.packages("knitr")
-          remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown")
+          remotes::install_deps(dependencies = TRUE)
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
         shell: Rscript {0}
 
