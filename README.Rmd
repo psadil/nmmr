@@ -23,9 +23,9 @@ Experimental package for NeuroModulation Modeling in R. This package under activ
 
 ## Installation
 
-`nmmr` relies on the [RStan](https://github.com/stan-dev/rstan) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up RStan](https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started).
+`nmmr` relies on the [cmdstanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html).
 
-After installing `RStan`, `nmmr` can be installed with the `remotes` package.
+After installing `cmdstanR`, `nmmr` can be installed with the `remotes` package.
 
 ```{r, install, eval=FALSE}
 # install.packages(remotes)
