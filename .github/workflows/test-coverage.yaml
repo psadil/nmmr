@@ -41,7 +41,7 @@ jobs:
 
       - name: Install dependencies
         run: |
-          install.packages("knitr")
+          install.packages(c("knitr", "covr"))
           remotes::install_deps(dependencies = TRUE)
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
         shell: Rscript {0}

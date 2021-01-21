@@ -30,9 +30,7 @@ Imports:
     tidybayes,
     tidyr
 Suggests:
-    covr,
     knitr,
-    remotes,
     rmarkdown,
     roxygen2,
     testthat
