@@ -89,12 +89,12 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p><code>nmmr</code> relies on the <a href="https://github.com/stan-dev/rstan">RStan</a> interface to <a href="https://mc-stan.org">Stan</a>. To install <code>nmmr</code>, first <a href="https://github.com/stan-dev/rstan/wiki/RStan-Getting-Started">follow instructions for setting up RStan</a>.</p>
-<p>After installing <code>RStan</code>, <code>nmmr</code> can be installed with the <code>remotes</code> package.</p>
+<p><code>nmmr</code> relies on the <a href="https://mc-stan.org/cmdstanr/">cmdstanR</a> interface to <a href="https://mc-stan.org">Stan</a>. To install <code>nmmr</code>, first <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html">follow instructions for setting up Stan and cmdstanR</a>.</p>
+<p>After installing <code>cmdstanR</code>, <code>nmmr</code> can be installed with the <code>remotes</code> package.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># install.packages(remotes)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://remotes.r-lib.org">remotes</a></span><span class="op">)</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"psadil/nmmr"</span><span class="op">)</span></code></pre></div>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"psadil/nmmr"</span><span class="op">)</span></code></pre></div>
 </div>
 </div>
 <div id="example-analysis" class="section level1">
@@ -111,57 +111,76 @@
 <table class="table">
 <thead><tr class="header">
 <th align="left">sub</th>
+<th align="left">run</th>
 <th align="left">voxel</th>
 <th align="left">contrast</th>
 <th align="right">orientation</th>
 <th align="right">y</th>
+<th align="left">ses</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
 <td align="left">2</td>
+<td align="left">15</td>
 <td align="left">191852</td>
 <td align="left">low</td>
 <td align="right">0.7853982</td>
 <td align="right">3.359860</td>
+<td align="left">3</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
+<td align="left">15</td>
 <td align="left">197706</td>
 <td align="left">low</td>
 <td align="right">0.7853982</td>
 <td align="right">-2.839522</td>
+<td align="left">3</td>
 </tr>
 <tr class="odd">
 <td align="left">2</td>
+<td align="left">15</td>
 <td align="left">197769</td>
 <td align="left">low</td>
 <td align="right">0.7853982</td>
 <td align="right">-2.027267</td>
+<td align="left">3</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
+<td align="left">15</td>
 <td align="left">197842</td>
 <td align="left">low</td>
 <td align="right">0.7853982</td>
 <td align="right">2.234859</td>
+<td align="left">3</td>
 </tr>
 <tr class="odd">
 <td align="left">2</td>
+<td align="left">15</td>
 <td align="left">197906</td>
 <td align="left">low</td>
 <td align="right">0.7853982</td>
 <td align="right">2.858387</td>
+<td align="left">3</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
+<td align="left">15</td>
 <td align="left">197907</td>
 <td align="left">low</td>
 <td align="right">0.7853982</td>
 <td align="right">1.506754</td>
+<td align="left">3</td>
 </tr>
 </tbody>
 </table>
 <p>For extra info on the dataset, see the help page for sub02 (?sub02).</p>
+</div>
+<div id="code-of-conduct" class="section level2">
+<h2 class="hasAnchor">
+<a href="#code-of-conduct" class="anchor"></a>Code of Conduct</h2>
+<p>Please note that the <code>nmmr</code> project is released with a <a href="https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html">Contributor Code of Conduct</a>. By contributing to this project, you agree to abide by its terms.</p>
 </div>
 </div>
 
