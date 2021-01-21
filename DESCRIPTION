@@ -28,12 +28,12 @@ Imports:
     rlang (>= 0.1.2),
     tibble,
     tidybayes,
-    tidyr,
-    knitr
+    tidyr
 Suggests:
     covr,
     devtools,
     git2r,
+    knitr,
     rmarkdown,
     roxygen2,
     testthat
