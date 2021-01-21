@@ -31,9 +31,8 @@ Imports:
     tidyr
 Suggests:
     covr,
-    devtools,
-    git2r,
     knitr,
+    remotes,
     rmarkdown,
     roxygen2,
     testthat

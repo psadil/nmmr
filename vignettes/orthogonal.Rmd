@@ -21,7 +21,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(forcats)
-devtools::load_all()
+library(nmmr)
 
 size_shape <- 2
 set.seed(1234)

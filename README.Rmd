@@ -30,7 +30,7 @@ After installing `RStan`, `nmmr` can be installed with the `remotes` package.
 ```{r, install, eval=FALSE}
 # install.packages(remotes)
 library(remotes)
-devtools::install_github("psadil/nmmr")
+remotes::install_github("psadil/nmmr")
 ```
 
 # Example Analysis
