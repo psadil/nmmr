@@ -59,7 +59,6 @@ sum_squares <- function(x, y=x){
 #' x <- rnorm(n, z)
 #' y <- rnorm(n, 2*z + 1)
 #' get_slope(x,y)
-#'
 get_slope <- function(x,y){
 
   # checks performed in sum_squares function

@@ -16,9 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: r-lib/actions/setup-r@master
+      - uses: r-lib/actions/setup-r@v1
+        with:
+          r-version: '4.0.3'
 
-      - uses: r-lib/actions/setup-pandoc@master
+      - uses: r-lib/actions/setup-pandoc@v1
 
       - name: Query dependencies
         run: |
@@ -39,6 +41,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          install.packages(c("knitr", "covr"))
           remotes::install_deps(dependencies = TRUE)
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
         shell: Rscript {0}
