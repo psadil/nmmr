@@ -14,7 +14,7 @@ URL: https://psadil.github.io/nmmr/,
     https://github.com/psadil/nmmr
 BugReports: https://github.com/psadil/nmmr/issues
 Depends:
-    R (>= 3.4.0)
+    R (>= 3.6.0)
 Imports:
     checkmate,
     cmdstanr,

@@ -8,4 +8,4 @@ sub02 <- fst::read_fst(here::here("data-raw", "sub-02_task-con_area-V1_space-T1w
     run = factor(run),
     ses = factor(ses))
 
-usethis::use_data(sub02, overwrite = TRUE)
+usethis::use_data(sub02, overwrite = TRUE, version = 3)
