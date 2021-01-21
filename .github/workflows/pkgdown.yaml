@@ -38,6 +38,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          install.packages("knitr")
           remotes::install_deps(dependencies = TRUE)
           install.packages("pkgdown", type = "binary")
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
