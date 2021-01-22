@@ -26,11 +26,47 @@ Experimental package for NeuroModulation Modeling in `R`. This package under act
 
 ## Installation
 
-`nmmr` relies on the [CmdStanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). It is important that `CmdStanR` and `CmdStan` be installed _before_ installing `nmmr`. 
-
 ### Windows
 
-If you are on Windows, 
+If you are on Windows, you will first need ensure that [RTools](https://cran.r-project.org/bin/windows/Rtools/) is installed and correctly setup.
+
+### Stan
+
+`nmmr` relies on the [CmdStanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). It is important that `CmdStanR` and `CmdStan` be installed _before_ installing `nmmr`. Note that there are two steps to this process.
+
+1. Install the `CmdStanR` package
+
+```{r, cmdstanr}
+# If you don't have the remotes package, install it with 
+# install.packages(remotes)
+# then, run the following to install nmmr
+remotes::install_github("stan-dev/cmdstanr")
+```
+
+At this point, you should check that you will be a
+
+```{r, tools_check}
+cmdstanr::check_cmdstan_toolchain()
+```
+
+
+2. Use `CmdStanR` to install `CmdStan`
+
+```{r, cmdstan}
+
+cmdstanr::install_cmdstan()
+```
+
+
+
+### Checking
+
+At this point
+
+```{r, tools}
+cmdstanr::check_cmdstan_toolchain()
+```
+
 
 After installing `CmdStanR`, `nmmr` can be installed with the `remotes` package.
 
