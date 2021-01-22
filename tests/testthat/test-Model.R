@@ -4,8 +4,6 @@ small <- sub02 %>%
 
 m <- Model$new(small, form = "multiplicative")
 
-# {
-# sink("/dev/null")
 capture.output(
   suppressMessages(
     f <- m$sample(
@@ -15,8 +13,6 @@ capture.output(
       refresh = 0,
       show_messages = FALSE)),
   file = if(.Platform$OS.type == "unix") "/dev/null" else "NUL")
-# sink()
-# }
 
 test_that("read-only fields cannot be modified", {
   testthat::expect_error(m$form <- "new")

@@ -43,38 +43,28 @@ If you are on Windows, you will first need ensure that [RTools](https://cran.r-p
 remotes::install_github("stan-dev/cmdstanr")
 ```
 
-At this point, you should check that you will be a
+At this point, you can check that you will be able to compile `CmdStan` and the `nmmr` models.
 
 ```{r, tools_check}
 cmdstanr::check_cmdstan_toolchain()
 ```
 
-
 2. Use `CmdStanR` to install `CmdStan`
 
 ```{r, cmdstan}
-
+# if you have the resources, you can set a 'cores' option to speed this up
 cmdstanr::install_cmdstan()
 ```
 
 
+### The `nmmr` package
 
-### Checking
-
-At this point
-
-```{r, tools}
-cmdstanr::check_cmdstan_toolchain()
-```
-
-
-After installing `CmdStanR`, `nmmr` can be installed with the `remotes` package.
+After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `remotes` package.
 
 ```{r, install, eval=FALSE}
 # If you don't have the remotes package, install it with 
 # install.packages(remotes)
 # then, run the following to install nmmr
-library(remotes)
 remotes::install_github("psadil/nmmr")
 ```
 
