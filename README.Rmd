@@ -20,19 +20,30 @@ knitr::opts_chunk$set(
 [![R-CMD-check](https://github.com/psadil/nmmr/workflows/R-CMD-check/badge.svg)](https://github.com/psadil/nmmr/actions)
 <!-- badges: end -->
 
-Experimental package for NeuroModulation Modeling in R. This package under active development and not yet released.
+## Overview
+
+Experimental package for NeuroModulation Modeling in `R`. This package under active development and not yet released.
 
 ## Installation
 
-`nmmr` relies on the [cmdstanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html).
+`nmmr` relies on the [CmdStanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). It is important that `CmdStanR` and `CmdStan` be installed _before_ installing `nmmr`. 
 
-After installing `cmdstanR`, `nmmr` can be installed with the `remotes` package.
+### Windows
+
+If you are on Windows, 
+
+After installing `CmdStanR`, `nmmr` can be installed with the `remotes` package.
 
 ```{r, install, eval=FALSE}
+# If you don't have the remotes package, install it with 
 # install.packages(remotes)
+# then, run the following to install nmmr
 library(remotes)
 remotes::install_github("psadil/nmmr")
 ```
+
+
+
 
 # Example Analysis
 
