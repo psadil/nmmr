@@ -4,15 +4,13 @@ small <- sub02 %>%
 
 m <- Model$new(small, form = "multiplicative")
 
-capture.output(
-  suppressMessages(
-    f <- m$sample(
-      iter_warmup = 5,
-      iter_sampling = 5,
-      chains = 2,
-      refresh = 0,
-      show_messages = FALSE)),
-  file = if(.Platform$OS.type == "unix") "/dev/null" else "NUL")
+testthat::capture_output(
+  {suppressMessages(f <- m$sample(
+    iter_warmup = 5,
+    iter_sampling = 5,
+    chains = 2,
+    refresh = 0,
+    show_messages = FALSE))})
 
 test_that("read-only fields cannot be modified", {
   testthat::expect_error(m$form <- "new")
