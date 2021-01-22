@@ -340,7 +340,7 @@ ranks <- cross_threshold(sub02_wide, voxel, low, high, participant = sub)
 ```{r}
 left_join(ranks, slopes, by = c("voxel")) %>%
   ggplot(aes(x=slope)) +
-  facet_wrap(~Threshold, scales = "free") +
+  facet_wrap(~Threshold, scales = "free", labeller = label_both) +
   geom_histogram(bins = 20) +
   geom_vline(xintercept = 1)
 ```

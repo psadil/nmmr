@@ -17,6 +17,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/psadil/nmmr/branch/master/graph/badge.svg)](https://codecov.io/gh/psadil/nmmr?branch=master)
+[![R-CMD-check](https://github.com/psadil/nmmr/workflows/R-CMD-check/badge.svg)](https://github.com/psadil/nmmr/actions)
 <!-- badges: end -->
 
 Experimental package for NeuroModulation Modeling in R. This package under active development and not yet released.
