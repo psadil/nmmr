@@ -68,7 +68,6 @@ After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `re
 remotes::install_github("psadil/nmmr")
 ```
 
-
 # Next Steps
 
 NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in two vignettes.
