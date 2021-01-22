@@ -31,15 +31,7 @@ set.seed(1234)
 
 NMM involves two techniques for looking at neuromodulation. One of them is based on model comparison, quantitatively looking at the difference between models. The other is based on a visualization, attempting to look directly at neuromodulation in the data. That visualization is the focus of this vignette.
 
-# Data
-
-After loading the library, you will have access to a dataset, `sub02`. 
-
-```{r, data}
-sub02[1:10,]
-```
-
-## The Challenge
+# The Challenge
 
 Ideally, we could look at neuromodulation by plotting the voxel tuning function, for each voxel separately. That is an easy enough plot to generate, but it is insufficient. Here are the tuning functions for 12 voxels.
 
@@ -59,11 +51,14 @@ sub02 %>%
   scale_color_viridis_d(option="inferno", end=.8)
 ```
 
-The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps.
+The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps: a conceptual leap and orthogonal regression.
 
-# Low- vs. High-Contrast
+# A plot
 
 First, we need some way to focus on the neuromodulation itself, rather than the tuning. The central idea, detailed in the main paper, is that we can assess multiplicative vs. additive shift by looking at the slope of a line made from the low-contrast tuning plotted against the high-contrast tuning.
+
+
+A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. Additive neuromodulation corresponds to an increase in neural activity at all orientations. Thus, regardless of the forms of the weight distribution and neural tuning function, additive neuromodulation causes the low-contrast tuning function to shift upwards uniformly across orientations. Hence, a scatterplot of the voxel’s response to high-contrast stimuli against its response to low-contrast stimuli has a slope of 1. In contrast, multiplicative neuromodulation corresponds to an increase in neural activity at the most preferred orientations, and a scatterplot of a voxel’s response to high versus low-contrast stimuli has a slope larger than 1. Therefore, the models can be differentiated by plotting high-contrast activity against low-contrast activity and calculating the slope of the best fitting line. A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.
 
 ```{r, add_mult, echo=FALSE, fig.cap="Reproduced from the paper."}
 
@@ -139,9 +134,7 @@ a <- make_d(seq(-pi, pi, length.out = 1000)) %>%
   scale_color_viridis_c(option = "inferno", end = .8) +
   scale_linetype_manual(values = c("solid", "dashed")) +
   scale_shape_manual(values = c(1:8)) +
-  theme_classic(
-    base_size = 10,
-    base_family = "ArialMT") +
+  theme_classic(base_size = 10) +
   theme(
     axis.line.y = element_blank(),
     rect = element_blank(),
@@ -176,9 +169,7 @@ b <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
   scale_color_viridis_c(option = "inferno", end = .8) +
   scale_linetype_manual(values = c("dotted", "dashed")) +
   scale_shape_manual(values = 1:8) +
-  theme_classic(
-    base_size = 10,
-    base_family = "ArialMT") +
+  theme_classic(base_size = 10) +
   theme(
     rect = element_blank(),
     legend.position = "none",
@@ -202,10 +193,11 @@ cowplot::plot_grid(
 
 ```
 
-Unlike the main Bayesian approach, this approach does not assume a particular for either the neural tuning function or weight distribution. 
-
 
 # Total Least Squares
+
+[Deming Regression](https://en.wikipedia.org/wiki/Deming_regression), (specifically orthogonal regression), [measurement error models](https://en.wikipedia.org/wiki/Errors-in-variables_models).
+
 
 
 ## Sample Data
@@ -249,9 +241,9 @@ d %>%
   geom_abline(intercept=0, slope=2, linetype = "dashed", color="blue")
 ```
 
+This issue is known as [Regression Dilution](https://en.wikipedia.org/wiki/Regression_dilution). 
 
 ## Instead, use total least squares
-
 
 The main function for this is called `get_slope`. 
 
@@ -262,8 +254,9 @@ slope <- get_slope(d$x, d$y)
 
 ```{r, tls_show}
 
-fits <- crossing(i = 1:1000,
-         n = 1:N) %>%
+fits <- crossing(
+  i = 1:1000,
+  n = 1:N) %>%
   mutate(
     z = rnorm(n()),
     x = rnorm(n(), z),
@@ -278,15 +271,23 @@ fits <- crossing(i = 1:1000,
 ```
 
 
-```{r, ls_compare, fig.cap="Across "}
+```{r, ls_compare, fig.cap="Across many simulated datasets, the Ordinary Least Squares (OLS) method estimates a slope that is too small, whereas the orthogonal regression (TLS) is unbiased."}
 fits %>%
   ggplot(aes(x=Estimate)) +
   geom_histogram(aes(fill=Method), bins = 100) +
   geom_vline(xintercept = 2, linetype = "dashed")
 ```
 
-
 # Application to Data
+
+This 
+
+```{r raw_data}
+sub02[1:10,]
+```
+
+For more details, see the help page of the dataset: `?sub02`.
+
 
 When your data are formatted according to the 
 
