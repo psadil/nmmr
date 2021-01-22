@@ -17,36 +17,63 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![Codecov test coverage](https://codecov.io/gh/psadil/nmmr/branch/master/graph/badge.svg)](https://codecov.io/gh/psadil/nmmr?branch=master)
+[![R-CMD-check](https://github.com/psadil/nmmr/workflows/R-CMD-check/badge.svg)](https://github.com/psadil/nmmr/actions)
 <!-- badges: end -->
 
-Experimental package for NeuroModulation Modeling in R. This package under active development and not yet released.
+## Overview
+
+Experimental package for NeuroModulation Modeling in `R`. This package under active development and not yet released.
 
 ## Installation
 
-`nmmr` relies on the [cmdstanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html).
+### Windows
 
-After installing `cmdstanR`, `nmmr` can be installed with the `remotes` package.
+If you are on Windows, you will first need ensure that [RTools](https://cran.r-project.org/bin/windows/Rtools/) is installed and correctly setup.
+
+### Stan
+
+`nmmr` relies on the [CmdStanR](https://mc-stan.org/cmdstanr/) interface to [Stan](https://mc-stan.org). To install `nmmr`, first [follow instructions for setting up Stan and cmdstanR](https://mc-stan.org/cmdstanr/articles/cmdstanr.html). It is important that `CmdStanR` and `CmdStan` be installed _before_ installing `nmmr`. Note that there are two steps to this process.
+
+1. Install the `CmdStanR` package
+
+```{r, cmdstanr}
+# If you don't have the remotes package, install it with 
+# install.packages(remotes)
+# then, run the following to install nmmr
+remotes::install_github("stan-dev/cmdstanr")
+```
+
+At this point, you can check that you will be able to compile `CmdStan` and the `nmmr` models.
+
+```{r, tools_check}
+cmdstanr::check_cmdstan_toolchain()
+```
+
+2. Use `CmdStanR` to install `CmdStan`
+
+```{r, cmdstan}
+# if you have the resources, you can set a 'cores' option to speed this up
+cmdstanr::install_cmdstan()
+```
+
+
+### The `nmmr` package
+
+After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `remotes` package.
 
 ```{r, install, eval=FALSE}
+# If you don't have the remotes package, install it with 
 # install.packages(remotes)
-library(remotes)
+# then, run the following to install nmmr
 remotes::install_github("psadil/nmmr")
 ```
 
-# Example Analysis
 
-## Data
+# Next Steps
 
-The package is bundled with a sample dataset. The dataset contains the beta values for a single participant and shows the format expected by the functions of this package. The dataset can be loaded with the following command.
+NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in two vignettes.
 
-```{r, data}
-# library(nmmr)
-data("sub02")
-knitr::kable(head(sub02))
-```
-
-For extra info on the dataset, see the help page for sub02 (?sub02).
-
+- 
 
 
 ## Code of Conduct
