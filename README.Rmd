@@ -9,7 +9,8 @@ knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
   fig.path = "man/figures/README-",
-  out.width = "100%"
+  out.width = "100%",
+  eval = FALSE
 )
 ```
 
@@ -60,7 +61,7 @@ cmdstanr::install_cmdstan()
 
 After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `remotes` package.
 
-```{r, install, eval=FALSE}
+```{r, install}
 # If you don't have the remotes package, install it with 
 # install.packages(remotes)
 # then, run the following to install nmmr
@@ -72,7 +73,8 @@ remotes::install_github("psadil/nmmr")
 
 NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in two vignettes.
 
-- 
+- Rough-and-ready, [orthogonal regression](https://psadil.github.io/nmmr/articles/orthogonal.html)
+- Full Model, (vignette to come)
 
 
 ## Code of Conduct
