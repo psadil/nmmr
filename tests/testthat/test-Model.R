@@ -4,17 +4,15 @@ small <- sub02 %>%
 
 m <- Model$new(small, form = "multiplicative")
 
-{
-  sink("/dev/null")
+capture.output(
   suppressMessages(
     f <- m$sample(
       iter_warmup = 5,
       iter_sampling = 5,
       chains = 2,
       refresh = 0,
-      show_messages = FALSE))
-  sink()
-}
+      show_messages = FALSE)),
+  file = if(.Platform$OS.type == "unix") "/dev/null" else "NUL")
 
 test_that("read-only fields cannot be modified", {
   testthat::expect_error(m$form <- "new")
@@ -39,7 +37,7 @@ test_that("new data can be passed during sampling", {
         refresh = 0,
         show_messages = FALSE))
     sink()
-    }
+  }
   checkmate::expect_r6(f2, classes = c("ModelMCMC"))
   testthat::expect_identical(f$standata, f2$standata)
 })
