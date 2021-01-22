@@ -24,8 +24,7 @@ test_that("multiplicative model runs", {
 })
 
 test_that("new data can be passed during sampling", {
-  {
-    sink("/dev/null")
+  testthat::capture_output({
     suppressMessages(
       f2 <- m$sample(
         data = small,
@@ -33,9 +32,7 @@ test_that("new data can be passed during sampling", {
         iter_sampling = 5,
         chains = 2,
         refresh = 0,
-        show_messages = FALSE))
-    sink()
-  }
+        show_messages = FALSE))})
   checkmate::expect_r6(f2, classes = c("ModelMCMC"))
   testthat::expect_identical(f$standata, f2$standata)
 })

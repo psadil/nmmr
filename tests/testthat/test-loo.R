@@ -7,30 +7,23 @@ test_that("loo runs", {
   m <- Model$new(small, form = "multiplicative")
   a <- Model$new(small, form = "additive")
 
-
-  {
-    sink("/dev/null")
+  testthat::capture_output({
     suppressMessages(
       f_m <- m$sample(
         iter_warmup = 5,
         iter_sampling = 5,
         chains = 2,
         refresh = 0,
-        show_messages = FALSE))
-    sink()
-  }
+        show_messages = FALSE)) })
 
-  {
-    sink("/dev/null")
+  testthat::capture_output({
     suppressMessages(
       f_a <- a$sample(
         iter_warmup = 5,
         iter_sampling = 5,
         chains = 2,
         refresh = 0,
-        show_messages = FALSE))
-    sink()
-  }
+        show_messages = FALSE)) })
 
   suppressWarnings(elpd_m <- f_m$loo(cores=1))
   suppressWarnings(elpd_a <- f_a$loo(cores=1))
