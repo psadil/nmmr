@@ -134,20 +134,37 @@
 
     <h2 class="hasAnchor" id="format"><a class="anchor" href="#format"></a>Format</h2>
 
-    <p>Objects of class tbl_df (inherits from tbl, data.frame) a minimal tibble for the vtuner analysis (53856 x 7)</p>
+    <p>Objects of class tbl_df (inherits from tbl, data.frame) a minimal tibble for the <code>nmmr</code> analysis (53856 x 7)</p>
 <dl>
 <dt>sub</dt><dd><p>factor ID of subject</p></dd>
+<dt>run</dt><dd><p>factor ID of session</p></dd>
 <dt>voxel</dt><dd><p>factor ID of voxel</p></dd>
 <dt>contrast</dt><dd><p>Factor with different values of contrast. Note that the factor <em>must</em> have the lower levels of contrast correspond
 to a lower integer representation (e.g., low == 1 and high == 2)</p></dd>
-<dt>orientation</dt><dd><p>Orientation presented on trial (-pi,pi)</p></dd>
+<dt>orientation</dt><dd><p>Orientation presented on trial [-pi,pi)</p></dd>
 <dt>y</dt><dd><p>beta values in given condition (corresponds to beta in betas2)</p></dd>
+<dt>ses</dt><dd><p>factor ID of session</p></dd>
 
 </dl>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>a <a href='https://tibble.tidyverse.org/reference/tbl_df-class.html'>tibble</a></p>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
+
+    <p>Where possible, the columns of this dataframe follow the <a href='https://bids.neuroimaging.io/'>BIDS</a>
+format. That is, <code>sub</code> specifies participant, and <code>run</code> is the run number
+within session <code>ses</code>.</p>
+<p>The main functions of this package require data formatted analogously. At a
+minimum, you will need a column indexing voxels (e.g., <code>voxel</code>, in <code>sub02</code>),
+a column for the dependent variable (e.g., <code>y</code>), a column indexing the stimulus
+values for which voxels might be tuned (e.g., <code>orientation</code>), and a column
+indexing the experimental factor across which the tuning may be modulated
+(e.g., <code>contrast</code>). A column indexing participant (e.g., <code>sub</code>) is required
+for running the full hierarchical versions of the models.  The other columns
+(e.g., <code>run</code> and <code>ses</code>) are not always necessary, but they help keep the data
+tidy and may also help with troubleshooting (e.g., voxel activity often differs
+across sessions).</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>sub02</span>

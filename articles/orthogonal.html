@@ -103,30 +103,11 @@
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>NMM involves two techniques for looking at neuromodulation. One of them is based on model comparison, quantitatively looking at the difference between models. The other is based on a visualization, attempting to look directly at neuromodulation in the data. That visualization is the focus of this vignette.</p>
 </div>
-<div id="data" class="section level1">
+<div id="the-challenge" class="section level1">
 <h1 class="hasAnchor">
-<a href="#data" class="anchor"></a>Data</h1>
-<p>After loading the library, you will have access to a dataset, <code>sub02</code>.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sub02</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>
-<span class="co">#&gt; # A tibble: 10 x 7</span>
-<span class="co">#&gt;    sub   run   voxel  contrast orientation      y ses  </span>
-<span class="co">#&gt;    &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;          &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;</span>
-<span class="co">#&gt;  1 2     15    191852 low            0.785  3.36  3    </span>
-<span class="co">#&gt;  2 2     15    197706 low            0.785 -2.84  3    </span>
-<span class="co">#&gt;  3 2     15    197769 low            0.785 -2.03  3    </span>
-<span class="co">#&gt;  4 2     15    197842 low            0.785  2.23  3    </span>
-<span class="co">#&gt;  5 2     15    197906 low            0.785  2.86  3    </span>
-<span class="co">#&gt;  6 2     15    197907 low            0.785  1.51  3    </span>
-<span class="co">#&gt;  7 2     15    203688 low            0.785 -2.75  3    </span>
-<span class="co">#&gt;  8 2     15    203689 low            0.785 -2.51  3    </span>
-<span class="co">#&gt;  9 2     15    203690 low            0.785 -3.16  3    </span>
-<span class="co">#&gt; 10 2     15    203753 low            0.785  0.711 3</span></code></pre></div>
-<div id="the-challenge" class="section level2">
-<h2 class="hasAnchor">
-<a href="#the-challenge" class="anchor"></a>The Challenge</h2>
+<a href="#the-challenge" class="anchor"></a>The Challenge</h1>
 <p>Ideally, we could look at neuromodulation by plotting the voxel tuning function, for each voxel separately. That is an easy enough plot to generate, but it is insufficient. Here are the tuning functions for 12 voxels.</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">sub02</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">contrast</span>, <span class="va">orientation</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">6</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -145,23 +126,23 @@
 Individual voxel tuning functions are too noisy to provide information about neuromodulation individually.
 </p>
 </div>
-<p>The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps.</p>
+<p>The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps: a conceptual leap and orthogonal regression.</p>
 </div>
-</div>
-<div id="low--vs--high-contrast" class="section level1">
+<div id="a-plot" class="section level1">
 <h1 class="hasAnchor">
-<a href="#low--vs--high-contrast" class="anchor"></a>Low- vs. High-Contrast</h1>
+<a href="#a-plot" class="anchor"></a>A plot</h1>
 <p>First, we need some way to focus on the neuromodulation itself, rather than the tuning. The central idea, detailed in the main paper, is that we can assess multiplicative vs. additive shift by looking at the slope of a line made from the low-contrast tuning plotted against the high-contrast tuning.</p>
+<p>A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. Additive neuromodulation corresponds to an increase in neural activity at all orientations. Thus, regardless of the forms of the weight distribution and neural tuning function, additive neuromodulation causes the low-contrast tuning function to shift upwards uniformly across orientations. Hence, a scatterplot of the voxel’s response to high-contrast stimuli against its response to low-contrast stimuli has a slope of 1. In contrast, multiplicative neuromodulation corresponds to an increase in neural activity at the most preferred orientations, and a scatterplot of a voxel’s response to high versus low-contrast stimuli has a slope larger than 1. Therefore, the models can be differentiated by plotting high-contrast activity against low-contrast activity and calculating the slope of the best fitting line. A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.</p>
 <div class="figure">
 <img src="orthogonal_files/figure-html/add_mult-1.png" alt="Reproduced from the paper." width="700"><p class="caption">
 Reproduced from the paper.
 </p>
 </div>
-<p>Unlike the main Bayesian approach, this approach does not assume a particular for either the neural tuning function or weight distribution.</p>
 </div>
 <div id="total-least-squares" class="section level1">
 <h1 class="hasAnchor">
 <a href="#total-least-squares" class="anchor"></a>Total Least Squares</h1>
+<p><a href="https://en.wikipedia.org/wiki/Deming_regression">Deming Regression</a>, (specifically orthogonal regression), <a href="https://en.wikipedia.org/wiki/Errors-in-variables_models">measurement error models</a>.</p>
 <div id="sample-data" class="section level2">
 <h2 class="hasAnchor">
 <a href="#sample-data" class="anchor"></a>Sample Data</h2>
@@ -174,7 +155,7 @@ y &amp; \sim N(2z, 1)
 \end{align}
 \]</span></p>
 <p>Next, simulate 1000 draws from this model.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
 <span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
@@ -185,7 +166,7 @@ y &amp; \sim N(2z, 1)
 <h2 class="hasAnchor">
 <a href="#ordinary-least-squares-will-not-work" class="anchor"></a>Ordinary Least Squares will not work</h2>
 <p>Unfortunately, we cannot recover the desired slope through typical regression.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, data<span class="op">=</span><span class="va">d</span><span class="op">)</span>
 
@@ -201,17 +182,19 @@ y &amp; \sim N(2z, 1)
 We want to estimate the dashed line, which has a slope of 2 (dashed line). However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line).
 </p>
 </div>
+<p>This issue is known as <a href="https://en.wikipedia.org/wiki/Regression_dilution">Regression Dilution</a>.</p>
 </div>
 <div id="instead-use-total-least-squares" class="section level2">
 <h2 class="hasAnchor">
 <a href="#instead-use-total-least-squares" class="anchor"></a>Instead, use total least squares</h2>
 <p>The main function for this is called <code>get_slope</code>.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">slope</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_slope.html">get_slope</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">x</span>, <span class="va">d</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
-<span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html">crossing</a></span><span class="op">(</span>i <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,
-         n <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">)</span> <span class="op">%&gt;%</span>
+<span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html">crossing</a></span><span class="op">(</span>
+  i <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,
+  n <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
     z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
     x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">z</span><span class="op">)</span>,
@@ -222,14 +205,14 @@ We want to estimate the dashed line, which has a slope of 2 (dashed line). Howev
     TLS <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dbl</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span><span class="fu"><a href="../reference/get_slope.html">get_slope</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">x</span>, <span class="va">.</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">data</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">OLS</span>, <span class="va">TLS</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"Method"</span>, values_to <span class="op">=</span> <span class="st">"Estimate"</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fits</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">Estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">Method</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">2</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="orthogonal_files/figure-html/ls_compare-1.png" alt="Across " width="700"><p class="caption">
-Across
+<img src="orthogonal_files/figure-html/ls_compare-1.png" alt="Across many simulated datasets, the Ordinary Least Squares (OLS) method estimates a slope that is too small, whereas the orthogonal regression (TLS) is unbiased." width="700"><p class="caption">
+Across many simulated datasets, the Ordinary Least Squares (OLS) method estimates a slope that is too small, whereas the orthogonal regression (TLS) is unbiased.
 </p>
 </div>
 </div>
@@ -237,6 +220,23 @@ Across
 <div id="application-to-data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#application-to-data" class="anchor"></a>Application to Data</h1>
+<p>This</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">sub02</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>
+<span class="co">#&gt; # A tibble: 10 x 7</span>
+<span class="co">#&gt;    sub   run   voxel  contrast orientation      y ses  </span>
+<span class="co">#&gt;    &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;          &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;</span>
+<span class="co">#&gt;  1 2     15    191852 low            0.785  3.36  3    </span>
+<span class="co">#&gt;  2 2     15    197706 low            0.785 -2.84  3    </span>
+<span class="co">#&gt;  3 2     15    197769 low            0.785 -2.03  3    </span>
+<span class="co">#&gt;  4 2     15    197842 low            0.785  2.23  3    </span>
+<span class="co">#&gt;  5 2     15    197906 low            0.785  2.86  3    </span>
+<span class="co">#&gt;  6 2     15    197907 low            0.785  1.51  3    </span>
+<span class="co">#&gt;  7 2     15    203688 low            0.785 -2.75  3    </span>
+<span class="co">#&gt;  8 2     15    203689 low            0.785 -2.51  3    </span>
+<span class="co">#&gt;  9 2     15    203690 low            0.785 -3.16  3    </span>
+<span class="co">#&gt; 10 2     15    203753 low            0.785  0.711 3</span></code></pre></div>
+<p>For more details, see the help page of the dataset: <code><a href="../reference/sub02.html">?sub02</a></code>.</p>
 <p>When your data are formatted according to the</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
