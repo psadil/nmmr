@@ -39,7 +39,7 @@ If you are on Windows, you will first need ensure that [RTools](https://cran.r-p
 ```{r, cmdstanr}
 # If you don't have the remotes package, install it with 
 # install.packages(remotes)
-# then, run the following to install nmmr
+# then, run the following to install cmdstanr
 remotes::install_github("stan-dev/cmdstanr")
 ```
 
@@ -56,7 +56,6 @@ cmdstanr::check_cmdstan_toolchain()
 cmdstanr::install_cmdstan()
 ```
 
-
 ### The `nmmr` package
 
 After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `remotes` package.
@@ -69,22 +68,11 @@ remotes::install_github("psadil/nmmr")
 ```
 
 
+# Next Steps
 
+NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in two vignettes.
 
-# Example Analysis
-
-## Data
-
-The package is bundled with a sample dataset. The dataset contains the beta values for a single participant and shows the format expected by the functions of this package. The dataset can be loaded with the following command.
-
-```{r, data}
-# library(nmmr)
-data("sub02")
-knitr::kable(head(sub02))
-```
-
-For extra info on the dataset, see the help page for sub02 (?sub02).
-
+- 
 
 
 ## Code of Conduct

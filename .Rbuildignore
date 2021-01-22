@@ -18,3 +18,5 @@
 
 ^inst/stan/vtf$
 ^inst/stan/orthogonal$
+^inst/stan/vtf\.exe$
+^inst/stan/orthogonal\.exe$
