@@ -21,6 +21,7 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(forcats)
+library(purrr)
 library(nmmr)
 
 size_shape <- 2
@@ -37,15 +38,17 @@ Ideally, we could look at neuromodulation by plotting the voxel tuning function,
 
 ```{r, vtfs, fig.cap="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually."}
 sub02 %>%
-  group_by(contrast, orientation) %>%
+  group_by(contrast, orientation, run, ses) %>%
   slice_head(n=6) %>%
-  whoppeR::WISEsummary(
-    dependentvars = "y",
-    withinvars = c("orientation", "contrast"),
-    idvar = "voxel",
-    betweenvars = "voxel") %>%
+  group_by(voxel) %>%
+  group_nest() %>%
+  mutate(
+    data = map(
+      data, 
+      ~WISEsummary(.x, dependentvars = y, withinvars = c(orientation, contrast)))) %>%
+  unnest(data) %>%
   ggplot(aes(x=orientation, y=y_mean, color = contrast)) +
-  facet_wrap(~voxel) +
+  facet_wrap(~voxel, labeller = label_both) +
   geom_line() +
   geom_errorbar(aes(ymin=y_mean-y_sem, ymax=y_mean+y_sem)) +
   scale_color_viridis_d(option="inferno", end=.8)
@@ -61,7 +64,7 @@ First, we need some way to focus on the neuromodulation itself, rather than the 
 A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. Additive neuromodulation corresponds to an increase in neural activity at all orientations. Thus, regardless of the forms of the weight distribution and neural tuning function, additive neuromodulation causes the low-contrast tuning function to shift upwards uniformly across orientations. Hence, a scatterplot of the voxel’s response to high-contrast stimuli against its response to low-contrast stimuli has a slope of 1. In contrast, multiplicative neuromodulation corresponds to an increase in neural activity at the most preferred orientations, and a scatterplot of a voxel’s response to high versus low-contrast stimuli has a slope larger than 1. Therefore, the models can be differentiated by plotting high-contrast activity against low-contrast activity and calculating the slope of the best fitting line. A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.
 
 ```{r, add_mult, echo=FALSE, fig.cap="Reproduced from the paper."}
-
+library(patchwork)
 make_d <- function(raw,
                    kv = 2,
                    center = -pi/16,
