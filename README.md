@@ -11,7 +11,7 @@ coverage](https://codecov.io/gh/psadil/nmmr/branch/master/graph/badge.svg)](http
 ## Overview
 
 Experimental package for NeuroModulation Modeling in `R`. This package
-under active development and not yet released.
+under active development and not ready for use.
 
 ## Installation
 
@@ -78,6 +78,5 @@ these analyses are detailed in two vignettes.
 ## Code of Conduct
 
 Please note that the `nmmr` project is released with a [Contributor Code
-of
-Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
+of Conduct](https://contributor-covenant.org/version/2/0/CODE_OF_CONDUCT.html).
 By contributing to this project, you agree to abide by its terms.

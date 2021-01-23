@@ -7,7 +7,8 @@ Authors@R:
            role = c("aut", "cre"),
            email = "psadil@gmail.com",
            comment = c(ORCID = "0000-0003-4141-1343"))
-Description: Tools for determining the form of neuromodulation, given fMRI BOLD data. 
+Description: Tools for determining the form of neuromodulation,
+    given fMRI BOLD data.
 License: GPL-3
 URL: https://psadil.github.io/nmmr/,
     https://github.com/psadil/nmmr
@@ -31,10 +32,10 @@ Imports:
     tidyr
 Suggests:
     CircStats,
-    cowplot,
     ggplot2,
     glue,
     knitr,
+    patchwork,
     rmarkdown,
     roxygen2,
     testthat,

@@ -176,19 +176,8 @@ b <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
     strip.text = element_blank()) +
   annotate("segment", x=-Inf, xend=Inf, y=-Inf, yend=-Inf, size = 0.5)
 
-leg <- cowplot::get_legend(a + theme(legend.justification = "left"))
 
-cowplot::plot_grid(
-  a + theme(legend.position = "none"),
-  b,
-  nrow = 1,
-  axis = "tblr",
-  align = "hv") %>%
-  cowplot::plot_grid(
-    leg,
-    nrow=2,
-    rel_heights = c(1,0.01)) +
-  theme(plot.margin = unit(c(0,0,12,0), units ="points"))
+a + b + plot_layout(nrow=1)
 
 
 ```
