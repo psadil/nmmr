@@ -28,6 +28,11 @@
 WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
                         idvar=NULL, CI_width=.95, na.rm=FALSE) {
 
+  checkmate::assert_logical(na.rm, min.len = 1, max.len = 1)
+  checkmate::assert_number(CI_width, lower = 0, upper = 1)
+  checkmate::assert_data_frame(data)
+  checkmate::assert_names(names(data), must.include = rlang::as_name(enquo(dependentvars)))
+
   # Norm each subject's data so that each subject's mean is equal to the mean
   # of the between subject condition they are in
   #
@@ -46,19 +51,23 @@ WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
 
   # Get the averages in each condition (grouping by within and between variables,
   # ignoring the subjects. Standard 'unnormed' means.
-  cell_means <- dplyr::group_by(data, dplyr::across({{betweenvars}}), dplyr::across({{withinvars}})) %>%
+
+  by_dv <- data %>%
+    tidyr::pivot_longer(cols = {{dependentvars}}, names_to = "DV")
+
+  cell_means <- by_dv %>%
+    dplyr::group_by(.data$DV, dplyr::across({{betweenvars}}), dplyr::across({{withinvars}})) %>%
     dplyr::summarise(
       dplyr::across(
-        {{dependentvars}},
+        .data$value,
         .fns = ~mean(.x, na.rm = na.rm),
-        .names = "{.col}_mean"),
+        .names = "mean"),
       .groups = "drop")
 
-  nCells <- nrow(cell_means)
+  nCells <- nrow(dplyr::distinct(cell_means, dplyr::across({{withinvars}})))
   correction <- sqrt((nCells/(nCells - 1)))
 
-  recentered <- data %>%
-    tidyr::pivot_longer(cols = {{dependentvars}}, names_to = "DV") %>%
+  recentered <- by_dv %>%
     dplyr::group_by(.data$DV, dplyr::across({{idvar}})) %>%
     dplyr::mutate(subject_avg = mean(.data$value)) %>%
     dplyr::group_by(.data$DV) %>%
@@ -67,23 +76,24 @@ WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
     dplyr::summarise(
       dplyr::across(
         .data$recentered_value,
-        .fns = list(recentered_mean = mean, n = length, sem = sem),
+        .fns = list(recentered_mean = mean, sem = sem, n = length),
         .names = "{.fn}"),
-      .groups = "drop") %>%
+      .groups = "drop")
+
+
+  dplyr::left_join(cell_means, recentered) %>%
     dplyr::mutate(
       sem = .data$sem * correction,
       CI = stats::qt((1 - CI_width)/2, df = .data$n-1, lower.tail = FALSE) * .data$sem,
-      CI_lower = .data$recentered_mean - .data$CI,
-      CI_upper = .data$recentered_mean + .data$CI) %>%
+      CI_lower = .data$mean - .data$CI,
+      CI_upper = .data$mean + .data$CI) %>%
     dplyr::select(-.data$CI) %>%
     tidyr::pivot_wider(
       names_from = .data$DV,
-      values_from = c(.data$recentered_mean, .data$n, .data$sem, .data$CI_lower, .data$CI_upper),
+      values_from = c(.data$mean, .data$recentered_mean, .data$sem, .data$n, .data$CI_lower, .data$CI_upper),
       names_glue = "{DV}_{.value}") %>%
-    dplyr::left_join(cell_means) %>%
     suppressMessages()
 
-  recentered
 }
 
 
