@@ -1,9 +1,8 @@
 pandoc: 2.7.3
 pkgdown: 1.6.1
 pkgdown_sha: ~
-articles:
-  orthogonal: orthogonal.html
-last_built: 2021-01-23T22:25Z
+articles: {}
+last_built: 2021-01-26T20:40Z
 urls:
   reference: https://psadil.github.io/nmmr/reference
   article: https://psadil.github.io/nmmr/articles
