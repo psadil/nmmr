@@ -11,7 +11,8 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  warning = FALSE
+  warning = FALSE,
+  dev = "ragg_png"
 )
 ```
 
@@ -30,14 +31,16 @@ set.seed(1234)
 
 # Introduction
 
-NMM involves two techniques for looking at neuromodulation. One of them is based on model comparison, quantitatively looking at the difference between models. The other is based on a visualization, attempting to look directly at neuromodulation in the data. That visualization is the focus of this vignette.
+A key insight of NMM is that, under certain circumstances, neuromodulation is reflected in changes to the voxel tuning function. That is, changes in the voxels tuning function implicate certain forms of neuromodulation. NMM outlines two techniques for looking at voxel tuning functions. One technique requires assuming that the neural tuning functions and distributions of neurons within voxels follow a specific form. The other technique makes fewer assumptions and is a bit simpler to run. This vignette covers the latter technique.
 
 # The Challenge
 
-Ideally, we could look at neuromodulation by plotting the voxel tuning function, for each voxel separately. That is an easy enough plot to generate, but it is insufficient. Here are the tuning functions for 12 voxels.
+Ideally, we could assess changes in the voxel tuning function by simply plotting them. That is an easy enough plot to generate. Here are the tuning functions for 6 voxels.
 
-```{r, vtfs, fig.cap="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually."}
-sub02 %>%
+```{r, vtfs, fig.cap="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually. Error bars span 95% confidence intervals"}
+
+# take six voxels worth of data and calculate summary statistics
+six_voxels <- sub02 %>%
   group_by(contrast, orientation, run, ses) %>%
   slice_head(n=6) %>%
   group_by(voxel) %>%
@@ -46,15 +49,18 @@ sub02 %>%
     data = map(
       data, 
       ~WISEsummary(.x, dependentvars = y, withinvars = c(orientation, contrast)))) %>%
-  unnest(data) %>%
+  unnest(data)
+
+# plot those statistics
+six_voxels %>%
   ggplot(aes(x=orientation, y=y_mean, color = contrast)) +
   facet_wrap(~voxel, labeller = label_both) +
   geom_line() +
   geom_errorbar(aes(ymin=y_mean-y_sem, ymax=y_mean+y_sem)) +
-  scale_color_viridis_d(option="inferno", end=.8)
+  ylab("Average BOLD Signal (% Average Signal)") 
 ```
 
-The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps: a conceptual leap and orthogonal regression.
+Unfortunately, most voxels have weak tuning (i.e., across orientations, the lines are nearly flat). Moreover, the activity at a given orientation is quite variable, and so it's challenging to distinguish an additive shift from a subtle multiplicative gain within a single voxel.
 
 # A plot
 
