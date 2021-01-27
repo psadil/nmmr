@@ -366,7 +366,7 @@ left_join(ranks, slopes, by = c("voxel")) %>%
   geom_vline(xintercept = 1)
 ```
 
-This need to threshold is _ad hoc_ and not ideal (e.g., there is no clear reason why we should look at the top 10% of voxels, rather than the top 20% or 5%). But the point of this orthogonal regression is not to produce a precise measure of neuromodulation. Instead, it is meant as a rough-and-ready tool for getting a sense of whether neuromodulation might be present. With just three simple functions, `get_slope`, `get_slope_by_group`, and `cross_threshold`, you can get a sense of whether the manipulation causes an additive versus multiplicative gain.
+This need to threshold is _ad hoc_; there is no clear reason why we should look at the top 10% of voxels, rather than the top 20% or 5%. But the point of this orthogonal regression is not to produce a precise measure of neuromodulation. Instead, it is meant as a rough-and-ready tool for getting a sense of whether neuromodulation might be present. With just three simple functions, `get_slope`, `get_slope_by_group`, and `cross_threshold`, you can get a sense of whether the manipulation causes an additive versus multiplicative gain.
  
 If you need a method that is more quantitative, `nmmR` provides two other sets of functions, each covered in their own vignette. One set implements the orthogonal regression idea in a Bayesian hierarchical modeling framework. This has the advantage of still being relatively quick, but does not require _ad hoc_ thresholding. The other set is the main Bayesian model. 
 
