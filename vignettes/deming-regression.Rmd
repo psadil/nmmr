@@ -55,7 +55,7 @@ For the purposes of this vignette, we reduce the dataset down to just 100 voxels
 ```{r, small}
 small <- sub02_wide %>%
   group_by(orientation, run, ses) %>%
-  slice_head(n = 5) %>%
+  slice_head(n = 100) %>%
   mutate(voxel = fct_drop(voxel)) %>%
   ungroup() 
 ```
