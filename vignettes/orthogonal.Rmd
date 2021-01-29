@@ -13,7 +13,6 @@ knitr::opts_chunk$set(
   comment = "#>",
   warning = FALSE)
 
-if (requireNamespace("ragg", quietly = TRUE)) knitr::opts_chunk$set(dev = "ragg_png")
 ```
 
 

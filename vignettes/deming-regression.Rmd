@@ -10,9 +10,7 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>",
-  cache = TRUE)
-if (requireNamespace("ragg", quietly = TRUE)) knitr::opts_chunk$set(dev = "ragg_png")
+  comment = "#>")
 options(tinytex.engine = 'lualatex')
 ```
 
@@ -39,7 +37,8 @@ The model is very similar to the model underlying orthogonal regression, but for
 
 The paper has full details of the model, but a schematic [plate diagram](https://en.wikipedia.org/wiki/Plate_notation) is is reproduced here.
 
-```{tikz, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.'}
+```{tikz, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext="png"}
+
 \usetikzlibrary{graphs, graphdrawing, arrows.meta, positioning, decorations, decorations.pathreplacing, bayesnet, calc}
 \usegdlibrary{layered}
 
@@ -164,7 +163,7 @@ For the purposes of this vignette, we reduce the dataset down to just 100 voxels
 ```{r, small}
 small <- sub02_wide %>%
   group_by(orientation, run, ses) %>%
-  slice_head(n = 100) %>%
+  slice_head(n = 10) %>%
   mutate(voxel = fct_drop(voxel)) %>%
   ungroup() 
 ```
@@ -178,7 +177,7 @@ m <- Deming$new(small, low, high, tuning_var = orientation, voxel_var = voxel)
 The newly created object, `m`, is an [`R6`](https://r6.r-lib.org/) object of class [`Deming`](https://psadil.github.io/nmmr/reference/Deming.html). It can be thought of as a wrapper around a `cmdstanr::CmdStanModel` class, but one which does a bit of extra prep work to clean up the data and prepare it for sampling. The underlying Stan model can be accessed with the [`$print()`](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html#methods) method of the `cmdstanmodel` field.^[This model is also available on the `nmmr` repository, [here](https://github.com/psadil/nmmr/blob/main/inst/stan/deming.stan).]
 
 ```{r, print_model}
-m$cmdstanmodel$print()
+m$cmdstanmodel
 ```
 
 Note that, in the model, the names of the parameters were chosen to match the names in the schematic, above. For example, the parameter `g` is the voxel-specific slope. The hierarchy on the slope assumes that each individual voxel's slope comes from a population distribution, which in this case is normal with mean `g_mu` (written in the diagram $\mu^g$) and standard deviation `g_sigma` (written in the diagram as $\sigma^g$).
@@ -250,7 +249,7 @@ draws %>%
 
 Finally, what is the average slope? 
 
-```{r, post_slope, fig.cap="In support of multiplicative gain, the average slope appears to be larger than 1. "}
+```{r, post_slope, fig.cap="In support of multiplicative gain, the average slope appears to be larger than 1."}
 draws %>%
   select(-contains("sigma"), Slope = "g_mu") %>%
   ggplot(aes(x = Slope)) +

@@ -36,11 +36,12 @@ Suggests:
     glue,
     knitr,
     patchwork,
+    ragg,
     rmarkdown,
     roxygen2,
     testthat,
-    ragg,
-    tinytex
+    tinytex,
+    magick
 VignetteBuilder:
     knitr
 Remotes:
