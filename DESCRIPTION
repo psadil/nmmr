@@ -38,7 +38,8 @@ Suggests:
     patchwork,
     rmarkdown,
     roxygen2,
-    testthat
+    testthat,
+    ragg
 VignetteBuilder:
     knitr
 Remotes:

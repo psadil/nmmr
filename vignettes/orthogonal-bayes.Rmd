@@ -11,7 +11,9 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
-  cache = TRUE)
+  cache = TRUE,
+  eval = FALSE)
+if (requireNamespace("ragg", quietly = TRUE)) knitr::opts_chunk$set(dev = "ragg_png")
 options(tinytex.engine = 'lualatex')
 ```
 
@@ -160,7 +162,7 @@ sub02_wide <- sub02 %>%
 
 For the purposes of this vignette, we reduce the dataset down to just 100 voxels. This is only to speed up the estimation process. 
 
-```{r, wide}
+```{r, small}
 small <- sub02_wide %>%
   group_by(orientation, run, ses) %>%
   slice_head(n = 100) %>%
@@ -182,7 +184,7 @@ m$cmdstanmodel$print()
 
 Note that, in the model, the names of the parameters were chosen to match the names in the schematic, above. For example, the parameter `g` is the voxel-specific slope. The hierarchy on the slope assumes that each individual voxel's slope comes from a population distribution, which in this case is normal with mean `g_mu` (written in the diagram $\mu^g$) and standard deviation `g_sigma` (written in the diagram as $\sigma^g$).
 
-The object contains a method called `$sample()`, which accepts all of the arguments as does the `$sample()` method of `cmdstanr::CmdStanModel`. Here, we run three chains in parallel, set the random number generator seed, and increase adapt delta to 0.9.^[Increasing the "adapt delta" parameter will likely cause the model to run more slowly, but also avoid divergences. With only `r dplyr::n_distinct(small$voxel)` voxels, there is not quite enough data to wrangle the posterior with the default sampler settings.  When working with a larger dataset (e.g., 1000+ voxels), the default sampling parameters (i.e., `adapt_delta = 0.8`) may be sufficient.
+The object contains a method called `$sample()`, which accepts all of the arguments as does the `$sample()` method of `cmdstanr::CmdStanModel`. Here, we run three chains in parallel, set the random number generator seed, and increase adapt delta to 0.9.^[Increasing the "adapt delta" parameter will likely cause the model to run more slowly, but also avoid divergences. With only 100 voxels, there is not quite enough data to wrangle the posterior with the default sampler settings.  When working with a larger dataset (e.g., 1000+ voxels), the default sampling parameters (i.e., `adapt_delta = 0.8`) may be sufficient.
 ]
 
 ```{r, fit}

@@ -58,8 +58,8 @@ Deming <- R6::R6Class(
 
       stan_data <- d %>%
         dplyr::arrange({{voxel_name}}, {{tuning_var}}) %>%
-        dplyr::rename(x = {{x}}, y = {{y}}) %>%
         dplyr::mutate(voxel_tuning = interaction({{voxel_name}}, {{tuning_var}}, lex.order = TRUE)) %>%
+        dplyr::rename(x = {{x}}, y = {{y}}, "tuning" = {{tuning_var}}) %>%
         tidybayes::compose_data()
 
       return(stan_data)

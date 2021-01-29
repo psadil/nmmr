@@ -53,6 +53,7 @@ sub02 \%>\%
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
+Initialize new instance of class
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel")}\if{html}{\out{</div>}}
 }
