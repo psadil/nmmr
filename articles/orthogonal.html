@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/orthogonal-bayes.html">orthogonal-bayes</a>
+    </li>
+    <li>
       <a href="../articles/orthogonal.html">orthogonal</a>
     </li>
   </ul>
@@ -93,23 +96,26 @@
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span><span class="op">)</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://forcats.tidyverse.org">forcats</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://forcats.tidyverse.org">forcats</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://purrr.tidyverse.org">purrr</a></span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://psadil.github.io/nmmr/">nmmr</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/tidyverse/glue">glue</a></span><span class="op">)</span>
 
 <span class="va">size_shape</span> <span class="op">&lt;-</span> <span class="fl">2</span>
 <span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></code></pre></div>
 <div id="introduction" class="section level1">
 <h1 class="hasAnchor">
 <a href="#introduction" class="anchor"></a>Introduction</h1>
-<p>NMM involves two techniques for looking at neuromodulation. One of them is based on model comparison, quantitatively looking at the difference between models. The other is based on a visualization, attempting to look directly at neuromodulation in the data. That visualization is the focus of this vignette.</p>
+<p>A key insight of NMM is that, under certain circumstances, neuromodulation is reflected in changes to the voxel tuning function. That is, changes in the voxels tuning function implicate certain forms of neuromodulation. NMM outlines two techniques for looking at voxel tuning functions. One technique requires assuming that the neural tuning functions and distributions of neurons within voxels follow a specific form. The other technique makes fewer assumptions and is a bit simpler to run. This vignette covers the latter technique.</p>
 </div>
-<div id="the-challenge" class="section level1">
+<div id="the-challenge-voxels-are-too-noisy" class="section level1">
 <h1 class="hasAnchor">
-<a href="#the-challenge" class="anchor"></a>The Challenge</h1>
-<p>Ideally, we could look at neuromodulation by plotting the voxel tuning function, for each voxel separately. That is an easy enough plot to generate, but it is insufficient. Here are the tuning functions for 12 voxels.</p>
+<a href="#the-challenge-voxels-are-too-noisy" class="anchor"></a>The Challenge: Voxels are too noisy</h1>
+<p>Ideally, we could assess changes in the voxel tuning function by simply plotting them. That is an easy enough plot to generate. This package comes with the dataset <code>sub02</code>, which contains the responses for voxels in V1 for a single participant (author PS). Here are the tuning functions for six of those voxels.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sub02</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R">
+<span class="co"># take six voxels worth of data and calculate summary statistics</span>
+<span class="va">six_voxels</span> <span class="op">&lt;-</span> <span class="va">sub02</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">contrast</span>, <span class="va">orientation</span>, <span class="va">run</span>, <span class="va">ses</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n<span class="op">=</span><span class="fl">6</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">voxel</span><span class="op">)</span> <span class="op">%&gt;%</span>
@@ -118,136 +124,141 @@
     data <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span>
       <span class="va">data</span>, 
       <span class="op">~</span><span class="fu"><a href="../reference/WISEsummary.html">WISEsummary</a></span><span class="op">(</span><span class="va">.x</span>, dependentvars <span class="op">=</span> <span class="va">y</span>, withinvars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">orientation</span>, <span class="va">contrast</span><span class="op">)</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/nest.html">unnest</a></span><span class="op">(</span><span class="va">data</span><span class="op">)</span>
+
+<span class="co"># plot those statistics</span>
+<span class="va">six_voxels</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">orientation</span>, y<span class="op">=</span><span class="va">y_mean</span>, color <span class="op">=</span> <span class="va">contrast</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">voxel</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_line</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_linerange.html">geom_errorbar</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>ymin<span class="op">=</span><span class="va">y_mean</span><span class="op">-</span><span class="va">y_sem</span>, ymax<span class="op">=</span><span class="va">y_mean</span><span class="op">+</span><span class="va">y_sem</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_viridis.html">scale_color_viridis_d</a></span><span class="op">(</span>option<span class="op">=</span><span class="st">"inferno"</span>, end<span class="op">=</span><span class="fl">.8</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ylab</a></span><span class="op">(</span><span class="st">"Average BOLD Signal (% Average Signal)"</span><span class="op">)</span> </code></pre></div>
 <div class="figure">
-<img src="orthogonal_files/figure-html/vtfs-1.png" alt="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually." width="700"><p class="caption">
-Individual voxel tuning functions are too noisy to provide information about neuromodulation individually.
+<img src="orthogonal_files/figure-html/vtfs-1.png" alt="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually. Error bars span 95% confidence intervals" width="700"><p class="caption">
+Individual voxel tuning functions are too noisy to provide information about neuromodulation individually. Error bars span 95% confidence intervals
 </p>
 </div>
-<p>The relevant effects are hard to parse in individual voxels. There are two issues. First, individual voxels are only weakly tuned. When tuning is flat, an additive shift and multiplicative gain look the same. Second, for many voxels, the effect of contrast is small. A weak effect of contrast further squashes the minor nuances. These issues will be handled in two steps: a conceptual leap and orthogonal regression.</p>
+<p>Unfortunately, most voxels have weak tuning. That is, across orientations, the lines are nearly flat. Without tuning, different forms of neuromodulation are conflated; multiplicative gain looks like an additive shift. Moreover, in even those voxels that are tuned, their activity is rather variable. Variable activity makes it challenging to distinguish between different forms of neuromodulation within a single voxel. A simple approach would involve collapsing across voxels. But such collapsing would ignore the clear differences in how voxels respond to the experimental manipulation (i.e., how they respond to contrast).</p>
+<p>So, there are two challenges. First, we need an analysis that focuses on the form of neuromodulation but which does not require sharp tuning. Second, we need that this analysis can pool information across voxels, while also being sensitive to differences in the voxels’ responsivity.</p>
 </div>
-<div id="a-plot" class="section level1">
+<div id="solutions" class="section level1">
 <h1 class="hasAnchor">
-<a href="#a-plot" class="anchor"></a>A plot</h1>
+<a href="#solutions" class="anchor"></a>Solutions</h1>
+<div id="a-scatterplot-of-activity-across-conditions-reveals-changes-in-voxel-tuning" class="section level2">
+<h2 class="hasAnchor">
+<a href="#a-scatterplot-of-activity-across-conditions-reveals-changes-in-voxel-tuning" class="anchor"></a>A scatterplot of activity across conditions reveals changes in voxel tuning</h2>
 <p>First, we need some way to focus on the neuromodulation itself, rather than the tuning. The central idea, detailed in the main paper, is that we can assess multiplicative vs. additive shift by looking at the slope of a line made from the low-contrast tuning plotted against the high-contrast tuning.</p>
 <p>A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. Additive neuromodulation corresponds to an increase in neural activity at all orientations. Thus, regardless of the forms of the weight distribution and neural tuning function, additive neuromodulation causes the low-contrast tuning function to shift upwards uniformly across orientations. Hence, a scatterplot of the voxel’s response to high-contrast stimuli against its response to low-contrast stimuli has a slope of 1. In contrast, multiplicative neuromodulation corresponds to an increase in neural activity at the most preferred orientations, and a scatterplot of a voxel’s response to high versus low-contrast stimuli has a slope larger than 1. Therefore, the models can be differentiated by plotting high-contrast activity against low-contrast activity and calculating the slope of the best fitting line. A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.</p>
 <div class="figure">
-<img src="orthogonal_files/figure-html/add_mult-1.png" alt="Reproduced from the paper." width="700"><p class="caption">
-Reproduced from the paper.
+<img src="orthogonal_files/figure-html/add_mult-1.png" alt="Plotting beta a voxel's response to high- versus low-contrast uncovers neuromodulation. Left: Simulated voxel tuning functions in which higher levels of contrast induce either an additive (top) or multiplicative (bottom) neuromodulation. The eight vertical lines are eight hypothetical orientations at which these voxel tuning functions might be probed, which would produce eight responses per level of contrast. Right: The two kinds of neuromodulation reveal different signatures when the response to high-contrast stimuli are plotted against the response to low-contrast stimuli. The diagonal line corresponds to no effect of contrast. A line drawn through the points produced by the additive model necessarily has a slope equal to 1; under this neuromodulation, the effect of contrast does not depend on the orientation. A line drawn through the points produced by the multiplicative model necessarily has a slope greater than 1; under this neuromodulation, the effect of contrast is largest at those orientations which are closest to the voxel's preferred orientation." width="700"><p class="caption">
+Plotting beta a voxel’s response to high- versus low-contrast uncovers neuromodulation. Left: Simulated voxel tuning functions in which higher levels of contrast induce either an additive (top) or multiplicative (bottom) neuromodulation. The eight vertical lines are eight hypothetical orientations at which these voxel tuning functions might be probed, which would produce eight responses per level of contrast. Right: The two kinds of neuromodulation reveal different signatures when the response to high-contrast stimuli are plotted against the response to low-contrast stimuli. The diagonal line corresponds to no effect of contrast. A line drawn through the points produced by the additive model necessarily has a slope equal to 1; under this neuromodulation, the effect of contrast does not depend on the orientation. A line drawn through the points produced by the multiplicative model necessarily has a slope greater than 1; under this neuromodulation, the effect of contrast is largest at those orientations which are closest to the voxel’s preferred orientation.
 </p>
 </div>
+<div id="orthogonal-regression" class="section level3">
+<h3 class="hasAnchor">
+<a href="#orthogonal-regression" class="anchor"></a>Orthogonal Regression</h3>
+<p>Based on the above, we know that different forms of neuromodulation are implicated by the slope of a line fit to high- versus low-contrast activity. However, to estimate this line, we should not estimate the line with ordinary least squares. This subsection will overview why ordinary least squares is insufficient, suggesting instead orthogonal regression <a href="https://en.wikipedia.org/wiki/Deming_regression#Orthogonal_regression">orthogonal regression</a>.</p>
 </div>
-<div id="total-least-squares" class="section level1">
-<h1 class="hasAnchor">
-<a href="#total-least-squares" class="anchor"></a>Total Least Squares</h1>
-<p><a href="https://en.wikipedia.org/wiki/Deming_regression">Deming Regression</a>, (specifically orthogonal regression), <a href="https://en.wikipedia.org/wiki/Errors-in-variables_models">measurement error models</a>.</p>
-<div id="sample-data" class="section level2">
-<h2 class="hasAnchor">
-<a href="#sample-data" class="anchor"></a>Sample Data</h2>
-<p>Here is a toy example to to build intuition for the function. The observed variables <code>x</code> and <code>y</code></p>
+<div id="sample-data" class="section level3">
+<h3 class="hasAnchor">
+<a href="#sample-data" class="anchor"></a>Sample Data</h3>
+<p>Here is a toy example to build intuition for the failings of ordinary least squares as an estimate of slope in this situation. Let the variable <span class="math inline">\(z\)</span> refer to the average activity of a voxel at low contrast. For simplicity, assume that this variable is distributed according to a standard normal distribution.</p>
 <p><span class="math display">\[
-\begin{align}
-z &amp; \sim N(0, 1) \\
-x &amp; \sim N(z, 1) \\
-y &amp; \sim N(2z, 1)
-\end{align}
+z \sim N(0, 1)
 \]</span></p>
-<p>Next, simulate 1000 draws from this model.</p>
+<p>As researchers, we are unable to directly observe <span class="math inline">\(z\)</span>; this variable is the <em>average</em> activity at low contrast, but on any given trial a voxels response varies around the average. Assume that the variability follows another standard normal distribution, so the resulting observed activity at low contrast, <span class="math inline">\(x\)</span>, is distributed according to another normal distribution</p>
+<p><span class="math display">\[
+x \sim N(z, 1)
+\]</span></p>
+<p>The activity at high contrast will be a function of the activity at high contrast. In this toy example, let’s assume multiplicative gain factor of two. Importantly, the activity at high contrast will be a function of the latent voxel tuning function, <span class="math inline">\(z\)</span>, not the noise-corrupted observation, <span class="math inline">\(x\)</span>. Activity at high contrast, <span class="math inline">\(y\)</span>, will then be distributed according to the following (again, assuming standard normal noise).</p>
+<p><span class="math display">\[
+y \sim N(2z, 1)
+\]</span></p>
+<p>Together, these assumptions define a model from which we can simulate datasets. The following chunk defines a function for simulating from this toy model and then uses it to generate 1000 observations (i.e., this would be 1000 observations for a single voxel at each of low and high contrast).</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">N</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
-<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="va">z</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">2</span><span class="op">*</span><span class="va">z</span><span class="op">)</span><span class="op">)</span></code></pre></div>
-</div>
-<div id="ordinary-least-squares-will-not-work" class="section level2">
-<h2 class="hasAnchor">
-<a href="#ordinary-least-squares-will-not-work" class="anchor"></a>Ordinary Least Squares will not work</h2>
-<p>Unfortunately, we cannot recover the desired slope through typical regression.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, data<span class="op">=</span><span class="va">d</span><span class="op">)</span>
+<code class="sourceCode R"><span class="va">simulate_toy</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">N</span>, <span class="va">true_slope</span> <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">{</span>
+  <span class="fu"><a href="https://tibble.tidyverse.org/reference/tibble.html">tibble</a></span><span class="op">(</span>z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+    <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+      x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="va">z</span><span class="op">)</span>,
+      y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="va">N</span>, <span class="fl">2</span><span class="op">*</span><span class="va">z</span><span class="op">)</span><span class="op">)</span>
+<span class="op">}</span>
 
-<span class="va">d</span> <span class="op">%&gt;%</span>
+<span class="va">d</span> <span class="op">&lt;-</span> <span class="fu">simulate_toy</span><span class="op">(</span>N <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span></code></pre></div>
+</div>
+<div id="ordinary-least-squares-will-not-work" class="section level3">
+<h3 class="hasAnchor">
+<a href="#ordinary-least-squares-will-not-work" class="anchor"></a>Ordinary Least Squares will not work</h3>
+<p>We can use the built-in function <code>lm</code> to estimate the slope with ordinary least squares.</p>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ls</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, data<span class="op">=</span><span class="va">d</span><span class="op">)</span>
+<span class="va">ls</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Call:</span>
+<span class="co">#&gt; lm(formula = y ~ x, data = d)</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Coefficients:</span>
+<span class="co">#&gt; (Intercept)            x  </span>
+<span class="co">#&gt;    -0.01208      1.00627</span></code></pre></div>
+<p>At only about 1.01, the estimated slope is only about half of the true slope (2)! The following plot shows the difference between the line we wanted to estimate (with a slope of 2), versus the line provided by <code>lm</code> (a slope of ~1).</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">d</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">x</span>, y<span class="op">=</span><span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">.2</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>intercept<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">ls</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span>, slope<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="va">ls</span><span class="op">)</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span>, color<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html">coord_fixed</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="fu">glue</span><span class="fu">::</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span><span class="st">"OLS slope: {round(coef(ls)[2], digits=2)}"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span><span class="op">(</span><span class="fu"><a href="https://glue.tidyverse.org/reference/glue.html">glue</a></span><span class="op">(</span><span class="st">"OLS slope: {round(coef(ls)[2], digits=2)}"</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_abline</a></span><span class="op">(</span>intercept<span class="op">=</span><span class="fl">0</span>, slope<span class="op">=</span><span class="fl">2</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span>, color<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="orthogonal_files/figure-html/tls_plot-1.png" alt="We want to estimate the dashed line, which has a slope of 2 (dashed line). However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line)." width="700"><p class="caption">
-We want to estimate the dashed line, which has a slope of 2 (dashed line). However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line).
+<img src="orthogonal_files/figure-html/tls_plot-1.png" alt="We want to estimate the dashed line, which has a slope of 2. However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line)." width="700"><p class="caption">
+We want to estimate the dashed line, which has a slope of 2. However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line).
 </p>
 </div>
-<p>This issue is known as <a href="https://en.wikipedia.org/wiki/Regression_dilution">Regression Dilution</a>.</p>
+<p>This issue is known as <a href="https://en.wikipedia.org/wiki/Regression_dilution">Regression Dilution</a>. One way to understand the issue that that there is variability in, not just the y-coordinate, but also the x-coordinate, which inspires the name <a href="https://en.wikipedia.org/wiki/Errors-in-variables_models">errors-in-variables model</a>. For these circumstances, we need to use orthogonal regression.</p>
 </div>
-<div id="instead-use-total-least-squares" class="section level2">
-<h2 class="hasAnchor">
-<a href="#instead-use-total-least-squares" class="anchor"></a>Instead, use total least squares</h2>
-<p>The main function for this is called <code>get_slope</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">slope</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_slope.html">get_slope</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">x</span>, <span class="va">d</span><span class="op">$</span><span class="va">y</span><span class="op">)</span></code></pre></div>
+<div id="orthogonal-regression-accurately-recovers-the-slope" class="section level3">
+<h3 class="hasAnchor">
+<a href="#orthogonal-regression-accurately-recovers-the-slope" class="anchor"></a>Orthogonal regression accurately recovers the slope</h3>
+<p>The <code>nmmR</code> package provides a function to estimate the slope, called <code>get_slope</code>. It takes two vectors of numbers. Here is how to apply it on our toy example</p>
 <div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html">crossing</a></span><span class="op">(</span>
-  i <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span>,
-  n <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="va">N</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    z <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span>,
-    x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">z</span><span class="op">)</span>,
-    y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>, <span class="fl">2</span><span class="op">*</span><span class="va">z</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_nest.html">group_nest</a></span><span class="op">(</span><span class="va">i</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
-    OLS <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dbl</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, data<span class="op">=</span><span class="va">.</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">extract</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span>,
-    TLS <span class="op">=</span> <span class="fu">purrr</span><span class="fu">::</span><span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map_dbl</a></span><span class="op">(</span><span class="va">data</span>, <span class="op">~</span><span class="fu"><a href="../reference/get_slope.html">get_slope</a></span><span class="op">(</span><span class="va">.</span><span class="op">$</span><span class="va">x</span>, <span class="va">.</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">data</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">OLS</span>, <span class="va">TLS</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"Method"</span>, values_to <span class="op">=</span> <span class="st">"Estimate"</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">slope</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/get_slope.html">get_slope</a></span><span class="op">(</span><span class="va">d</span><span class="op">$</span><span class="va">x</span>, <span class="va">d</span><span class="op">$</span><span class="va">y</span><span class="op">)</span>
+<span class="va">slope</span>
+<span class="co">#&gt; [1] 1.952462</span></code></pre></div>
+<p>This is pretty much closer to the true slope!</p>
+<p>But perhaps we got lucky. Let’s stimulate 1000 datasets, estimating for each the sleop with ordinary least squares and orthogonal regression.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">fits</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tidyr.tidyverse.org/reference/expand.html">crossing</a></span><span class="op">(</span>i <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1000</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>simulation <span class="op">=</span> <span class="fu"><a href="https://purrr.tidyverse.org/reference/map.html">map</a></span><span class="op">(</span><span class="va">i</span>, <span class="va">simulate_toy</span>, N<span class="op">=</span><span class="fl">1000</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rowwise.html">rowwise</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>
+  ordinary <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, data<span class="op">=</span><span class="va">simulation</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="op">)</span> <span class="op">%&gt;%</span> <span class="fu">magrittr</span><span class="fu">::</span><span class="fu"><a href="https://magrittr.tidyverse.org/reference/aliases.html">extract</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span>,
+  orthogonal <span class="op">=</span> <span class="fu"><a href="../reference/get_slope.html">get_slope</a></span><span class="op">(</span><span class="va">simulation</span><span class="op">$</span><span class="va">x</span>, <span class="va">simulation</span><span class="op">$</span><span class="va">y</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="va">simulation</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_longer.html">pivot_longer</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">ordinary</span>, <span class="va">orthogonal</span><span class="op">)</span>, names_to <span class="op">=</span> <span class="st">"Method"</span>, values_to <span class="op">=</span> <span class="st">"Estimate"</span><span class="op">)</span></code></pre></div>
+<p>Next, plot the distribution of recovered slopes for each of the two methods.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">fits</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">Estimate</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>fill<span class="op">=</span><span class="va">Method</span><span class="op">)</span>, bins <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">2</span>, linetype <span class="op">=</span> <span class="st">"dashed"</span><span class="op">)</span></code></pre></div>
 <div class="figure">
-<img src="orthogonal_files/figure-html/ls_compare-1.png" alt="Across many simulated datasets, the Ordinary Least Squares (OLS) method estimates a slope that is too small, whereas the orthogonal regression (TLS) is unbiased." width="700"><p class="caption">
-Across many simulated datasets, the Ordinary Least Squares (OLS) method estimates a slope that is too small, whereas the orthogonal regression (TLS) is unbiased.
+<img src="orthogonal_files/figure-html/ls_compare-1.png" alt="Across many simulated datasets, the ordinary least squares method estimates a slope that is too small, whereas the orthogonal regression is unbiased. The dashed vertical line marks the true slope." width="700"><p class="caption">
+Across many simulated datasets, the ordinary least squares method estimates a slope that is too small, whereas the orthogonal regression is unbiased. The dashed vertical line marks the true slope.
 </p>
 </div>
+<p>These simulations suggest that ordinary least squares is indeed biased, whereas orthogonal regression gives a more accurate slope.</p>
 </div>
 </div>
-<div id="application-to-data" class="section level1">
-<h1 class="hasAnchor">
-<a href="#application-to-data" class="anchor"></a>Application to Data</h1>
-<p>This</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">sub02</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>
-<span class="co">#&gt; # A tibble: 10 x 7</span>
-<span class="co">#&gt;    sub   run   voxel  contrast orientation      y ses  </span>
-<span class="co">#&gt;    &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt;          &lt;dbl&gt;  &lt;dbl&gt; &lt;fct&gt;</span>
-<span class="co">#&gt;  1 2     15    191852 low            0.785  3.36  3    </span>
-<span class="co">#&gt;  2 2     15    197706 low            0.785 -2.84  3    </span>
-<span class="co">#&gt;  3 2     15    197769 low            0.785 -2.03  3    </span>
-<span class="co">#&gt;  4 2     15    197842 low            0.785  2.23  3    </span>
-<span class="co">#&gt;  5 2     15    197906 low            0.785  2.86  3    </span>
-<span class="co">#&gt;  6 2     15    197907 low            0.785  1.51  3    </span>
-<span class="co">#&gt;  7 2     15    203688 low            0.785 -2.75  3    </span>
-<span class="co">#&gt;  8 2     15    203689 low            0.785 -2.51  3    </span>
-<span class="co">#&gt;  9 2     15    203690 low            0.785 -3.16  3    </span>
-<span class="co">#&gt; 10 2     15    203753 low            0.785  0.711 3</span></code></pre></div>
-<p>For more details, see the help page of the dataset: <code><a href="../reference/sub02.html">?sub02</a></code>.</p>
-<p>When your data are formatted according to the</p>
+<div id="application-to-data" class="section level2">
+<h2 class="hasAnchor">
+<a href="#application-to-data" class="anchor"></a>Application to data</h2>
+<p>We can apply this same method to estimate a slope for each voxel in the provided dataset, <code>sub02</code>. However, to sue <code>get_slope</code>, it would help if the data were <a href="https://r4ds.had.co.nz/tidy-data.html">wider</a>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sub02_wide</span> <span class="op">&lt;-</span> <span class="va">sub02</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://tidyr.tidyverse.org/reference/pivot_wider.html">pivot_wider</a></span><span class="op">(</span>names_from <span class="op">=</span> <span class="va">contrast</span>, values_from <span class="op">=</span> <span class="va">y</span><span class="op">)</span>
 
-<span class="va">sub02_wide</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span>,<span class="op">]</span>
-<span class="co">#&gt; # A tibble: 10 x 7</span>
+<span class="va">sub02_wide</span>
+<span class="co">#&gt; # A tibble: 26,928 x 7</span>
 <span class="co">#&gt;    sub   run   voxel  orientation ses      low    high</span>
 <span class="co">#&gt;    &lt;fct&gt; &lt;fct&gt; &lt;fct&gt;        &lt;dbl&gt; &lt;fct&gt;  &lt;dbl&gt;   &lt;dbl&gt;</span>
 <span class="co">#&gt;  1 2     15    191852       0.785 3      3.36   6.39  </span>
@@ -259,30 +270,28 @@ Across many simulated datasets, the Ordinary Least Squares (OLS) method estimate
 <span class="co">#&gt;  7 2     15    203688       0.785 3     -2.75   0.241 </span>
 <span class="co">#&gt;  8 2     15    203689       0.785 3     -2.51  -2.34  </span>
 <span class="co">#&gt;  9 2     15    203690       0.785 3     -3.16  -1.40  </span>
-<span class="co">#&gt; 10 2     15    203753       0.785 3      0.711  0.427</span></code></pre></div>
+<span class="co">#&gt; 10 2     15    203753       0.785 3      0.711  0.427 </span>
+<span class="co">#&gt; # … with 26,918 more rows</span></code></pre></div>
+<p>With these data, we want to estimate a single slope for each voxel. The <code>nmmR</code> package provides a helper function for applying the <code>get_slope</code> function to groups of a dataset, called <code>get_slope_by_group</code>.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
-<span class="va">slopes</span> <span class="op">&lt;-</span> <span class="va">sub02_wide</span> <span class="op">%&gt;%</span>
+<code class="sourceCode R"><span class="va">slopes</span> <span class="op">&lt;-</span> <span class="va">sub02_wide</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="../reference/get_slope_by_group.html">get_slope_by_group</a></span><span class="op">(</span><span class="va">voxel</span>, <span class="va">low</span>, <span class="va">high</span><span class="op">)</span></code></pre></div>
+<p>For visualization, plot the distribution of estimated slopes.</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">slopes</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">slope</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">200</span><span class="op">)</span> </code></pre></div>
 <div class="figure">
 <img src="orthogonal_files/figure-html/voxel_slopes-1.png" alt="When looking at all of the voxels, some of the slopes are spuriously high." width="700"><p class="caption">
 When looking at all of the voxels, some of the slopes are spuriously high.
 </p>
 </div>
-<div id="thresholding" class="section level2">
-<h2 class="hasAnchor">
-<a href="#thresholding" class="anchor"></a>Thresholding</h2>
-<p>An issue with the above is that many voxels are only weakly affected by contrast, meaning</p>
+<p>Unfortunately, this distribution of slopes is not helpful. Clearly, there are outliers (one voxel has a slope of over 200). These outliers are symptomatic of the two problems identified at the beginning of this voxel: voxels are flat and noisy. We can see the issue by looking at the activity for a single voxel.</p>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R">
 <span class="va">sub02_wide</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu">forcats</span><span class="fu">::</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_match.html">fct_match</a></span><span class="op">(</span><span class="va">voxel</span>, <span class="st">"209671"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span><span class="op">(</span><span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_match.html">fct_match</a></span><span class="op">(</span><span class="va">voxel</span>, <span class="st">"209671"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">low</span>, y <span class="op">=</span> <span class="va">high</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_fixed.html">coord_fixed</a></span><span class="op">(</span><span class="op">)</span> </code></pre></div>
@@ -291,15 +300,43 @@ When looking at all of the voxels, some of the slopes are spuriously high.
 When voxels are poorly tuned, the best-fitting line can easily be one that is nearly vertical.
 </p>
 </div>
+<p>This voxel was only weakly tuned, and so the scatterplot is nearly circular. When the data are circular, a line at any angle fits equally well. With circular scatterplots, orthogonal regression produces slopes that have a spuriously high slope.</p>
+</div>
+<div id="thresholding" class="section level2">
+<h2 class="hasAnchor">
+<a href="#thresholding" class="anchor"></a>Thresholding</h2>
+<p>Orthogonal least squares allows us to focus on the form of neuromodulation, but now we need a way to focus on just those voxels that are responsive to stimulation. We advise thresholding based on each voxel’s responsivity to contrast. That is, we advise considering each voxel’s average difference in activity between high and low contrast, and then selecting only those voxels whose differences are in the upper quantiles.</p>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_threshold.html">cross_threshold</a></span><span class="op">(</span><span class="va">sub02_wide</span>, <span class="va">voxel</span>, <span class="va">low</span>, <span class="va">high</span>, participant <span class="op">=</span> <span class="va">sub</span><span class="op">)</span></code></pre></div>
+<code class="sourceCode R"><span class="va">sub02_wide</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>diff <span class="op">=</span> <span class="va">high</span> <span class="op">-</span> <span class="va">low</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">voxel</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>average_difference <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">diff</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>
+    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">average_difference</span><span class="op">)</span>,
+    bins <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></code></pre></div>
+<div class="figure">
+<img src="orthogonal_files/figure-html/avg_diff-1.png" alt="Average difference between high and low contrast, across voxels." width="700"><p class="caption">
+Average difference between high and low contrast, across voxels.
+</p>
+</div>
+<p>In the paper, we looked at quatiles of 0 (i.e., no thresholding, analyze all voxels), and 0.9 (i.e., select only the top 10% of voxels within a participant). The <code>nmmR</code> function <code>cross_threshold</code> takes a dataframe and a vector of quantiles, and it returns another dataframe that can be used to filter voxels in the original data.</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="va">ranks</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/cross_threshold.html">cross_threshold</a></span><span class="op">(</span><span class="va">sub02_wide</span>, <span class="va">voxel</span>, <span class="va">low</span>, <span class="va">high</span>, quantiles <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.9</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<p>Joining the returned dataframe with the original dataset allows us to plot the distribution of slopes at both thresholds.</p>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">ranks</span>, <span class="va">slopes</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"voxel"</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">slope</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/facet_wrap.html">facet_wrap</a></span><span class="op">(</span><span class="op">~</span><span class="va">Threshold</span>, scales <span class="op">=</span> <span class="st">"free"</span>, labeller <span class="op">=</span> <span class="va">label_both</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">+</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_vline</a></span><span class="op">(</span>xintercept <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></code></pre></div>
-<p><img src="orthogonal_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<div class="figure">
+<img src="orthogonal_files/figure-html/thresholded_slopes-1.png" alt="Thresholding based on the average difference across levels of contrast removed the spuriously high slopes. Vertical line marks a slope of 1, which is predicted by the additive but not multiplicative model." width="700"><p class="caption">
+Thresholding based on the average difference across levels of contrast removed the spuriously high slopes. Vertical line marks a slope of 1, which is predicted by the additive but not multiplicative model.
+</p>
+</div>
+<p>This need to threshold is <em>ad hoc</em>; there is no clear reason why we should look at the top 10% of voxels, rather than the top 20% or 5%. But the point of this orthogonal regression is not to produce a precise measure of neuromodulation. Instead, it is meant as a rough-and-ready tool for getting a sense of whether neuromodulation might be present. With just three simple functions, <code>get_slope</code>, <code>get_slope_by_group</code>, and <code>cross_threshold</code>, you can get a sense of whether the manipulation causes an additive versus multiplicative gain.</p>
+<p>If you need a method that is more quantitative, <code>nmmR</code> provides two other sets of functions, each covered in their own vignette. One set implements the orthogonal regression idea in a Bayesian hierarchical modeling framework. This has the advantage of still being relatively quick, but does not require <em>ad hoc</em> thresholding. The other set is the main Bayesian model.</p>
 </div>
 </div>
   </div>

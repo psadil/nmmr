@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Model object, ready for sampling — Model • nmmr</title>
+<title>Model object, ready for sampling — Deming • nmmr</title>
 
 
 <!-- jquery -->
@@ -39,7 +39,7 @@
 
 
 
-<meta property="og:title" content="Model object, ready for sampling — Model" />
+<meta property="og:title" content="Model object, ready for sampling — Deming" />
 <meta property="og:description" content="Model object, ready for sampling
 Model object, ready for sampling" />
 
@@ -125,8 +125,8 @@ Model object, ready for sampling" />
   <div class="col-md-9 contents">
     <div class="page-header">
     <h1>Model object, ready for sampling</h1>
-    <small class="dont-index">Source: <a href='https://github.com/psadil/nmmr/blob/master/R/model-class.R'><code>R/model-class.R</code></a></small>
-    <div class="hidden name"><code>Model.Rd</code></div>
+    <small class="dont-index">Source: <a href='https://github.com/psadil/nmmr/blob/master/R/deming-class.R'><code>R/deming-class.R</code></a></small>
+    <div class="hidden name"><code>Deming.Rd</code></div>
     </div>
 
     <div class="ref-description">
@@ -138,8 +138,7 @@ Model object, ready for sampling" />
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
-    <div class='dont-index'><p><a href='https://mc-stan.org/cmdstanr/reference/model-method-sample.html'>cmdstanr::sample()</a>
-Prepare data for running model</p></div>
+    <div class='dont-index'><p><a href='https://mc-stan.org/cmdstanr/reference/model-method-sample.html'>cmdstanr::sample()</a></p></div>
     <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
 
     <p><div class="r6-fields"></p><dl>
@@ -153,10 +152,6 @@ Prepare data for running model</p></div>
     <p><div class="r6-active-bindings"></p><dl>
 <dt><code>standata</code></dt><dd><p>used to fit model</p></dd>
 
-<dt><code>form</code></dt><dd><p>used to fit model</p></dd>
-
-<dt><code>prior</code></dt><dd><p>used to fit model</p></dd>
-
 <dt><code>cmdstanmodel</code></dt><dd><p>Underlying <code><a href='https://mc-stan.org/cmdstanr/reference/CmdStanModel.html'>cmdstanr::CmdStanModel</a></code></p></dd>
 
 </dl><p></div></p>
@@ -166,56 +161,66 @@ Prepare data for running model</p></div>
 <h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Public methods</h3>
 
 <ul>
-<li><p><a href='#method-new'><code>Model$new()</code></a></p></li>
-<li><p><a href='#method-sample'><code>Model$sample()</code></a></p></li>
-<li><p><a href='#method-make_standata'><code>Model$make_standata()</code></a></p></li>
-<li><p><a href='#method-clone'><code>Model$clone()</code></a></p></li>
+<li><p><a href='#method-new'><code>Deming$new()</code></a></p></li>
+<li><p><a href='#method-make_standata'><code>Deming$make_standata()</code></a></p></li>
+<li><p><a href='#method-sample'><code>Deming$sample()</code></a></p></li>
+<li><p><a href='#method-clone'><code>Deming$clone()</code></a></p></li>
 </ul>
 <p><hr>
 <a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>form</span>, prior <span class='op'>=</span> <span class='va'><a href='Prior.html'>Prior</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
+<p>Initialize new instance of class</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>tuning_var</span>, voxel_var <span class='op'>=</span> <span class='st'>"voxel"</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>d</code></dt><dd><p>dataframe from which to make standata.</p></dd>
 
-<dt><code>form</code></dt><dd><p>Form of the neuromodulation (additive or multiplicative)</p></dd>
+<dt><code>x, y</code></dt><dd><p>Names of columns in d which contain the x and y values</p></dd>
 
-<dt><code>prior</code></dt><dd><p>A <code><a href='Prior.html'>Prior</a></code></p></dd>
+<dt><code>tuning_var</code></dt><dd><p>Name of column across which there was testing</p></dd>
 
-</dl><p></div></p>
-<p><hr>
-<a id="method-sample"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/sample.html'>sample()</a></code></h3>
-<p>Draw samples from the posterior of the model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>sample</span><span class='op'>(</span>data <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre><p></div></p>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
-<p><div class="arguments"></p><dl>
-<dt><code>data</code></dt><dd><p>optional new data. If present, this will be used instead
-of the internally stored data (created when the object was initialized)</p></dd>
-
-<dt><code>...</code></dt><dd><p>arguments passed to <a href='https://mc-stan.org/cmdstanr/reference/model-method-sample.html'>cmdstanr::sample()</a>.</p></dd>
+<dt><code>voxel_var</code></dt><dd><p>Name of column indexing voxels</p></dd>
 
 </dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Examples</h4>
+<p><div class="r example copy"></p><pre><span class='va'>sub02</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>orientation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>orientation</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>low</span>, <span class='va'>high</span>, tuning_var <span class='op'>=</span> <span class='va'>orientation</span>, voxel_var <span class='op'>=</span> <span class='va'>voxel</span><span class='op'>)</span>
+</pre><p></div></p>
+
 <p><hr>
 <a id="method-make_standata"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>make_standata()</code></h3>
-
-<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>make_standata</span><span class='op'>(</span><span class='va'>d</span><span class='op'>)</span></pre><p></div></p>
+<p>Prepare data for running model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>make_standata</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>tuning_var</span>, voxel_var <span class='op'>=</span> <span class='st'>"voxel"</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
 <dt><code>d</code></dt><dd><p>dataframe from which to make standata.</p></dd>
+
+<dt><code>x, y</code></dt><dd><p>Names of columns in d which contain the x and y values.</p></dd>
+
+<dt><code>tuning_var</code></dt><dd><p>Name of column across which there was testing. Column must be a factor.</p></dd>
+
+<dt><code>voxel_var</code></dt><dd><p>Name of column indexing voxels. Column must be a factor.</p></dd>
 
 </dl><p></div></p>
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
 <p>named list</p>
 <p><hr>
+<a id="method-sample"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code><a href='https://rdrr.io/r/base/sample.html'>sample()</a></code></h3>
+<p>Draw samples from the posterior of the model</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>sample</span><span class='op'>(</span><span class='va'>...</span><span class='op'>)</span></pre><p></div></p>
+
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
+<p><div class="arguments"></p><dl>
+<dt><code>...</code></dt><dd><p>arguments passed to <a href='https://mc-stan.org/cmdstanr/reference/model-method-sample.html'>cmdstanr::sample()</a>.</p></dd>
+
+</dl><p></div></p>
+<p><hr>
 <a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>Model</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>clone</span><span class='op'>(</span>deep <span class='op'>=</span> <span class='cn'>FALSE</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
@@ -225,6 +230,29 @@ of the internally stored data (created when the object was initialized)</p></dd>
 
 
 
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'>
+<span class='co'>## ------------------------------------------------</span>
+<span class='co'>## Method `Deming$new`</span>
+<span class='co'>## ------------------------------------------------</span>
+
+<span class='va'>sub02</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>orientation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>orientation</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+  <span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>low</span>, <span class='va'>high</span>, tuning_var <span class='op'>=</span> <span class='va'>orientation</span>, voxel_var <span class='op'>=</span> <span class='va'>voxel</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; &lt;Deming&gt;
+#&gt;   Public:
+#&gt;     clone: function (deep = FALSE) 
+#&gt;     cmdstan_version: 2.26.0
+#&gt;     cmdstanmodel: active binding
+#&gt;     cmdstanr_version: package_version, numeric_version
+#&gt;     initialize: function (d, x, y, tuning_var, voxel_var = "voxel") 
+#&gt;     make_standata: function (d, x, y, tuning_var, voxel_var = "voxel") 
+#&gt;     sample: function (...) 
+#&gt;     standata: active binding
+#&gt;   Private:
+#&gt;     .cmdstanmodel: CmdStanModel, R6
+#&gt;     .standata: list</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

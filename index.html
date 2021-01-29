@@ -47,6 +47,21 @@
 <li>
   <a href="reference/index.html">Reference</a>
 </li>
+<li class="dropdown">
+  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
+    Articles
+     
+    <span class="caret"></span>
+  </a>
+  <ul class="dropdown-menu" role="menu">
+<li>
+      <a href="articles/orthogonal-bayes.html">orthogonal-bayes</a>
+    </li>
+    <li>
+      <a href="articles/orthogonal.html">orthogonal</a>
+    </li>
+  </ul>
+</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -89,31 +104,13 @@
 <div id="stan" class="section level3">
 <h3 class="hasAnchor">
 <a href="#stan" class="anchor"></a>Stan</h3>
-<p><code>nmmr</code> relies on the <a href="https://mc-stan.org/cmdstanr/">CmdStanR</a> interface to <a href="https://mc-stan.org">Stan</a>. To install <code>nmmr</code>, first <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html">follow instructions for setting up Stan and cmdstanR</a>. It is important that <code>CmdStanR</code> and <code>CmdStan</code> be installed <em>before</em> installing <code>nmmr</code>. Note that there are two steps to this process.</p>
-<ol>
-<li>Install the <code>CmdStanR</code> package</li>
-</ol>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># If you don't have the remotes package, install it with </span>
-<span class="co"># install.packages(remotes)</span>
-<span class="co"># then, run the following to install cmdstanr</span>
-<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"stan-dev/cmdstanr"</span><span class="op">)</span></code></pre></div>
-<p>At this point, you can check that you will be able to compile <code>CmdStan</code> and the <code>nmmr</code> models.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html">check_cmdstan_toolchain</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
-<ol>
-<li>Use <code>CmdStanR</code> to install <code>CmdStan</code>
-</li>
-</ol>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># if you have the resources, you can set a 'cores' option to speed this up</span>
-<span class="fu">cmdstanr</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/cmdstanr/reference/install_cmdstan.html">install_cmdstan</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
+<p><code>nmmr</code> relies on the <a href="https://mc-stan.org/cmdstanr/">CmdStanR</a> interface to <a href="https://mc-stan.org">Stan</a>. To install <code>nmmr</code>, first <a href="https://mc-stan.org/cmdstanr/articles/cmdstanr.html">follow instructions for setting up Stan and cmdstanR</a>. It is important that <code>CmdStanR</code> and <code>CmdStan</code> be installed <em>before</em> installing <code>nmmr</code>. Note that there are two steps to this process: 1) installing the <code>R</code> package <code>CmdStanR</code>, and 2) using this <code>R</code> package to install <code>CmdStan</code>.</p>
 </div>
 <div id="the-nmmr-package" class="section level3">
 <h3 class="hasAnchor">
 <a href="#the-nmmr-package" class="anchor"></a>The <code>nmmr</code> package</h3>
 <p>After installing <code>CmdStanR</code>, and <code>CmdStan</code>, <code>nmmr</code> can be installed with the <code>remotes</code> package.</p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="co"># If you don't have the remotes package, install it with </span>
 <span class="co"># install.packages(remotes)</span>
 <span class="co"># then, run the following to install nmmr</span>
@@ -126,9 +123,9 @@
 <a href="#next-steps" class="anchor"></a>Next Steps</h1>
 <p>NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in two vignettes.</p>
 <ul>
-<li>Rough-and-ready, <a href="https://psadil.github.io/nmmr/articles/orthogonal.html">orthogonal regression</a>
-</li>
-<li>Full Model, (vignette to come)</li>
+<li>Rough-and-ready, (vignette to come)</li>
+<li>Deming Regression (vignette to come)</li>
+<li>Full Model (vignette to come)</li>
 </ul>
 <div id="code-of-conduct" class="section level2">
 <h2 class="hasAnchor">
