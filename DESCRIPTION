@@ -31,14 +31,13 @@ Imports:
     tidybayes,
     tidyr
 Suggests:
+    bayesplot,
     CircStats,
     ggplot2,
     glue,
     knitr,
     patchwork,
-    ragg,
     rmarkdown,
-    roxygen2,
     testthat
 VignetteBuilder:
     knitr
