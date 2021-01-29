@@ -98,7 +98,7 @@ get_slope_by_group <- function(d, group, x, y) {
   x_name <- as_name(enquo(x))
   y_name <- as_name(enquo(y))
 
-  checkmate::assert_data_frame(d)
+  checkmate::assert_data_frame(d, any.missing = FALSE)
   checkmate::assert_subset(x_name, names(d))
   checkmate::assert_subset(y_name, names(d))
 

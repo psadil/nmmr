@@ -16,7 +16,7 @@ test_that("wisesummary runs w/ and w/o tidy eval", {
   expect_s3_class(WISEsummary(sub02, y, withinvars = c(contrast, orientation), idvar = "voxel"), class = "data.frame")
 
 
-  # runs with differnet combinations of inputs
+  # runs with different combinations of inputs
   expect_silent(WISEsummary(sub02, y, withinvars = orientation, betweenvars = contrast, idvar = voxel))
   expect_silent(WISEsummary(sub02, y, withinvars = c(contrast, orientation)))
   expect_silent(WISEsummary(sub02, y, withinvars = c(contrast, orientation), betweenvars = voxel))
@@ -25,4 +25,7 @@ test_that("wisesummary runs w/ and w/o tidy eval", {
   # runs on other dataset
   expect_silent(WISEsummary(ChickWeight, dependentvars = weight, withinvars = Time, idvar = Chick))
 
+  # no INF when within is missing
+  bet <- WISEsummary(sub02, y, betweenvars = contrast, idvar = voxel)
+  expect_lt(bet$y_CI_lower[[1]], Inf)
 })
