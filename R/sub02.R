@@ -11,8 +11,9 @@
 #' \item{run}{factor ID of session}
 #' \item{voxel}{factor ID of voxel}
 #' \item{contrast}{Factor with different values of contrast. Note that the factor _must_ have the lower levels of contrast correspond
-#' to a lower integer representation (e.g., low == 1 and high == 2)}
-#' \item{orientation}{Orientation presented on trial [-pi,pi)}
+#' to a lower integer representation (e.g., low == 1 and high == 2).}
+#' \item{orientation}{Orientation presented on trial, in radians (between \eqn{\pm\pi}).
+#' This is the _tuning variable_. Most functions require the numeric values, but some functions require only the factor levels (e.g., [Deming$new()]).}
 #' \item{y}{beta values in given condition (corresponds to beta in betas2)}
 #' \item{ses}{factor ID of session}
 #' }

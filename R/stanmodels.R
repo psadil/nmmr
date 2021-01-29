@@ -1,5 +1,5 @@
 # names of stan models
-stanmodels <- c("vtf", "orthogonal")
+stanmodels <- c("vtf", "deming")
 
 # instantiate each stanmodel object
 stanmodels <- sapply(stanmodels, function(model_name) {

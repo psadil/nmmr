@@ -3,6 +3,7 @@
 export("%>%")
 export(":=")
 export(.data)
+export(Deming)
 export(Model)
 export(ModelMCMC)
 export(Prior)
