@@ -169,13 +169,13 @@ small <- sub02_wide %>%
   ungroup() 
 ```
 
-The model can be implemented by initializing an object provided by the `nmmr` package of class `Deming`. As with orthogonal regression, the `$new()` method takes a dataset and the names of the columns with the two dependent variables. Additionally, the class needs to know which column containing the tuning variable (e.g., the orientation associated with each observation), and the column indexing voxel (e.g., voxel). 
+The model can be implemented by initializing an object provided by the `nmmr` package of class [`Deming`](https://psadil.github.io/nmmr/reference/Deming.html). As with orthogonal regression, the [`$new()`](https://psadil.github.io/nmmr/reference/Deming.html#method-new) method takes a dataset and the names of the columns with the two dependent variables. Additionally, the class needs to know which column containing the tuning variable (e.g., the orientation associated with each observation), and the column indexing voxel (e.g., voxel). 
 
 ```{r, stancode}
 m <- Deming$new(small, low, high, tuning_var = orientation, voxel_var = voxel)
 ```
 
-The newly created object, `m`, is an [`R6`](https://r6.r-lib.org/) object of class `Deming`. It can be thought of as a wrapper around a `cmdstanr::CmdStanModel` class, but one which does a bit of extra prep work to clean up the data and prepare it for sampling. The underlying Stan model can be accessed with the `$print()` method of the `cmdstanmodel` field.^[This model is also available on the `nmmr` repository, [here](https://github.com/psadil/nmmr/blob/main/inst/stan/deming.stan).]
+The newly created object, `m`, is an [`R6`](https://r6.r-lib.org/) object of class [`Deming`](https://psadil.github.io/nmmr/reference/Deming.html). It can be thought of as a wrapper around a `cmdstanr::CmdStanModel` class, but one which does a bit of extra prep work to clean up the data and prepare it for sampling. The underlying Stan model can be accessed with the [`$print()`](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html#methods) method of the `cmdstanmodel` field.^[This model is also available on the `nmmr` repository, [here](https://github.com/psadil/nmmr/blob/main/inst/stan/deming.stan).]
 
 ```{r, print_model}
 m$cmdstanmodel$print()
@@ -183,7 +183,7 @@ m$cmdstanmodel$print()
 
 Note that, in the model, the names of the parameters were chosen to match the names in the schematic, above. For example, the parameter `g` is the voxel-specific slope. The hierarchy on the slope assumes that each individual voxel's slope comes from a population distribution, which in this case is normal with mean `g_mu` (written in the diagram $\mu^g$) and standard deviation `g_sigma` (written in the diagram as $\sigma^g$).
 
-The object contains a method called `$sample()`, which accepts all of the arguments as does the `$sample()` method of `cmdstanr::CmdStanModel`. Here, we run three chains in parallel, set the random number generator seed, and increase adapt delta to 0.9.^[Increasing the "adapt delta" parameter will likely cause the model to run more slowly, but also avoid divergences. With only 100 voxels, there is not quite enough data to wrangle the posterior with the default sampler settings.  When working with a larger dataset (e.g., 1000+ voxels), the default sampling parameters (i.e., `adapt_delta = 0.8`) may be sufficient.
+The object contains a method called [`$sample()`](https://psadil.github.io/nmmr/reference/Deming.html#method-sample), which accepts all of the arguments as does the [`$sample()`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html) method of `cmdstanr::CmdStanModel`. Here, we run three chains in parallel, set the random number generator seed, and increase adapt delta to 0.9.^[Increasing the "adapt delta" parameter will likely cause the model to run more slowly, but also avoid divergences. With only 100 voxels, there is not quite enough data to wrangle the posterior with the default sampler settings.  When working with a larger dataset (e.g., 1000+ voxels), the default sampling parameters (i.e., `adapt_delta = 0.8`) may be sufficient.
 ]
 
 ```{r, fit}
@@ -199,7 +199,7 @@ Such conflicts are beyond the scope of this vignette, and the `nmmr` package. If
 
 ## Analyzing Results
 
-The `sample` method returns a [`cmdstanr::CmdStanMCMC`](https://mc-stan.org/cmdstanr/reference/CmdStanMCMC.html) object. For example, we can look at a quick summary of the population-level parameters for the slope (`g_mu` and `g_sigma`), the intercept (`a_mu` and `a_sigma`), the noise at low contrast (`x_sigma_mu` and `x_sigma_sigma`), and the noise at high contrast (`y_sigma_mu` and `y_sigma_sigma`).
+The [`$sample()`](https://psadil.github.io/nmmr/reference/Deming.html#method-sample) method returns a `cmdstanr::CmdStanMCMC` object. For example, we can look at a quick summary of the population-level parameters for the slope (`g_mu` and `g_sigma`), the intercept (`a_mu` and `a_sigma`), the noise at low contrast (`x_sigma_mu` and `x_sigma_sigma`), and the noise at high contrast (`y_sigma_mu` and `y_sigma_sigma`).
 
 ```{r, quick_summary}
 fit$summary(c("g_mu", "g_sigma",
@@ -218,14 +218,14 @@ bayesplot::mcmc_pairs(
 ```
 
 
-For digging deeper into the model, other packages from the Stan development team will be useful. For example, if you have `RStan` installed, you can use the function `rstan::read_stan_csv` to reformat the results and use [`shinystan`](https://mc-stan.org/shinystan/).^[Alternatively, you can use `shinystan` without installing `RStan` by instead installing the development version of `shinystan`. See https://github.com/stan-dev/shinystan/issues/184.]
+For digging deeper into the model, other packages from the Stan development team will be useful. For example, if you have [`RStan`](https://mc-stan.org/rstan/) installed, you can use the function [`rstan::read_stan_csv()`](https://mc-stan.org/rstan/reference/stan_csv.html) to reformat the results and use [`shinystan`](https://mc-stan.org/shinystan/).^[Alternatively, you can use [`shinystan`](https://mc-stan.org/shinystan/) without installing [`RStan`](https://mc-stan.org/rstan/) by instead installing the development version of [`shinystan`](https://mc-stan.org/shinystan/). See https://github.com/stan-dev/shinystan/issues/184.]
 
 ```{r, eval=FALSE}
 stanfit <- rstan::read_stan_csv(fit$output_files())
 shinystan::launch_shinystan(stanfit)
 ```
 
-When applying this model to your data, it is a good idea to browse through these plots. For now, focus on the three main parameters of interest, the average noise at low and high contrast (`x_sigma_mu` and `y_sigma_mu`), and the average slope (`g_mu`). For ease of plotting, convert them into a `tibble`.
+When applying this model to your data, it is a good idea to browse through these plots. For now, focus on the three main parameters of interest, the average noise at low and high contrast (`x_sigma_mu` and `y_sigma_mu`), and the average slope (`g_mu`). For ease of plotting, convert them into a `tibble::tibble`.
 
 ```{r, draws}
 draws <- fit$draws(c("g_mu", "x_sigma_mu","y_sigma_mu")) %>%
@@ -233,7 +233,7 @@ draws <- fit$draws(c("g_mu", "x_sigma_mu","y_sigma_mu")) %>%
   as_tibble() 
 ```
 
-Now use `tidyverse` packages to plot the posteriors. For example, we can look at whether there is evidence that the noise differs across levels of contrast.
+Now use [`tidyverse`](https://www.tidyverse.org/) packages to plot the posteriors. For example, we can look at whether there is evidence that the noise differs across levels of contrast.
 
 ```{r, post_noise, fig.cap="These data provide some evidence that noise increases at high contrast, but the posteriors are not precise enough to be confident."}
 draws %>%

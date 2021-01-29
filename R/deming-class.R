@@ -69,8 +69,6 @@ Deming <- R6::R6Class(
     #' Draw samples from the posterior of the model
     #'
     #' @param ... arguments passed to [cmdstanr::sample()][cmdstanr::model-method-sample()].
-    #'
-    #' @seealso [cmdstanr::sample()][cmdstanr::model-method-sample]
     sample = function(...){
       fit <- self$cmdstanmodel$sample(data = self$standata, ...)
       return(fit)

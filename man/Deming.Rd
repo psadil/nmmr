@@ -19,9 +19,6 @@ sub02 \%>\%
   dplyr::mutate(orientation = factor(orientation)) \%>\%
   Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
 }
-\seealso{
-\link[cmdstanr:model-method-sample]{cmdstanr::sample()}
-}
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
