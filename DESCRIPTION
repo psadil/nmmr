@@ -39,9 +39,7 @@ Suggests:
     ragg,
     rmarkdown,
     roxygen2,
-    testthat,
-    tinytex,
-    magick
+    testthat
 VignetteBuilder:
     knitr
 Remotes:

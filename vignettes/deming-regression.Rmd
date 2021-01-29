@@ -11,7 +11,6 @@ vignette: >
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>")
-options(tinytex.engine = 'lualatex')
 ```
 
 ```{r setup}
@@ -37,115 +36,8 @@ The model is very similar to the model underlying orthogonal regression, but for
 
 The paper has full details of the model, but a schematic [plate diagram](https://en.wikipedia.org/wiki/Plate_notation) is is reproduced here.
 
-```{tikz, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext="png"}
-
-\usetikzlibrary{graphs, graphdrawing, arrows.meta, positioning, decorations, decorations.pathreplacing, bayesnet, calc}
-\usegdlibrary{layered}
-
-\begin{tikzpicture}[
-latent/.style={circle, draw, minimum size=1cm},
-every label/.style={outer sep=0.2cm}]
-
-% Define nodes
-\node[obs]                          (low) {$x$};
-\node[obs, left=of low]             (high) {$y$};
-
-% low
-\node[det, above=of low]  (z_low) {$\zeta^x$};
-\node[latent, right=of low]  (low_scale) {$\sigma^x$};
-\node[latent, right=of low_scale]  (low_scale_mu) {$\mu^{\sigma^x}$};
-\node[latent, below=of low_scale_mu]  (low_scale_sigma) {$\sigma^{\sigma^x}$};
-\node[factor, right=of low_scale_mu, label=${TN(0,10)}$] (low_scale_prior) {};
-\node[factor, right=of low_scale_sigma, label=${TN(0,10)}$] (low_scale_loc_prior) {};
-
-% high
-\node[det, above=of high]  (z_high) {$\zeta^y$};
-\node[latent, left=of high]  (high_scale) {$\sigma^y$};
-\node[latent, left=of high_scale]  (high_scale_mu) {$\mu^{\sigma^y}$};
-\node[latent, below=of high_scale_mu]  (high_scale_sigma) {$\sigma^{\sigma^y}$};
-\node[factor, left=of high_scale_mu, label=${TN(0,10)}$] (high_scale_prior) {};
-\node[factor, left=of high_scale_sigma, label=${TN(0,10)}$] (high_scale_loc_prior) {};
-
-% z
-\node[latent, above=of z_low] (z) at ($(z_low)!0.5!(z_high)$) {$z$};
-
-% g
-\node[latent, left=of z_high] (g) {$g$};
-\node[latent, left=of g] (mu_g) {$\mu^g$};
-\node[latent, above=of mu_g] (sigma_g) {$\sigma^g$};
-\node[factor, left=of mu_g, label=${N(0,10)}$] (mu_g_prior) {};
-\node[factor, left=of sigma_g, label=${TN(0,10)}$] (sigma_g_prior) {};
-
-% a
-\node[latent, above=of g] (a) {$a$};
-\node[latent, above=of sigma_g] (mu_a) {$\mu^a$};
-\node[latent, above=of mu_a] (sigma_a) {$\sigma^a$};
-\node[factor, left=of mu_a, label=${N(0,10)}$] (mu_a_prior) {};
-\node[factor, left=of sigma_a, label=${TN(0,10)}$] (sigma_a_prior) {};
-
-% mu
-\node[latent, above=of z] (mu) {$\mu^z$};
-\node[latent, right=of mu] (sigma_z) {$\sigma^z$};
-\node[latent, above=of mu] (z_mu) {$\mu^{\mu^z}$};
-\node[latent, left=of z_mu] (z_mu_sigma) {$\sigma^{\mu_z}$};
-\node[latent, above=of sigma_z] (z_sigma) {$\mu^{\sigma^z}$};
-\node[latent, right=of z_sigma] (z_sigma_sigma) {$\sigma^{\sigma^z}$};
-\node[factor, above=of z_mu, label=${N(0,10)}$] (z_mu_prior) {};
-\node[factor, above=of z_mu_sigma, label=${TN(0,10)}$] (z_mu_sigma_prior) {};
-\node[factor, above=of z_sigma, label=${TN(0,10)}$] (z_sigma_prior) {};
-\node[factor, above=of z_sigma_sigma, label=${TN(0,10)}$] (z_sigma_sigma_prior) {};
-
-\edge {z_low, low_scale} {low}; 
-\edge {z_high, high_scale} {high};
-\edge{z}{z_low, z_high};
-\edge{g,a}{z_high};
-
-\edge{mu,sigma_z}{z};
-\edge{z_mu,z_mu_sigma}{mu};
-\edge{z_sigma,z_sigma_sigma}{sigma_z};
-
-\edge{high_scale_loc_prior}{high_scale_sigma};
-\edge{high_scale_prior}{high_scale_mu};
-\edge{high_scale_mu, high_scale_sigma}{high_scale};
-
-\edge{low_scale_loc_prior}{low_scale_sigma};
-\edge{low_scale_prior}{low_scale_mu};
-\edge{low_scale_mu, low_scale_sigma}{low_scale};
-
-\edge{mu_g,sigma_g}{g};
-\edge{mu_a,sigma_a}{a};
-\edge{mu_a_prior}{mu_a};
-\edge{sigma_a_prior}{sigma_a};
-\edge{mu_g_prior}{mu_g};
-\edge{sigma_g_prior}{sigma_g};
-
-\edge{z_sigma_sigma_prior}{z_sigma_sigma};
-\edge{z_sigma_prior}{z_sigma};
-\edge{z_mu_sigma_prior}{z_mu_sigma};
-\edge{z_mu_prior}{z_mu};
-
-% Plates
-\plate {run} {(low)(high)} {$j \in \text{Run}$};
-\plate {ori} {(z)(run.south east)(run.south west)} {$r \in \text{Orientation}$};
-\plate {voxel} {(low_scale)(high_scale)(ori.south west)(mu)} {$v \in \text{Voxel}$};
-
-% model
-\node[anchor=west] at (4, 4.5) {$\begin{aligned}
-    x \sim &~ N(\zeta^x, \sigma^x) \\
-    y \sim &~ N(\zeta^y, \sigma^y) \\
-    \sigma^x \sim &~ TN(\mu^{\sigma^x}, \sigma^{\sigma^x}) \\
-    \sigma^y \sim &~ TN(\mu^{\sigma^y}, \sigma^{\sigma^y}) \\
-    \zeta^x = &~ z \\
-    \zeta^y = &~ a + gz \\
-    z \sim &~ N(\mu^z,\sigma^z) \\
-    a \sim &~ N(\mu^a, \sigma^a) \\
-    g \sim &~ N(\mu^g, \sigma^g) \\
-    \mu^z \sim &~ N(\mu^{\mu^z}, \sigma^{\mu^z}) \\
-    \sigma^z \sim &~ TN(\mu^{\sigma^z}, \sigma^{\sigma^z}) \\
-\end{aligned}$
-};
-	
-\end{tikzpicture}
+```{r, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext='svg'}
+knitr::include_graphics("deming-regression-model.svg")
 ```
 
 ## Stan Code
@@ -163,7 +55,7 @@ For the purposes of this vignette, we reduce the dataset down to just 100 voxels
 ```{r, small}
 small <- sub02_wide %>%
   group_by(orientation, run, ses) %>%
-  slice_head(n = 10) %>%
+  slice_head(n = 5) %>%
   mutate(voxel = fct_drop(voxel)) %>%
   ungroup() 
 ```
