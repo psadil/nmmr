@@ -1,8 +1,8 @@
 ---
-title: "orthogonal"
+title: "Orthogonal Regression"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{orthogonal}
+  %\VignetteIndexEntry{Orthogonal Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
