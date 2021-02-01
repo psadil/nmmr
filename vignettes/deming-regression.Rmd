@@ -1,0 +1,161 @@
+---
+title: "orthogonal-bayes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{orthogonal-bayes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  cache = TRUE)
+```
+
+```{r setup}
+library(nmmr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+
+set.seed(1234)
+```
+
+
+# Introduction
+
+The `vignette("orthogonal")` presented a quick, non-parametric approach for checking neuromodulation based on a scatter plot of voxel activity at high- versus low-contrast. However, that method required an _ad hoc_ preprocessing step, excluding poorly tuned voxels. Without this preprocessing, the estimated slopes were too variable. To obviate the need for filtering voxels, this vignette covers another set of functions that implement the scatter plot idea in a Bayesian hierarchical framework.
+
+# Hierarchical Bayesian Deming Regression
+
+## The Model
+
+The model is very similar to the model underlying orthogonal regression, but for two important changes. First, the model is hierarchical. That is, whereas we previously ran a separate orthogonal regression on each voxel, we now estimate each of the separate slope, intercept, and noise terms in a single regression model^[If hierarchical modeling is unfamiliar, see [here](https://mc-stan.org/rstanarm/articles/pooling.html) for a brief introduction.]. Second, we relax the assumption that the variances in both observed variables (e.g., voxel activity at high and low contrast) are equal^[The terminology ["Deming"](https://en.wikipedia.org/wiki/Deming_regression) refers to this later relaxation.]. 
+
+The paper has full details of the model, but a [plate diagram](https://en.wikipedia.org/wiki/Plate_notation) for the model is is reproduced here.
+
+```{r, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext='svg'}
+knitr::include_graphics("deming-regression-model.svg")
+```
+
+## Application to data
+
+### Data Prep
+
+As for the orthogonal regression functions, the data need to be in a wider format. Additionally, the tuning variable (e.g., `orientation`) should be converted into a `factor`.
+
+```{r, wider}
+sub02_wide <- sub02 %>%
+  pivot_wider(names_from = contrast, values_from = y) %>%
+  mutate(orientation = factor(orientation))
+```
+
+For the purposes of this vignette, we reduce the dataset down to just 100 voxels. This is only to speed up the estimation process. 
+
+```{r, small}
+small <- sub02_wide %>%
+  group_by(orientation, run, ses) %>%
+  slice_head(n = 100) %>%
+  mutate(voxel = fct_drop(voxel)) %>%
+  ungroup() 
+```
+
+### Stan Code
+
+The model can be implemented by initializing an object provided by the `nmmr` package of class [`Deming`](https://psadil.github.io/nmmr/reference/Deming.html), using the [`$new()`](https://psadil.github.io/nmmr/reference/Deming.html#method-new) method. This method takes a dataset and the names of the columns with the two dependent variables (e.g., `low` and `high`). Additionally, the class needs to know which column contains the tuning variable (e.g., `orientation`) and the column indexing voxel (e.g., `voxel`). 
+
+```{r, stancode}
+m <- Deming$new(small, low, high, tuning_var = orientation, voxel_var = voxel)
+```
+
+The newly created object, `m`, is an [`R6`](https://r6.r-lib.org/) object of class [`Deming`](https://psadil.github.io/nmmr/reference/Deming.html). It can be thought of as a wrapper around an instance of a `cmdstanr::CmdStanModel` class, but one which prepares the data for sampling. The actual model is contained in a field of `m` called `cmdstanmodel`. The underlying Stan model can be accessed with the [`$print()`](https://mc-stan.org/cmdstanr/reference/CmdStanModel.html#methods) method of the `cmdstanmodel` field.^[The model code is also available on the `nmmr` repository, [here](https://github.com/psadil/nmmr/blob/main/inst/stan/deming.stan).]
+
+```{r, print_model}
+m$cmdstanmodel
+```
+
+Note that, in the model, the names of the parameters were chosen to match the names in the plate diagram, above. For example, the parameter `g` is the voxel-specific slope. The hierarchy on the slope assumes that each individual voxel's slope comes from a population distribution, which in this case is normal with mean `g_mu` (written in the diagram $\mu^g$) and standard deviation `g_sigma` (written in the diagram as $\sigma^g$).
+
+The `m` object contains a method called [`$sample()`](https://psadil.github.io/nmmr/reference/Deming.html#method-sample), which accepts all of the arguments as the [`$sample()`](https://mc-stan.org/cmdstanr/reference/model-method-sample.html) method of a `cmdstanr::CmdStanModel`. Here is how to generate samples from the posterior distribution, running two chains in parallel and setting the random number generator seed.
+
+```{r, fit}
+# fewer samples run for the sake of a quicker vignette
+# In a real analysis, you would probably want at least 4 chains with 
+# 1000 samples each
+fit <- m$sample(
+  chains = 2, 
+  parallel_chains = 2, 
+  seed = 1,
+  iter_sampling = 500)
+```
+
+The initial messages "The current Metropolis proposal is about to be rejected [...]" can safely be ignored. However, if you see warnings about either divergences or maximum treedepth, be wary. For a brief introduction to these warnings, [see here](https://mc-stan.org/misc/warnings.html). You can try setting adapt_delta to a higher number, but if you reach a value like 0.99 and still encounter divergences, then it is likely that there is a deeper issue, a conflict between the model and your data. 
+
+Such conflicts are beyond the scope of this vignette. If increasing adapt delta does not eliminate the sampling warnings, feel free to file an issue on the [github repository](https://github.com/psadil/nmmr/issues). It may be possible to tailor the model to your dataset.
+
+## Analyzing Results
+
+The [`$sample()`](https://psadil.github.io/nmmr/reference/Deming.html#method-sample) method returns a `cmdstanr::CmdStanMCMC` object. For example, we can look at a quick summary of the population-level parameters for the slope (`g_mu` and `g_sigma`), the intercept (`a_mu` and `a_sigma`), the noise at low contrast (`x_sigma_mu` and `x_sigma_sigma`), and the noise at high contrast (`y_sigma_mu` and `y_sigma_sigma`).
+
+```{r, quick_summary}
+fit$summary(c("g_mu", "g_sigma",
+              "a_mu", "a_sigma",
+              "x_sigma_mu", "x_sigma_sigma",
+              "y_sigma_mu", "y_sigma_sigma"))
+```
+
+Additionally, we can make use of the many other packages that compose the Stan ecosystem. For example, [`bayesplot`](https://mc-stan.org/bayesplot/) has many resources for plotting posterior distributions. The following shows a pairs plot, useful for seeing whether parameters in the posterior tradeoff.
+
+```{r, pairs, fig.cap="These parameters do not exhibit strong correlations."}
+bayesplot::mcmc_pairs(
+  fit$draws(c("g_mu", "g_sigma",
+             "x_sigma_mu", "x_sigma_sigma",
+             "y_sigma_mu", "y_sigma_sigma")))
+```
+
+For digging deeper into the model, other packages from the Stan development team will be useful. For example, if you have [`RStan`](https://mc-stan.org/rstan/) installed, you can use the function [`rstan::read_stan_csv()`](https://mc-stan.org/rstan/reference/stan_csv.html) to reformat the results and use [`shinystan`](https://mc-stan.org/shinystan/).^[Alternatively, you can use [`shinystan`](https://mc-stan.org/shinystan/) without installing [`RStan`](https://mc-stan.org/rstan/) by instead installing the development version of [`shinystan`](https://mc-stan.org/shinystan/). See https://github.com/stan-dev/shinystan/issues/184.]
+
+```{r, eval=FALSE}
+stanfit <- rstan::read_stan_csv(fit$output_files())
+shinystan::launch_shinystan(stanfit)
+```
+
+When applying this model to your data, it is a good idea to browse through these plots. For now, focus on the three main parameters of interest, the average noise at low and high contrast (`x_sigma_mu` and `y_sigma_mu`), and the average slope (`g_mu`). For ease of plotting, convert the posterior samples into a `tibble::tibble`.
+
+```{r, draws}
+draws <- fit$draws(c("g_mu", "x_sigma_mu","y_sigma_mu")) %>%
+  posterior::as_draws_df() %>%
+  as_tibble() 
+```
+
+Now use [`tidyverse`](https://www.tidyverse.org/) packages to plot the posteriors. For example, we can look at whether there is evidence that the noise differs across levels of contrast.
+
+```{r, post_noise, fig.cap="These data provide some evidence that noise increases at high contrast, but the posteriors are not precise enough to be confident."}
+draws %>%
+  select(-g_mu) %>%
+  pivot_longer(cols = contains("sigma"), names_to = "Contrast", values_to = "Noise") %>%
+  mutate(
+    Contrast = factor(
+      Contrast, 
+      levels = c("x_sigma_mu", "y_sigma_mu"),
+      labels = c("Low", "High"))) %>%
+  ggplot(aes(x=Noise, fill=Contrast)) +
+  geom_histogram(bins=50, position = position_dodge()) 
+```
+
+Finally, what is the average slope? 
+
+```{r, post_slope, fig.cap="In support of multiplicative gain, the average slope appears to be larger than 1."}
+draws %>%
+  select(-contains("sigma"), Slope = "g_mu") %>%
+  ggplot(aes(x = Slope)) +
+  geom_histogram(bins = 50) +
+  coord_cartesian(xlim = c(0.5, 1.5))
+
+```
+
+Since multiplicative gain but not additive offset predict a slope larger than 1, these data provide evidence that contrast causes multiplicative neuromodulation.
+

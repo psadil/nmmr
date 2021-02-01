@@ -36,7 +36,7 @@ sum_squares <- function(x, y=x){
   sum((x-mean(x)) * (y-mean(y)) )
 }
 
-#' Return slope in total least squares problem
+#' Return slope in orthogonal regression problem
 #'
 #' @param x vector with independent variable
 #' @param y vector with dependent variable
@@ -46,7 +46,7 @@ sum_squares <- function(x, y=x){
 #'
 #' @details
 #' Whereas ordinary least squares finds the line that minimizes the sum of squared
-#' vertical distance, total least squares finds the line that minimizes the sum
+#' vertical distance, orthogonal regressions finds the line that minimizes the sum
 #' of vertical and horizontal differences.
 #'
 #' @seealso
@@ -73,8 +73,8 @@ get_slope <- function(x,y){
 #' Calculate slopes by groups
 #'
 #' @param d wide,dataframe containing the
-#' @param group name of column (bare only)
-#' @param x,y names of column (bare or quoted) in d with which to do the regression
+#' @param group name of column
+#' @param x,y names of column in `d` containing the dependent and independent variables
 #'
 #' @return
 #' a dataframe with two columns, one containing the group id and

@@ -4,9 +4,8 @@
 \alias{Deming}
 \title{Model object, ready for sampling}
 \description{
-Model object, ready for sampling
-
-Model object, ready for sampling
+\code{Deming} facilitates a non-parametric check of neuromodulation.
+This class is a wrapper around a \code{\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}} class.
 }
 \examples{
 
@@ -18,9 +17,6 @@ sub02 \%>\%
   tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
   dplyr::mutate(orientation = factor(orientation)) \%>\%
   Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
-}
-\seealso{
-\link[cmdstanr:model-method-sample]{cmdstanr::sample()}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -53,7 +49,7 @@ sub02 \%>\%
 \if{html}{\out{<a id="method-new"></a>}}
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
-Initialize new instance of class
+Initialize new instance of class Deming
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel")}\if{html}{\out{</div>}}
 }
@@ -124,6 +120,9 @@ Draw samples from the posterior of the model
 \item{\code{...}}{arguments passed to \link[cmdstanr:model-method-sample]{cmdstanr::sample()}.}
 }
 \if{html}{\out{</div>}}
+}
+\subsection{Returns}{
+An object of class \code{\link[cmdstanr:CmdStanMCMC]{cmdstanr::CmdStanMCMC}}
 }
 }
 \if{html}{\out{<hr>}}

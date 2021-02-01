@@ -20,8 +20,9 @@ cross_threshold(d, group, x, y, quantiles = c(0, 0.9), participant = NULL)
 }
 \value{
 data frame object with one column for the \code{group}, potentially another index
-column for \code{participant}, and a new column called Threshold. A group will be
-repeated as many times as it passes the threshold.
+column for \code{participant}, and a new column called \code{Threshold.} The \code{Threshold}
+column is crossed with the original dataset, but for each crossing, members
+of \code{group} are excluded if they do not cross the threshold.
 }
 \description{
 Get Thresholds

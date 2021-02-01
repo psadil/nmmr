@@ -31,15 +31,15 @@ Imports:
     tidybayes,
     tidyr
 Suggests:
+    bayesplot,
     CircStats,
     ggplot2,
     glue,
     knitr,
     patchwork,
     rmarkdown,
-    roxygen2,
     testthat,
-    ragg
+    gridExtra
 VignetteBuilder:
     knitr
 Remotes:

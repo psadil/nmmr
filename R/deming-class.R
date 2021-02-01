@@ -1,5 +1,8 @@
 #' Model object, ready for sampling
 #'
+#' @description `Deming` facilitates a non-parametric check of neuromodulation.
+#'  This class is a wrapper around a [`cmdstanr::CmdStanModel`] class.
+#'
 #' @export
 Deming <- R6::R6Class(
 
@@ -13,7 +16,7 @@ Deming <- R6::R6Class(
     cmdstan_version = cmdstanr::cmdstan_version(),
 
     #' @description
-    #' Initialize new instance of class
+    #' Initialize new instance of class Deming
     #'
     #' @param d dataframe from which to make standata.
     #' @param x,y Names of columns in d which contain the x and y values
@@ -70,7 +73,7 @@ Deming <- R6::R6Class(
     #'
     #' @param ... arguments passed to [cmdstanr::sample()][cmdstanr::model-method-sample()].
     #'
-    #' @seealso [cmdstanr::sample()][cmdstanr::model-method-sample]
+    #' @return An object of class [`cmdstanr::CmdStanMCMC`]
     sample = function(...){
       fit <- self$cmdstanmodel$sample(data = self$standata, ...)
       return(fit)
