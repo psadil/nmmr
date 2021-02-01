@@ -40,8 +40,8 @@
 
 
 <meta property="og:title" content="Model object, ready for sampling — Deming" />
-<meta property="og:description" content="Model object, ready for sampling
-Model object, ready for sampling" />
+<meta property="og:description" content="Deming facilitates a non-parametric check of neuromodulation.
+This class is a wrapper around a cmdstanr::CmdStanModel class." />
 
 
 
@@ -96,7 +96,7 @@ Model object, ready for sampling" />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/orthogonal-bayes.html">orthogonal-bayes</a>
+      <a href="../articles/deming-regression.html">orthogonal-bayes</a>
     </li>
     <li>
       <a href="../articles/orthogonal.html">orthogonal</a>
@@ -130,15 +130,12 @@ Model object, ready for sampling" />
     </div>
 
     <div class="ref-description">
-    <p>Model object, ready for sampling</p>
-<p>Model object, ready for sampling</p>
+    <p><code>Deming</code> facilitates a non-parametric check of neuromodulation.
+This class is a wrapper around a <code><a href='https://mc-stan.org/cmdstanr/reference/CmdStanModel.html'>cmdstanr::CmdStanModel</a></code> class.</p>
     </div>
 
 
 
-    <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
-
-    <div class='dont-index'><p><a href='https://mc-stan.org/cmdstanr/reference/model-method-sample.html'>cmdstanr::sample()</a></p></div>
     <h2 class="hasAnchor" id="public-fields"><a class="anchor" href="#public-fields"></a>Public fields</h2>
 
     <p><div class="r6-fields"></p><dl>
@@ -168,7 +165,7 @@ Model object, ready for sampling" />
 </ul>
 <p><hr>
 <a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
-<p>Initialize new instance of class</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
+<p>Initialize new instance of class Deming</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
 <p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>tuning_var</span>, voxel_var <span class='op'>=</span> <span class='st'>"voxel"</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
@@ -217,6 +214,8 @@ Model object, ready for sampling" />
 <dt><code>...</code></dt><dd><p>arguments passed to <a href='https://mc-stan.org/cmdstanr/reference/model-method-sample.html'>cmdstanr::sample()</a>.</p></dd>
 
 </dl><p></div></p>
+<h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Returns</h4>
+<p>An object of class <code><a href='https://mc-stan.org/cmdstanr/reference/CmdStanMCMC.html'>cmdstanr::CmdStanMCMC</a></code></p>
 <p><hr>
 <a id="method-clone"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>clone()</code></h3>
 <p>The objects of this class are cloneable with this method.</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>

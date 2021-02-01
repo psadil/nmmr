@@ -95,7 +95,7 @@
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
-      <a href="../articles/orthogonal-bayes.html">orthogonal-bayes</a>
+      <a href="../articles/deming-regression.html">orthogonal-bayes</a>
     </li>
     <li>
       <a href="../articles/orthogonal.html">orthogonal</a>
@@ -163,8 +163,9 @@
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>data frame object with one column for the <code>group</code>, potentially another index
-column for <code>participant</code>, and a new column called Threshold. A group will be
-repeated as many times as it passes the threshold.</p>
+column for <code>participant</code>, and a new column called <code>Threshold.</code> The <code>Threshold</code>
+column is crossed with the original dataset, but for each crossing, members
+of <code>group</code> are excluded if they do not cross the threshold.</p>
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='get_slope.html'>get_slope()</a></code>, <code><a href='get_slope_by_group.html'>get_slope_by_group()</a></code></p></div>
