@@ -5,6 +5,8 @@ vignette: >
   %\VignetteIndexEntry{Bayesian Hierarchical Deming Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+resource_files:
+  - vignettes/deming-regression-model.svg
 ---
 
 ```{r, include = FALSE}
