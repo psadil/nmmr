@@ -9,9 +9,9 @@ get_slope_by_group(d, group, x, y)
 \arguments{
 \item{d}{wide,dataframe containing the}
 
-\item{group}{name of column (bare only)}
+\item{group}{name of column}
 
-\item{x, y}{names of column (bare or quoted) in d with which to do the regression}
+\item{x, y}{names of column in \code{d} containing the dependent and independent variables}
 }
 \value{
 a dataframe with two columns, one containing the group id and

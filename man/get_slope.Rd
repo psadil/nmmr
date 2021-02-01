@@ -2,7 +2,7 @@
 % Please edit documentation in R/orthogonal.R
 \name{get_slope}
 \alias{get_slope}
-\title{Return slope in total least squares problem}
+\title{Return slope in orthogonal regression problem}
 \usage{
 get_slope(x, y)
 }
@@ -15,11 +15,11 @@ get_slope(x, y)
 the slope of the line that minimizes the total least squared error
 }
 \description{
-Return slope in total least squares problem
+Return slope in orthogonal regression problem
 }
 \details{
 Whereas ordinary least squares finds the line that minimizes the sum of squared
-vertical distance, total least squares finds the line that minimizes the sum
+vertical distance, orthogonal regressions finds the line that minimizes the sum
 of vertical and horizontal differences.
 }
 \examples{

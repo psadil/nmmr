@@ -9,8 +9,9 @@
 #'
 #' @return
 #'   data frame object with one column for the `group`, potentially another index
-#'   column for `participant`, and a new column called Threshold. A group will be
-#'   repeated as many times as it passes the threshold.
+#'   column for `participant`, and a new column called `Threshold.` The `Threshold`
+#'   column is crossed with the original dataset, but for each crossing, members
+#'   of `group` are excluded if they do not cross the threshold.
 #' @seealso [get_slope()], [get_slope_by_group()]
 #' @examples
 #' sub02 %>%
