@@ -1,8 +1,8 @@
 ---
-title: "orthogonal-bayes"
+title: "Bayesian Hierarchical Deming Regression"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{orthogonal-bayes}
+  %\VignetteIndexEntry{Bayesian Hierarchical Deming Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -29,7 +29,7 @@ set.seed(1234)
 
 The `vignette("orthogonal")` presented a quick, non-parametric approach for checking neuromodulation based on a scatter plot of voxel activity at high- versus low-contrast. However, that method required an _ad hoc_ preprocessing step, excluding poorly tuned voxels. Without this preprocessing, the estimated slopes were too variable. To obviate the need for filtering voxels, this vignette covers another set of functions that implement the scatter plot idea in a Bayesian hierarchical framework.
 
-# Hierarchical Bayesian Deming Regression
+# Bayesian Hierarchical Deming Regression
 
 ## The Model
 
@@ -152,9 +152,7 @@ Finally, what is the average slope?
 draws %>%
   select(-contains("sigma"), Slope = "g_mu") %>%
   ggplot(aes(x = Slope)) +
-  geom_histogram(bins = 50) +
-  coord_cartesian(xlim = c(0.5, 1.5))
-
+  geom_histogram(bins = 50) 
 ```
 
 Since multiplicative gain but not additive offset predict a slope larger than 1, these data provide evidence that contrast causes multiplicative neuromodulation.
