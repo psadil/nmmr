@@ -29,20 +29,22 @@ size_shape <- 2
 set.seed(1234)
 ```
 
-# Introduction
+# How can neuromodulation be assessed quickly?
 
-A key insight of NMM is that, under certain circumstances, neuromodulation is reflected in changes to the voxel tuning function. That is, changes in the voxels tuning function implicate certain forms of neuromodulation. NMM outlines two techniques for looking at voxel tuning functions. One technique requires assuming that the neural tuning functions and distributions of neurons within voxels follow a specific form. The other technique makes fewer assumptions and is a bit simpler to run. This vignette covers the latter technique.
+A key insight of NMM is that, under certain circumstances, neuromodulation is reflected in changes to the voxel tuning function. That is, changes in the voxels tuning function implicate certain forms of neuromodulation. NMM outlines two techniques for looking at voxel tuning functions. One technique, a Bayesian modeling approach, requires assuming that the neural tuning functions and distributions of neurons within voxels follow a specific form. The Bayesian component of NMM pools information across voxels with hierarchical modeling, boiling down the question of neuromodulation into model comparison. But the Bayesian model assumes that the weight distribution and neural tuning function follow specific functional forms, assumptions that may not hold in all datasets (e.g., with some voxel sizes, the weight distribution may be multimodal). Moreover, the full Bayesian model is complex, making it challenging to assess which features of the data drive a comparison in favor of multiplicative gain versus additive offset. So, the Bayesian approach makes assumptions that may not always hold, is computationally expensive, and is hard to understand. 
 
-# The Challenge: Voxels are too noisy
+To complement the parametric modeling, NMM includes a non-parametric method for checking the form of neuromodulation, covered in this vignette.
 
-Ideally, we could assess changes in the voxel tuning function by simply plotting them. That is an easy enough plot to generate. This package comes with the dataset `sub02`, which contains the responses for voxels in V1 for a single participant (author PS). Here are the tuning functions for six of those voxels.
+# Non-parametric Check
+
+Ideally, we could assess changes in the voxel tuning functions by simply plotting them. Generating that plot is easy enough. This package comes with the dataset `sub02`, which contains the responses for voxels in V1 for a single participant (author PS). Here are the tuning functions for six of those voxels.
 
 ```{r, vtfs, fig.cap="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually. Error bars span 95% confidence intervals"}
 
 # take six voxels worth of data and calculate summary statistics
 six_voxels <- sub02 %>%
   group_by(contrast, orientation, run, ses) %>%
-  slice_head(n=6) %>%
+  slice_head(n = 6) %>%
   group_by(voxel) %>%
   group_nest() %>%
   mutate(
@@ -51,7 +53,7 @@ six_voxels <- sub02 %>%
       ~WISEsummary(.x, dependentvars = y, withinvars = c(orientation, contrast)))) %>%
   unnest(data)
 
-# plot those statistics
+# plot the tuning functions
 six_voxels %>%
   ggplot(aes(x=orientation, y=y_mean, color = contrast)) +
   facet_wrap(~voxel, labeller = label_both) +
@@ -60,17 +62,11 @@ six_voxels %>%
   ylab("Average BOLD Signal (% Average Signal)") 
 ```
 
-Unfortunately, most voxels have weak tuning. That is, across orientations, the lines are nearly flat. Without tuning, different forms of neuromodulation are conflated; multiplicative gain looks like an additive shift. Moreover, in even those voxels that are tuned, their activity is rather variable. Variable activity makes it challenging to distinguish between different forms of neuromodulation within a single voxel. A simple approach would involve collapsing across voxels. But such collapsing would ignore the clear differences in how voxels respond to the experimental manipulation (i.e., how they respond to contrast).
-
-So, there are two challenges. First, we need an analysis that focuses on the form of neuromodulation but which does not require sharp tuning. Second, we need that this analysis can pool information across voxels, while also being sensitive to differences in the voxels' responsivity. 
-
-# Solutions
+Although intuitive, plots of the voxel tuning function are uninformative. This is because most voxels have weak tuning. That is, across orientations, the lines are nearly flat, and the activity is rather variable. When tuning is weak, different forms of neuromodulation look identical (i.e., multiplying a flat line by a gain factor can produce the same result as simply adding an offset). So, simply plotting the voxel tuning functions does not offer much insight into the form of neuromodulation.
 
 ## A scatterplot of activity across conditions reveals changes in voxel tuning
 
-First, we need some way to focus on the neuromodulation itself, rather than the tuning. The central idea, detailed in the main paper, is that we can assess multiplicative vs. additive shift by looking at the slope of a line made from the low-contrast tuning plotted against the high-contrast tuning.
-
-A key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. Additive neuromodulation corresponds to an increase in neural activity at all orientations. Thus, regardless of the forms of the weight distribution and neural tuning function, additive neuromodulation causes the low-contrast tuning function to shift upwards uniformly across orientations. Hence, a scatterplot of the voxel's response to high-contrast stimuli against its response to low-contrast stimuli has a slope of 1. In contrast, multiplicative neuromodulation corresponds to an increase in neural activity at the most preferred orientations, and a scatterplot of a voxel's response to high versus low-contrast stimuli has a slope larger than 1. Therefore, the models can be differentiated by plotting high-contrast activity against low-contrast activity and calculating the slope of the best fitting line. A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.
+The central idea, detailed in the main paper, is that we can assess multiplicative vs. additive shift by looking at the slope of a line made from the low-contrast activity plotted against the high-contrast activity. That is, a key difference between the models we compared is that the multiplicative model allows the effect of contrast to vary by orientation whereas the additive model does not. Additive neuromodulation corresponds to an increase in neural activity at all orientations. Thus, regardless of the forms of the weight distribution and neural tuning function, additive neuromodulation causes the low-contrast tuning function to shift upwards uniformly across orientations. Hence, a scatterplot of the voxel's response to high-contrast stimuli against its response to low-contrast stimuli has a slope of 1. In contrast, multiplicative neuromodulation corresponds to an increase in neural activity at the most preferred orientations, and a scatterplot of a voxel's response to high versus low-contrast stimuli has a slope larger than 1. Therefore, the models can be differentiated by plotting high-contrast activity against low-contrast activity and calculating the slope of the best fitting line. A slope of one implies additive shift, but a slope greater than one implies multiplicative gain.
 
 ```{r, add_mult, echo=FALSE, fig.cap="Plotting beta a voxel's response to high- versus low-contrast uncovers neuromodulation. Left: Simulated voxel tuning functions in which higher levels of contrast induce either an additive (top) or multiplicative (bottom) neuromodulation. The eight vertical lines are eight hypothetical orientations at which these voxel tuning functions might be probed, which would produce eight responses per level of contrast. Right: The two kinds of neuromodulation reveal different signatures when the response to high-contrast stimuli are plotted against the response to low-contrast stimuli. The diagonal line corresponds to no effect of contrast. A line drawn through the points produced by the additive model necessarily has a slope equal to 1; under this neuromodulation, the effect of contrast does not depend on the orientation. A line drawn through the points produced by the multiplicative model necessarily has a slope greater than 1; under this neuromodulation, the effect of contrast is largest at those orientations which are closest to the voxel's preferred orientation."}
 library(patchwork)
@@ -207,7 +203,7 @@ $$
 z \sim N(0, 1)
 $$
 
-As researchers, we are unable to directly observe $z$; this variable is the _average_ activity at low contrast, but on any given trial a voxels response varies around the average. Assume that the variability follows another standard normal distribution, so the resulting observed activity at low contrast, $x$, is distributed according to another normal distribution
+As researchers, we are unable to directly observe $z$; this variable is the _average_ activity at low contrast, but on any given trial a voxel's response varies around the average. Assume that the variability follows another standard normal distribution, so the resulting observed activity at low contrast, $x$, is distributed according to another normal distribution
 
 $$
 x \sim N(z, 1)
@@ -242,7 +238,8 @@ We can use the built-in function `lm` to estimate the slope with ordinary least 
 ls <- lm(y ~ x, data=d)
 ls
 ```
-At only about `r round(coef(ls)[2], digits=2)`, the estimated slope is only about half of the true slope (2)! The following plot shows the difference between the line we wanted to estimate (with a slope of 2), versus the line provided by `lm` (a slope of ~1).
+
+At only about `r round(coef(ls)[2], digits=2)`, the estimated slope is only about half of the true slope (2)! The following plot shows the difference between the line we wanted to estimate (with a slope of 2), versus the line provided by `lm`.
 
 ```{r, tls_plot, fig.cap="We want to estimate the dashed line, which has a slope of 2. However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line)."}
 d %>%
@@ -255,19 +252,20 @@ d %>%
 
 ```
 
-This issue is known as [Regression Dilution](https://en.wikipedia.org/wiki/Regression_dilution). One way to understand the issue that that there is variability in, not just the y-coordinate, but also the x-coordinate, which inspires the name [errors-in-variables model](https://en.wikipedia.org/wiki/Errors-in-variables_models). For these circumstances, we need to use orthogonal regression.
+This issue is known as [Regression Dilution](https://en.wikipedia.org/wiki/Regression_dilution). One way to understand the issue that that there is variability in, not just the y-coordinate, but also the x-coordinate, which inspires the name [errors-in-variables model](https://en.wikipedia.org/wiki/Errors-in-variables_models)^[Put another way, ordinary least squares assumes a model like $y\simN(2x, 1)$ -- e.g., that the activity at high contrast is directly related to the activity at low contrast]. For these circumstances, we need to use a _orthogonal_ regression.
 
-### Orthogonal regression accurately recovers the slope
+### Orthogonal regression accurately recovers our desired slope
 
-The `nmmR` package provides a function to estimate the slope, called `get_slope`. It takes two vectors of numbers. Here is how to apply it on our toy example
+The `nmmr` package provides a function to estimate the slope, called `get_slope`. It takes two vectors of numbers. Here is how to apply it on our toy example
 
 ```{r, tls_slope}
 slope <- get_slope(d$x, d$y)
 slope
 ```
-This is pretty much closer to the true slope!
 
-But perhaps we got lucky. Let's stimulate 1000 datasets, estimating for each the sleop with ordinary least squares and orthogonal regression.
+This is much closer to the true slope!
+
+But perhaps we got lucky. Let's stimulate 1000 datasets, estimating for each the slope with both ordinary least squares and orthogonal regression.
 
 ```{r, tls_show}
 fits <- crossing(i = 1:1000) %>%
@@ -293,17 +291,16 @@ These simulations suggest that ordinary least squares is indeed biased, whereas 
 
 ## Application to data
 
-We can apply this same method to estimate a slope for each voxel in the provided dataset, `sub02`. However, to sue `get_slope`, it would help if the data were [wider](https://r4ds.had.co.nz/tidy-data.html). 
+We can apply this same method to estimate a slope for each voxel in the provided dataset, `sub02`. To use `get_slope`, first [widen](https://r4ds.had.co.nz/tidy-data.html) the data.
 
 ```{r, pivot}
-
 sub02_wide <- sub02 %>%
   pivot_wider(names_from = contrast, values_from = y)
 
 sub02_wide
 ```
 
-With these data, we want to estimate a single slope for each voxel. The `nmmR` package provides a helper function for applying the `get_slope` function to groups of a dataset, called `get_slope_by_group`. 
+As mentioned above, contrast seems to have a different effect on each voxel. Hence, we should calculate the slope for each voxel separately. The `nmmr` package provides a helper function for applying the `get_slope` function to groups of a dataset, called `get_slope_by_group`. 
 
 ```{r, group}
 slopes <- sub02_wide %>%
@@ -320,25 +317,23 @@ slopes %>%
 
 ```
 
-Unfortunately, this distribution of slopes is not helpful. Clearly, there are outliers (one voxel has a slope of over 200). These outliers are symptomatic of the two problems identified at the beginning of this voxel: voxels are flat and noisy. We can see the issue by looking at the activity for a single voxel.
+Unfortunately, this distribution of slopes is not helpful. Clearly, there are outliers (e.g., one voxel has a slope that is over 200). These outliers are symptomatic of two challenges identified at the beginning of this voxel: voxels are flat and noisy. We can see the issue by looking at the activity for a single voxel.
 
 ```{r, circle, fig.cap="When voxels are poorly tuned, the best-fitting line can easily be one that is nearly vertical."}
-
 sub02_wide %>%
   filter(fct_match(voxel, "209671")) %>%
   ggplot(aes(x=low, y = high)) +
   geom_point() +
   coord_fixed() 
-
 ```
 
-This voxel was only weakly tuned, and so the scatterplot is nearly circular. When the data are circular, a line at any angle fits equally well. With circular scatterplots, orthogonal regression produces slopes that have a spuriously high slope. 
+When a voxel is tuned weakly, the scatterplot is nearly circular. When the data are circular, a line at any angle fits equally well. So, with circular scatterplots, orthogonal regression often produces slopes that have a spuriously high slope. 
 
 ## Thresholding
 
-Orthogonal least squares allows us to focus on the form of neuromodulation, but now we need a way to focus on just those voxels that are responsive to stimulation. We advise thresholding based on each voxel's responsivity to contrast. That is, we advise considering each voxel's average difference in activity between high and low contrast, and then selecting only those voxels whose differences are in the upper quantiles. 
+Orthogonal least squares allows us to focus on the form of neuromodulation, but now we need a way to focus on just those voxels that are responsive to stimulation. In the paper, we advise thresholding based on each voxel's responsivity to contrast. That is, we advise considering each voxel's average difference in activity between high and low contrast, and then selecting only those voxels whose differences are in the upper quantiles. 
 
-```{r avg_diff, fig.cap="Average difference between high and low contrast, across voxels."}
+```{r avg_diff, fig.cap="Distribution of average difference between high and low contrast, across voxels. The thresholding is based on the quantiles of this distribution."}
 sub02_wide %>%
   mutate(diff = high - low) %>%
   group_by(voxel) %>%
@@ -349,7 +344,7 @@ sub02_wide %>%
     bins = 20)
 ```
 
-In the paper, we looked at quatiles of 0 (i.e., no thresholding, analyze all voxels), and 0.9 (i.e., select only the top 10% of voxels within a participant). The `nmmR` function `cross_threshold` takes a dataframe and a vector of quantiles, and it returns another dataframe that can be used to filter voxels in the original data.
+In the paper, we looked at quatiles of 0 (i.e., no thresholding, analyze all voxels), and 0.9 (i.e., select only the top 10% of voxels within a participant). The `nmmr` function `cross_threshold` takes a dataframe and a vector of quantiles, and it returns another dataframe that can be used to filter voxels in the original data.
 
 ```{r, calc_ranks}
 ranks <- cross_threshold(sub02_wide, voxel, low, high, quantiles = c(0, 0.9))
@@ -365,7 +360,8 @@ left_join(ranks, slopes, by = c("voxel")) %>%
   geom_vline(xintercept = 1)
 ```
 
-This need to threshold is _ad hoc_; there is no clear reason why we should look at the top 10% of voxels, rather than the top 20% or 5%. But the point of this orthogonal regression is not to produce a precise measure of neuromodulation. Instead, it is meant as a rough-and-ready tool for getting a sense of whether neuromodulation might be present. With just three simple functions, `get_slope`, `get_slope_by_group`, and `cross_threshold`, you can get a sense of whether the manipulation causes an additive versus multiplicative gain.
+This need to threshold is _ad hoc_; there is no clear reason why we should look at the top 10% of voxels, rather than the top 20% or 5%. But the point of this orthogonal regression is not to produce a precise measure of neuromodulation. Instead, it is meant as a rough-and-ready tool for checking whether neuromodulation is additive or multiplicative. In the `nmmr` package, the main functions for performing these checks are `get_slope`, `get_slope_by_group`, and `cross_threshold`. 
  
-If you need a method that is more quantitative, `nmmR` provides two other sets of functions, each covered in their own vignette. One set implements the orthogonal regression idea in a Bayesian hierarchical modeling framework. This has the advantage of still being relatively quick, but does not require _ad hoc_ thresholding. The other set is the main Bayesian model. 
+If you need a method that is more quantitative, `nmmr` provides two other sets of functions, each covered in their own vignette. The most complex is the full Bayesian model. As outlined above, the Bayesian method uses hierarchical modeling to pool information across voxels. However, it also makes assumptions that may not hold in all datasets. For this reason, `nmmr` includes an intermediate approach, which implements the orthogonal regression idea in a Bayesian hierarchical model This has the advantage of still being quick (relative to the main Bayesian approach), but does not require _ad hoc_ thresholding. 
 
+The intermediate approach is covered in `vignette("deming-regression")`
