@@ -10,7 +10,8 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>")
+  comment = "#>",
+  cache = TRUE)
 ```
 
 ```{r setup}
@@ -78,10 +79,14 @@ The object contains a method called [`$sample()`](https://psadil.github.io/nmmr/
 ]
 
 ```{r, fit}
+# fewer samples run for the sake of a quicker vignette
+# In a real analysis, you would probably want at least 4 chains with 
+# 1000 samples each
 fit <- m$sample(
   chains = 2, 
   parallel_chains = 2, 
-  seed = 1)
+  seed = 1,
+  iter_sampling = 500)
 ```
 
 The initial messages "The current Metropolis proposal is about to be rejected [...]" can safely be ignored. However, if you see warnings about either divergences or maximum treedepth, be wary. For a brief introduction to these warnings, [see here](https://mc-stan.org/misc/warnings.html). You can try setting adapt_delta to a higher number, but if you reach a value like 0.99 and still encounter divergences, then it is likely that there is a deeper issue, a conflict between the model and your data. 

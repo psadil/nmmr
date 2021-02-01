@@ -38,7 +38,8 @@ Suggests:
     knitr,
     patchwork,
     rmarkdown,
-    testthat
+    testthat,
+    gridExtra
 VignetteBuilder:
     knitr
 Remotes:
