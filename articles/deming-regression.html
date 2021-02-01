@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>orthogonal-bayes • nmmr</title>
+<title>Bayesian Hierarchical Deming Regression • nmmr</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="orthogonal-bayes">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Bayesian Hierarchical Deming Regression">
 <meta property="og:description" content="nmmr">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -54,10 +54,10 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="../articles/deming-regression.html">orthogonal-bayes</a>
+      <a href="../articles/deming-regression.html">Bayesian Hierarchical Deming Regression</a>
     </li>
     <li>
-      <a href="../articles/orthogonal.html">orthogonal</a>
+      <a href="../articles/orthogonal.html">Orthogonal Regression</a>
     </li>
   </ul>
 </li>
@@ -82,7 +82,7 @@
       </header><script src="deming-regression_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>orthogonal-bayes</h1>
+      <h1 data-toc-skip>Bayesian Hierarchical Deming Regression</h1>
             
       
       <small class="dont-index">Source: <a href="https://github.com/psadil/nmmr/blob/master/vignettes/deming-regression.Rmd"><code>vignettes/deming-regression.Rmd</code></a></small>
@@ -113,9 +113,9 @@
 <a href="#introduction" class="anchor"></a>Introduction</h1>
 <p>The <code><a href="../articles/orthogonal.html">vignette("orthogonal")</a></code> presented a quick, non-parametric approach for checking neuromodulation based on a scatter plot of voxel activity at high- versus low-contrast. However, that method required an <em>ad hoc</em> preprocessing step, excluding poorly tuned voxels. Without this preprocessing, the estimated slopes were too variable. To obviate the need for filtering voxels, this vignette covers another set of functions that implement the scatter plot idea in a Bayesian hierarchical framework.</p>
 </div>
-<div id="hierarchical-bayesian-deming-regression" class="section level1">
+<div id="bayesian-hierarchical-deming-regression" class="section level1">
 <h1 class="hasAnchor">
-<a href="#hierarchical-bayesian-deming-regression" class="anchor"></a>Hierarchical Bayesian Deming Regression</h1>
+<a href="#bayesian-hierarchical-deming-regression" class="anchor"></a>Bayesian Hierarchical Deming Regression</h1>
 <div id="the-model" class="section level2">
 <h2 class="hasAnchor">
 <a href="#the-model" class="anchor"></a>The Model</h2>
@@ -246,78 +246,78 @@ Schematic of the Bayesian model. Filled square nodes indicate priors, open circl
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Chain 1 Iteration:    1 / 1500 [  0%]  (Warmup)</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 2 Iteration:    1 / 1500 [  0%]  (Warmup)</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 17, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 17, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/Rtmpvv8pfi/model-382927d0a658.stan', line 17, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpDQa9Wf/model-35e2106823.stan', line 17, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
@@ -352,13 +352,13 @@ Schematic of the Bayesian model. Filled square nodes indicate priors, open circl
 <span class="co">#&gt; Chain 2 Iteration: 1400 / 1500 [ 93%]  (Sampling) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1400 / 1500 [ 93%]  (Sampling) </span>
 <span class="co">#&gt; Chain 2 Iteration: 1500 / 1500 [100%]  (Sampling) </span>
-<span class="co">#&gt; Chain 2 finished in 981.5 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 993.4 seconds.</span>
 <span class="co">#&gt; Chain 1 Iteration: 1500 / 1500 [100%]  (Sampling) </span>
-<span class="co">#&gt; Chain 1 finished in 1007.0 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 1023.8 seconds.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Both chains finished successfully.</span>
-<span class="co">#&gt; Mean chain execution time: 994.2 seconds.</span>
-<span class="co">#&gt; Total execution time: 1007.3 seconds.</span></code></pre></div>
+<span class="co">#&gt; Mean chain execution time: 1008.6 seconds.</span>
+<span class="co">#&gt; Total execution time: 1024.1 seconds.</span></code></pre></div>
 <p>The initial messages “The current Metropolis proposal is about to be rejected […]” can safely be ignored. However, if you see warnings about either divergences or maximum treedepth, be wary. For a brief introduction to these warnings, <a href="https://mc-stan.org/misc/warnings.html">see here</a>. You can try setting adapt_delta to a higher number, but if you reach a value like 0.99 and still encounter divergences, then it is likely that there is a deeper issue, a conflict between the model and your data.</p>
 <p>Such conflicts are beyond the scope of this vignette. If increasing adapt delta does not eliminate the sampling warnings, feel free to file an issue on the <a href="https://github.com/psadil/nmmr/issues">github repository</a>. It may be possible to tailor the model to your dataset.</p>
 </div>
@@ -425,8 +425,7 @@ These data provide some evidence that noise increases at high contrast, but the 
 <code class="sourceCode R"><span class="va">draws</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/select.html">select</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://tidyselect.r-lib.org/reference/starts_with.html">contains</a></span><span class="op">(</span><span class="st">"sigma"</span><span class="op">)</span>, Slope <span class="op">=</span> <span class="st">"g_mu"</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Slope</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> <span class="op">+</span>
-  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/coord_cartesian.html">coord_cartesian</a></span><span class="op">(</span>xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">1.5</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_histogram.html">geom_histogram</a></span><span class="op">(</span>bins <span class="op">=</span> <span class="fl">50</span><span class="op">)</span> </code></pre></div>
 <div class="figure">
 <img src="deming-regression_files/figure-html/post_slope-1.png" alt="In support of multiplicative gain, the average slope appears to be larger than 1." width="700"><p class="caption">
 In support of multiplicative gain, the average slope appears to be larger than 1.
