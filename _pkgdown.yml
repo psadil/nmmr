@@ -2,3 +2,7 @@ development:
   mode: unreleased
 
 url: https://psadil.github.io/nmmr
+
+template:
+  params:
+    noindex: true
