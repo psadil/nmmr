@@ -5,8 +5,6 @@ vignette: >
   %\VignetteIndexEntry{Bayesian Hierarchical Deming Regression}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
-resource_files:
-  - vignettes/deming-regression-model.svg
 ---
 
 ```{r, include = FALSE}
@@ -39,8 +37,8 @@ The model is very similar to the model underlying orthogonal regression, but for
 
 The paper has full details of the model, but a [plate diagram](https://en.wikipedia.org/wiki/Plate_notation) for the model is is reproduced here.
 
-```{r, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext='svg'}
-knitr::include_graphics("deming-regression-model.svg")
+```{r, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext='png', dpi=600}
+knitr::include_graphics("deming-regression-model.png", dpi = 600)
 ```
 
 ## Application to data
@@ -60,7 +58,7 @@ For the purposes of this vignette, we reduce the dataset down to just 100 voxels
 ```{r, small}
 small <- sub02_wide %>%
   group_by(orientation, run, ses) %>%
-  slice_head(n = 100) %>%
+  slice_head(n = 2) %>%
   mutate(voxel = fct_drop(voxel)) %>%
   ungroup() 
 ```
