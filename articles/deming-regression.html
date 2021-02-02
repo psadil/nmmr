@@ -122,7 +122,7 @@
 <p>The model is very similar to the model underlying orthogonal regression, but for two important changes. First, the model is hierarchical. That is, whereas we previously ran a separate orthogonal regression on each voxel, we now estimate each of the separate slope, intercept, and noise terms in a single regression model<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. Second, we relax the assumption that the variances in both observed variables (e.g., voxel activity at high and low contrast) are equal<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a>.</p>
 <p>The paper has full details of the model, but a <a href="https://en.wikipedia.org/wiki/Plate_notation">plate diagram</a> for the model is is reproduced here.</p>
 <div class="figure">
-<img src="deming-regression-model.svg" alt='Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\mu,\sigma)$ is a normal with location $\mu$ and scale $\sigma$, and $TN(\mu,\sigma)$ is a normal with the same parameters, truncated below at $\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.' width="100%"><p class="caption">
+<img src="deming-regression-model.png" alt='Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\mu,\sigma)$ is a normal with location $\mu$ and scale $\sigma$, and $TN(\mu,\sigma)$ is a normal with the same parameters, truncated below at $\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.' width="100%"><p class="caption">
 Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square “plates”, indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. <span class="math inline">\(N(\mu,\sigma)\)</span> is a normal with location <span class="math inline">\(\mu\)</span> and scale <span class="math inline">\(\sigma\)</span>, and <span class="math inline">\(TN(\mu,\sigma)\)</span> is a normal with the same parameters, truncated below at <span class="math inline">\(\mu\)</span>. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.
 </p>
 </div>
@@ -142,7 +142,7 @@ Schematic of the Bayesian model. Filled square nodes indicate priors, open circl
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">small</span> <span class="op">&lt;-</span> <span class="va">sub02_wide</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">orientation</span>, <span class="va">run</span>, <span class="va">ses</span><span class="op">)</span> <span class="op">%&gt;%</span>
-  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">%&gt;%</span>
+  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/slice.html">slice_head</a></span><span class="op">(</span>n <span class="op">=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>voxel <span class="op">=</span> <span class="fu"><a href="https://forcats.tidyverse.org/reference/fct_drop.html">fct_drop</a></span><span class="op">(</span><span class="va">voxel</span><span class="op">)</span><span class="op">)</span> <span class="op">%&gt;%</span>
   <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">ungroup</a></span><span class="op">(</span><span class="op">)</span> </code></pre></div>
 </div>
@@ -246,78 +246,38 @@ Schematic of the Bayesian model. Filled square nodes indicate priors, open circl
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Chain 1 Iteration:    1 / 1500 [  0%]  (Warmup)</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 17, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 1</span>
-<span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 1</span>
-<span class="co">#&gt; Chain 1 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 1 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 1 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 1 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 1</span>
 <span class="co">#&gt; Chain 2 Iteration:    1 / 1500 [  0%]  (Warmup)</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 14, column 2 to column 53)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
 <span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 2</span>
-<span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 2</span>
-<span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 2</span>
-<span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 17, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 2</span>
-<span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 2</span>
-<span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 14, column 2 to column 53)</span>
-<span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
-<span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
-<span class="co">#&gt; Chain 2</span>
-<span class="co">#&gt; Chain 2 Informational Message: The current Metropolis proposal is about to be rejected because of the following issue:</span>
-<span class="co">#&gt; Chain 2 Exception: offset_multiplier_constrain: multiplier is 0, but must be positive finite! (in '/tmp/RtmpaT0YkC/model-364456bec7a8.stan', line 17, column 2 to column 53)</span>
+<span class="co">#&gt; Chain 2 Exception: normal_lpdf: Location parameter[1] is -inf, but must be finite! (in '/tmp/RtmpAqIJmV/model-365512515673.stan', line 74, column 2 to column 49)</span>
 <span class="co">#&gt; Chain 2 If this warning occurs sporadically, such as for highly constrained variable types like covariance matrices, then the sampler is fine,</span>
 <span class="co">#&gt; Chain 2 but if this warning occurs often then your model may be either severely ill-conditioned or misspecified.</span>
 <span class="co">#&gt; Chain 2</span>
@@ -325,40 +285,51 @@ Schematic of the Bayesian model. Filled square nodes indicate priors, open circl
 <span class="co">#&gt; Chain 2 Iteration:  100 / 1500 [  6%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  200 / 1500 [ 13%]  (Warmup) </span>
 <span class="co">#&gt; Chain 2 Iteration:  200 / 1500 [ 13%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  300 / 1500 [ 20%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  300 / 1500 [ 20%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  400 / 1500 [ 26%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  400 / 1500 [ 26%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  500 / 1500 [ 33%]  (Warmup) </span>
+<span class="co">#&gt; Chain 2 Iteration:  300 / 1500 [ 20%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  500 / 1500 [ 33%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  600 / 1500 [ 40%]  (Warmup) </span>
+<span class="co">#&gt; Chain 2 Iteration:  400 / 1500 [ 26%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  600 / 1500 [ 40%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  700 / 1500 [ 46%]  (Warmup) </span>
+<span class="co">#&gt; Chain 2 Iteration:  500 / 1500 [ 33%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  700 / 1500 [ 46%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  800 / 1500 [ 53%]  (Warmup) </span>
+<span class="co">#&gt; Chain 2 Iteration:  600 / 1500 [ 40%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  800 / 1500 [ 53%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration:  900 / 1500 [ 60%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration:  900 / 1500 [ 60%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration: 1000 / 1500 [ 66%]  (Warmup) </span>
-<span class="co">#&gt; Chain 2 Iteration: 1001 / 1500 [ 66%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration:  700 / 1500 [ 46%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1000 / 1500 [ 66%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1001 / 1500 [ 66%]  (Sampling) </span>
-<span class="co">#&gt; Chain 2 Iteration: 1100 / 1500 [ 73%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration:  800 / 1500 [ 53%]  (Warmup) </span>
+<span class="co">#&gt; Chain 2 Iteration:  900 / 1500 [ 60%]  (Warmup) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1100 / 1500 [ 73%]  (Sampling) </span>
-<span class="co">#&gt; Chain 2 Iteration: 1200 / 1500 [ 80%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration: 1000 / 1500 [ 66%]  (Warmup) </span>
+<span class="co">#&gt; Chain 2 Iteration: 1001 / 1500 [ 66%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration: 1100 / 1500 [ 73%]  (Sampling) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1200 / 1500 [ 80%]  (Sampling) </span>
-<span class="co">#&gt; Chain 2 Iteration: 1300 / 1500 [ 86%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration: 1200 / 1500 [ 80%]  (Sampling) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1300 / 1500 [ 86%]  (Sampling) </span>
-<span class="co">#&gt; Chain 2 Iteration: 1400 / 1500 [ 93%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration: 1300 / 1500 [ 86%]  (Sampling) </span>
 <span class="co">#&gt; Chain 1 Iteration: 1400 / 1500 [ 93%]  (Sampling) </span>
+<span class="co">#&gt; Chain 2 Iteration: 1400 / 1500 [ 93%]  (Sampling) </span>
 <span class="co">#&gt; Chain 2 Iteration: 1500 / 1500 [100%]  (Sampling) </span>
-<span class="co">#&gt; Chain 2 finished in 859.5 seconds.</span>
+<span class="co">#&gt; Chain 2 finished in 19.4 seconds.</span>
 <span class="co">#&gt; Chain 1 Iteration: 1500 / 1500 [100%]  (Sampling) </span>
-<span class="co">#&gt; Chain 1 finished in 885.3 seconds.</span>
+<span class="co">#&gt; Chain 1 finished in 20.1 seconds.</span>
 <span class="co">#&gt; </span>
 <span class="co">#&gt; Both chains finished successfully.</span>
-<span class="co">#&gt; Mean chain execution time: 872.4 seconds.</span>
-<span class="co">#&gt; Total execution time: 885.6 seconds.</span></code></pre></div>
+<span class="co">#&gt; Mean chain execution time: 19.8 seconds.</span>
+<span class="co">#&gt; Total execution time: 20.3 seconds.</span>
+<span class="co">#&gt; </span>
+<span class="co">#&gt; Warning: 4 of 1000 (0.0%) transitions ended with a divergence.</span>
+<span class="co">#&gt; This may indicate insufficient exploration of the posterior distribution.</span>
+<span class="co">#&gt; Possible remedies include: </span>
+<span class="co">#&gt;   * Increasing adapt_delta closer to 1 (default is 0.8) </span>
+<span class="co">#&gt;   * Reparameterizing the model (e.g. using a non-centered parameterization)</span>
+<span class="co">#&gt;   * Using informative or weakly informative prior distributions</span>
+<span class="co">#&gt; 168 of 1000 (17.0%) transitions hit the maximum treedepth limit of 10 or 2^10-1 leapfrog steps.</span>
+<span class="co">#&gt; Trajectories that are prematurely terminated due to this limit will result in slow exploration.</span>
+<span class="co">#&gt; Increasing the max_treedepth limit can avoid this at the expense of more computation.</span>
+<span class="co">#&gt; If increasing max_treedepth does not remove warnings, try to reparameterize the model.</span></code></pre></div>
 <p>The initial messages “The current Metropolis proposal is about to be rejected […]” can safely be ignored. However, if you see warnings about either divergences or maximum treedepth, be wary. For a brief introduction to these warnings, <a href="https://mc-stan.org/misc/warnings.html">see here</a>. You can try setting adapt_delta to a higher number, but if you reach a value like 0.99 and still encounter divergences, then it is likely that there is a deeper issue, a conflict between the model and your data.</p>
 <p>Such conflicts are beyond the scope of this vignette. If increasing adapt delta does not eliminate the sampling warnings, feel free to file an issue on the <a href="https://github.com/psadil/nmmr/issues">github repository</a>. It may be possible to tailor the model to your dataset.</p>
 </div>
@@ -373,16 +344,16 @@ Schematic of the Bayesian model. Filled square nodes indicate priors, open circl
               <span class="st">"x_sigma_mu"</span>, <span class="st">"x_sigma_sigma"</span>,
               <span class="st">"y_sigma_mu"</span>, <span class="st">"y_sigma_sigma"</span><span class="op">)</span><span class="op">)</span>
 <span class="co">#&gt; # A tibble: 8 x 10</span>
-<span class="co">#&gt;   variable        mean median    sd    mad    q5     q95  rhat ess_bulk ess_tail</span>
-<span class="co">#&gt;   &lt;chr&gt;          &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span>
-<span class="co">#&gt; 1 g_mu           3.96   3.90  0.798 0.794   2.71  5.33    1.00     393.     609.</span>
-<span class="co">#&gt; 2 g_sigma        3.36   3.34  0.596 0.543   2.44  4.35    1.00     230.     382.</span>
-<span class="co">#&gt; 3 a_mu          -0.895 -0.886 0.531 0.540  -1.78 -0.0307  1.00     381.     492.</span>
-<span class="co">#&gt; 4 a_sigma        2.96   2.95  0.300 0.282   2.47  3.48    1.00     478.     452.</span>
-<span class="co">#&gt; 5 x_sigma_mu     3.14   3.19  0.380 0.346   2.45  3.66    1.00    1208.     523.</span>
-<span class="co">#&gt; 6 x_sigma_sigma  2.38   2.34  0.298 0.281   1.96  2.91    1.00    1045.     488.</span>
-<span class="co">#&gt; 7 y_sigma_mu     2.86   2.86  0.123 0.122   2.66  3.05    1.01    2236.     724.</span>
-<span class="co">#&gt; 8 y_sigma_sigma  1.17   1.16  0.102 0.0959  1.02  1.35    1.00    2595.     695.</span></code></pre></div>
+<span class="co">#&gt;   variable       mean median    sd   mad      q5   q95  rhat ess_bulk ess_tail</span>
+<span class="co">#&gt;   &lt;chr&gt;         &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;</span>
+<span class="co">#&gt; 1 g_mu           1.08  0.354  7.87  7.72 -11.3   14.4  1.05      33.4     442.</span>
+<span class="co">#&gt; 2 g_sigma        5.37  4.17   4.62  4.21   0.362 14.3  0.999    647.      513.</span>
+<span class="co">#&gt; 3 a_mu           2.42  2.41   7.28  7.45  -9.40  14.3  1.04      46.9     487.</span>
+<span class="co">#&gt; 4 a_sigma        7.37  6.27   4.80  4.20   1.37  16.6  1.00     461.      158.</span>
+<span class="co">#&gt; 5 x_sigma_mu     3.54  3.03   2.78  2.38   0.286  8.54 1.00     703.      406.</span>
+<span class="co">#&gt; 6 x_sigma_sigma  6.06  4.91   4.13  3.07   1.80  14.2  1.01     876.      794.</span>
+<span class="co">#&gt; 7 y_sigma_mu     2.37  1.83   2.02  1.13   0.322  6.64 1.00     617.      501.</span>
+<span class="co">#&gt; 8 y_sigma_sigma  3.60  2.20   3.83  2.23   0.367 11.5  1.00     613.      817.</span></code></pre></div>
 <p>Additionally, we can make use of the many other packages that compose the Stan ecosystem. For example, <a href="https://mc-stan.org/bayesplot/"><code>bayesplot</code></a> has many resources for plotting posterior distributions. The following shows a pairs plot, useful for seeing whether parameters in the posterior tradeoff.</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu">bayesplot</span><span class="fu">::</span><span class="fu"><a href="https://mc-stan.org/bayesplot/reference/MCMC-scatterplots.html">mcmc_pairs</a></span><span class="op">(</span>
