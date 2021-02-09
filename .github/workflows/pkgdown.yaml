@@ -40,7 +40,7 @@ jobs:
         run: |
           install.packages("knitr")
           install.packages("pkgdown")
-          remotes::install_deps(dependencies = TRUE)
+          remotes::install_deps(dependencies = TRUE, upgrade = FALSE)
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
         shell: Rscript {0}
 
