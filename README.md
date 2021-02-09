@@ -26,7 +26,7 @@ After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `re
 
 ``` r
 # If you don't have the remotes package, install it with 
-# install.packages(remotes)
+# install.packages("remotes")
 # then, run the following to install nmmr
 remotes::install_github("psadil/nmmr")
 ```
