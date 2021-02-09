@@ -18,7 +18,7 @@ Depends:
 Imports:
     checkmate,
     cmdstanr,
-    dplyr,
+    dplyr (<= 1.0.3),
     forcats,
     loo,
     magrittr,
@@ -35,11 +35,11 @@ Suggests:
     CircStats,
     ggplot2,
     glue,
+    gridExtra,
     knitr,
     patchwork,
     rmarkdown,
-    testthat,
-    gridExtra
+    testthat
 VignetteBuilder:
     knitr
 Remotes:
