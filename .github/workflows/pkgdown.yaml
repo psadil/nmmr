@@ -41,7 +41,7 @@ jobs:
           install.packages("knitr")
           install.packages("pkgdown")
           remotes::install_deps(dependencies = TRUE, upgrade = FALSE)
-          writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
+          writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), file.path(".github", "cmdstan-version"))
         shell: Rscript {0}
 
       - name: Cache CmdStan
