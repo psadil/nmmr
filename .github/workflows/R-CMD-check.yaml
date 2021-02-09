@@ -79,6 +79,7 @@ jobs:
         run: |
           remotes::install_deps(dependencies = TRUE, upgrade = FALSE)
           remotes::install_cran("rcmdcheck")
+          writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), ".github/cmdstan-version")
         shell: Rscript {0}
 
 
