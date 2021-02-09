@@ -51,7 +51,7 @@ sum_squares <- function(x, y=x){
 #'
 #' @seealso
 #' [sum_squares()], [get_slope_by_group()]
-#' For a more general function (including one that returns the intercept), see [pracma::odregress()]
+#' For a more general function (including one that returns the intercept), see [`pracma::odregress()`](https://rdrr.io/rforge/pracma/man/odregress.html)
 #'
 #' @examples
 #' n <- 1000

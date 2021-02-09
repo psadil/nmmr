@@ -31,5 +31,5 @@ get_slope(x,y)
 }
 \seealso{
 \code{\link[=sum_squares]{sum_squares()}}, \code{\link[=get_slope_by_group]{get_slope_by_group()}}
-For a more general function (including one that returns the intercept), see \code{\link[pracma:odregress]{pracma::odregress()}}
+For a more general function (including one that returns the intercept), see \href{https://rdrr.io/rforge/pracma/man/odregress.html}{\code{pracma::odregress()}}
 }
