@@ -16,7 +16,7 @@
 ^doc$
 ^Meta$
 
-^inst/stan/vtf$
-^inst/stan/orthogonal$
-^inst/stan/vtf\.exe$
-^inst/stan/orthogonal\.exe$
+^exec/vtf$
+^exec/deming
+^exec/vtf\.exe$
+^exec/deming\.exe$

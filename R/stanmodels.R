@@ -8,5 +8,10 @@ stanmodels <- sapply(stanmodels, function(model_name) {
   stan_file <- if(dir.exists("stan")) "stan" else file.path("inst", "stan")
   stan_file <- file.path(stan_file, paste0(model_name, ".stan"))
 
-  cmdstanr::cmdstan_model(stan_file, include_paths = file.path("inst", "stan"))
+  if(!dir.exists("exec")) dir.create("exec")
+
+  cmdstanr::cmdstan_model(
+    stan_file,
+    dir = "exec",
+    include_paths = file.path("inst", "stan"))
 })
