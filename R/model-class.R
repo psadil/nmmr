@@ -18,17 +18,16 @@ Model <- R6::R6Class(
     #' @param form Form of the neuromodulation (additive or multiplicative)
     #' @param prior A [`Prior`]
     initialize = function(
-      d,
-      form,
-      prior = Prior$new()){
-
-      checkmate::assert_choice(form, c("additive","multiplicative"))
+                          d,
+                          form,
+                          prior = Prior$new()) {
+      checkmate::assert_choice(form, c("additive", "multiplicative"))
       checkmate::assert_class(prior, "Prior")
 
       private$.cmdstanmodel <- stanmodels$vtf
       private$.form <- form
       private$.prior <- prior
-      private$.standata <- self$make_standata(d=d)
+      private$.standata <- self$make_standata(d = d)
     },
 
     #' @description
@@ -39,14 +38,14 @@ Model <- R6::R6Class(
     #' @param ... arguments passed to [cmdstanr::sample()][cmdstanr::model-method-sample()].
     #'
     #' @seealso [cmdstanr::sample()][cmdstanr::model-method-sample]
-    sample = function(data = NULL, ...){
-      if(!is.null(data)){
-        standata <- self$make_standata(d=data)
-      }else{
+    sample = function(data = NULL, ...) {
+      if (!is.null(data)) {
+        standata <- self$make_standata(d = data)
+      } else {
         standata <- self$standata
       }
       fit <- self$cmdstanmodel$sample(data = standata, ...)
-      modelfit <- ModelMCMC$new(standata = standata, cmdstanmcmc=fit)
+      modelfit <- ModelMCMC$new(standata = standata, cmdstanmcmc = fit)
       return(modelfit)
     },
 
@@ -55,23 +54,23 @@ Model <- R6::R6Class(
     #' @param d dataframe from which to make standata.
     #'
     #' @return named list
-    make_standata = function(d){
-
+    make_standata = function(d) {
       checkmate::assert_data_frame(d, any.missing = FALSE)
       checkmate::assert_subset(c("sub", "voxel", "contrast", "orientation", "y"), names(d))
       checkmate::assert_numeric(d$orientation, lower = -pi, upper = pi)
 
-      if(self$form == "additive"){
+      if (self$form == "additive") {
         ntfp_min <- 0
         modulation <- 0
-      }else if(self$form =="multiplicative"){
+      } else if (self$form == "multiplicative") {
         ntfp_min <- 1
         modulation <- 1
       }
 
       tmp <- d %>%
         dplyr::mutate(
-          orientation_tested = as.numeric(factor(round(.data$orientation,3)))) %>%
+          orientation_tested = as.numeric(factor(round(.data$orientation, 3)))
+        ) %>%
         dplyr::arrange(.data$voxel, .data$contrast, .data$orientation)
 
       sub_by_vox <- tmp %>%
@@ -89,13 +88,15 @@ Model <- R6::R6Class(
       ori_by_vox <- matrix(
         0,
         nrow = dplyr::n_distinct(tmp$voxel),
-        ncol = length(unique_orientations))
+        ncol = length(unique_orientations)
+      )
 
       ori_by_vox0 <- tmp %>%
         dplyr::distinct(.data$voxel, .data$orientation_tested) %>%
         dplyr::group_nest(.data$voxel)
-      for(v in 1:nrow(ori_by_vox0))
-        ori_by_vox[v,1:n_unique_orientations_vox[v]] <- ori_by_vox0$data[[v]]$orientation_tested
+      for (v in 1:nrow(ori_by_vox0)) {
+        ori_by_vox[v, 1:n_unique_orientations_vox[v]] <- ori_by_vox0$data[[v]]$orientation_tested
+      }
 
       # voxels must already be differentiated by ses or sub (if relevant)
       X <- interaction(tmp$voxel, tmp$contrast, tmp$orientation_tested, lex.order = TRUE, drop = TRUE) %>%
@@ -111,7 +112,8 @@ Model <- R6::R6Class(
           X = list(X),
           sub_by_vox = list(sub_by_vox),
           ntfp_min = ntfp_min,
-          modulation = modulation)
+          modulation = modulation
+        )
 
       stan_data$orientation_tested <- NULL
       stan_data$orientation <- NULL
@@ -122,7 +124,7 @@ Model <- R6::R6Class(
   active = list(
 
     #' @field standata used to fit model
-    standata = function(value){
+    standata = function(value) {
       if (missing(value)) {
         private$.standata
       } else {
@@ -131,7 +133,7 @@ Model <- R6::R6Class(
     },
 
     #' @field form used to fit model
-    form = function(value){
+    form = function(value) {
       if (missing(value)) {
         private$.form
       } else {
@@ -140,7 +142,7 @@ Model <- R6::R6Class(
     },
 
     #' @field prior used to fit model
-    prior = function(value){
+    prior = function(value) {
       if (missing(value)) {
         private$.prior
       } else {
@@ -149,7 +151,7 @@ Model <- R6::R6Class(
     },
 
     #' @field cmdstanmodel Underlying [`cmdstanr::CmdStanModel`]
-    cmdstanmodel = function(value){
+    cmdstanmodel = function(value) {
       if (missing(value)) {
         private$.cmdstanmodel
       } else {
@@ -164,4 +166,3 @@ Model <- R6::R6Class(
     .cmdstanmodel = NULL
   )
 )
-

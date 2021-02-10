@@ -28,10 +28,9 @@ Deming <- R6::R6Class(
     #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
     #'   dplyr::mutate(orientation = factor(orientation)) %>%
     #'   Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
-    initialize = function(d, x, y, tuning_var, voxel_var = "voxel"){
-
+    initialize = function(d, x, y, tuning_var, voxel_var = "voxel") {
       private$.cmdstanmodel <- stanmodels$deming
-      private$.standata <- self$make_standata(d, {{x}}, {{y}}, {{tuning_var}}, {{voxel_var}})
+      private$.standata <- self$make_standata(d, {{ x }}, {{ y }}, {{ tuning_var }}, {{ voxel_var }})
     },
 
     #' @description
@@ -43,8 +42,7 @@ Deming <- R6::R6Class(
     #' @param voxel_var Name of column indexing voxels. Column must be a factor.
     #'
     #' @return named list
-    make_standata = function(d, x, y, tuning_var, voxel_var = "voxel"){
-
+    make_standata = function(d, x, y, tuning_var, voxel_var = "voxel") {
       x_name <- as_name(enquo(x))
       y_name <- as_name(enquo(y))
       tuning_name <- as_name(enquo(tuning_var))
@@ -60,9 +58,9 @@ Deming <- R6::R6Class(
       checkmate::assert_factor(d[[voxel_name]])
 
       stan_data <- d %>%
-        dplyr::arrange({{voxel_name}}, {{tuning_var}}) %>%
-        dplyr::mutate(voxel_tuning = interaction({{voxel_name}}, {{tuning_var}}, lex.order = TRUE)) %>%
-        dplyr::rename(x = {{x}}, y = {{y}}, "tuning" = {{tuning_var}}) %>%
+        dplyr::arrange({{ voxel_name }}, {{ tuning_var }}) %>%
+        dplyr::mutate(voxel_tuning = interaction({{ voxel_name }}, {{ tuning_var }}, lex.order = TRUE)) %>%
+        dplyr::rename(x = {{ x }}, y = {{ y }}, "tuning" = {{ tuning_var }}) %>%
         tidybayes::compose_data()
 
       return(stan_data)
@@ -74,16 +72,15 @@ Deming <- R6::R6Class(
     #' @param ... arguments passed to [cmdstanr::sample()][cmdstanr::model-method-sample()].
     #'
     #' @return An object of class [`cmdstanr::CmdStanMCMC`]
-    sample = function(...){
+    sample = function(...) {
       fit <- self$cmdstanmodel$sample(data = self$standata, ...)
       return(fit)
     }
-
   ),
   active = list(
 
     #' @field standata used to fit model
-    standata = function(value){
+    standata = function(value) {
       if (missing(value)) {
         private$.standata
       } else {
@@ -92,7 +89,7 @@ Deming <- R6::R6Class(
     },
 
     #' @field cmdstanmodel Underlying [`cmdstanr::CmdStanModel`]
-    cmdstanmodel = function(value){
+    cmdstanmodel = function(value) {
       if (missing(value)) {
         private$.cmdstanmodel
       } else {
@@ -105,4 +102,3 @@ Deming <- R6::R6Class(
     .cmdstanmodel = NULL
   )
 )
-

@@ -24,10 +24,8 @@
 #' @examples
 #'
 #' WISEsummary(sub02, y, withinvars = c(contrast, orientation), idvar = voxel)
-#'
-WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
-                        idvar=NULL, CI_width=.95, na.rm=FALSE) {
-
+WISEsummary <- function(data, dependentvars, betweenvars = NULL, withinvars = NULL,
+                        idvar = NULL, CI_width = .95, na.rm = FALSE) {
   checkmate::assert_logical(na.rm, min.len = 1, max.len = 1)
   checkmate::assert_number(CI_width, lower = 0, upper = 1)
   checkmate::assert_data_frame(data)
@@ -53,32 +51,36 @@ WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
   # ignoring the subjects. Standard 'unnormed' means.
 
   by_dv <- data %>%
-    tidyr::pivot_longer(cols = {{dependentvars}}, names_to = "DV")
+    tidyr::pivot_longer(cols = {{ dependentvars }}, names_to = "DV")
 
   cell_means <- by_dv %>%
-    dplyr::group_by(.data$DV, dplyr::across({{betweenvars}}), dplyr::across({{withinvars}})) %>%
+    dplyr::group_by(.data$DV, dplyr::across({{ betweenvars }}), dplyr::across({{ withinvars }})) %>%
     dplyr::summarise(
       dplyr::across(
         .data$value,
-        .fns = ~mean(.x, na.rm = na.rm),
-        .names = "mean"),
-      .groups = "drop")
+        .fns = ~ mean(.x, na.rm = na.rm),
+        .names = "mean"
+      ),
+      .groups = "drop"
+    )
 
-  nCells <- nrow(dplyr::distinct(cell_means, dplyr::across({{withinvars}})))
-  correction <- if(nCells > 1) sqrt((nCells/(nCells - 1))) else 1
+  nCells <- nrow(dplyr::distinct(cell_means, dplyr::across({{ withinvars }})))
+  correction <- if (nCells > 1) sqrt((nCells / (nCells - 1))) else 1
 
   recentered <- by_dv %>%
-    dplyr::group_by(.data$DV, dplyr::across({{idvar}})) %>%
+    dplyr::group_by(.data$DV, dplyr::across({{ idvar }})) %>%
     dplyr::mutate(subject_avg = mean(.data$value)) %>%
     dplyr::group_by(.data$DV) %>%
     dplyr::mutate(recentered_value = .data$value - .data$subject_avg + mean(.data$value)) %>%
-    dplyr::group_by(.data$DV, dplyr::across({{withinvars}}), dplyr::across({{betweenvars}})) %>%
+    dplyr::group_by(.data$DV, dplyr::across({{ withinvars }}), dplyr::across({{ betweenvars }})) %>%
     dplyr::summarise(
       dplyr::across(
         .data$recentered_value,
         .fns = list(recentered_mean = mean, sem = sem, n = length),
-        .names = "{.fn}"),
-      .groups = "drop")
+        .names = "{.fn}"
+      ),
+      .groups = "drop"
+    )
 
   by_cols <- names(cell_means)
   by_cols <- by_cols[!by_cols == "mean"]
@@ -86,15 +88,16 @@ WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
   dplyr::left_join(cell_means, recentered, by = by_cols) %>%
     dplyr::mutate(
       sem = .data$sem * correction,
-      CI = stats::qt((1 - CI_width)/2, df = .data$n-1, lower.tail = FALSE) * .data$sem,
+      CI = stats::qt((1 - CI_width) / 2, df = .data$n - 1, lower.tail = FALSE) * .data$sem,
       CI_lower = .data$mean - .data$CI,
-      CI_upper = .data$mean + .data$CI) %>%
+      CI_upper = .data$mean + .data$CI
+    ) %>%
     dplyr::select(-.data$CI) %>%
     tidyr::pivot_wider(
       names_from = .data$DV,
       values_from = c(.data$mean, .data$recentered_mean, .data$sem, .data$n, .data$CI_lower, .data$CI_upper),
-      names_glue = "{DV}_{.value}")
-
+      names_glue = "{DV}_{.value}"
+    )
 }
 
 
@@ -118,12 +121,10 @@ WISEsummary <- function(data, dependentvars, betweenvars=NULL, withinvars=NULL,
 #'
 #' x <- runif(30, 5, 2)
 #' sem(x)
-#'
 sem <- function(x, na.rm = FALSE) {
-
   checkmate::assert_numeric(x)
   check <- checkmate::check_numeric(x, all.missing = FALSE, any.missing = na.rm)
-  if(rlang::is_character(check)) warning(check)
+  if (rlang::is_character(check)) warning(check)
 
   if (na.rm) {
     x <- x[!is.na(x)]
@@ -132,4 +133,3 @@ sem <- function(x, na.rm = FALSE) {
   ## Standard error of the mean calculation
   sqrt(stats::var(x) / length(x))
 }
-

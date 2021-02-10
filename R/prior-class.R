@@ -52,17 +52,16 @@ Prior <- R6::R6Class(
     #'
     #' @return A new `Prior` object.
     initialize = function(
-      sigma_loc = c(2, 1/2),
-      sigma_scale = c(2, 1/2),
-      gamma_loc = 5,
-      gamma_scale = c(2, 1/20),
-      kappa_loc = c(3, 1),
-      kappa_scale = c(3, 1),
-      alpha_loc = c(0, 5),
-      alpha_scale = c(2, 1/2),
-      ntfp_loc = 0.5,
-      ntfp_scale = c(2, 3)) {
-
+                          sigma_loc = c(2, 1 / 2),
+                          sigma_scale = c(2, 1 / 2),
+                          gamma_loc = 5,
+                          gamma_scale = c(2, 1 / 20),
+                          kappa_loc = c(3, 1),
+                          kappa_scale = c(3, 1),
+                          alpha_loc = c(0, 5),
+                          alpha_scale = c(2, 1 / 2),
+                          ntfp_loc = 0.5,
+                          ntfp_scale = c(2, 3)) {
       checkmate::assert_numeric(sigma_loc, lower = 0, len = 2)
       checkmate::assert_numeric(sigma_scale, lower = 0, len = 2)
       checkmate::assert_numeric(gamma_loc, lower = 0, len = 1)
@@ -88,7 +87,7 @@ Prior <- R6::R6Class(
 
     #' @description Convert object to a list.
     #' This is useful when passing data to Stan
-    as_list = function(){
+    as_list = function() {
       list(
         prior_sigma_loc = self$sigma_loc,
         prior_sigma_scale = self$sigma_scale,
@@ -99,7 +98,8 @@ Prior <- R6::R6Class(
         prior_alpha_loc = self$alpha_loc,
         prior_alpha_scale = self$alpha_scale,
         prior_ntfp_loc = self$ntfp_loc,
-        prior_ntfp_scale = self$ntfp_scale)
+        prior_ntfp_scale = self$ntfp_scale
+      )
     }
   )
 )
