@@ -24,10 +24,13 @@ Deming <- R6::R6Class(
     #' @param voxel_var Name of column indexing voxels
     #' @param prior A [`DemingPrior`]
     #' @examples
-    #' sub02 %>%
-    #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
-    #'   dplyr::mutate(orientation = factor(orientation)) %>%
-    #'   Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+    #' m <- sub02 %>%
+    #'      tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
+    #'      dplyr::mutate(orientation = factor(orientation)) %>%
+    #'      Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+    #' m
+    #'
+    #' m$cmdstanmodel
     initialize = function(d,
                           x,
                           y,
@@ -37,8 +40,8 @@ Deming <- R6::R6Class(
       checkmate::assert_class(prior, "DemingPrior")
 
       private$.cmdstanmodel <- stanmodels$deming
-      private$.standata <- self$make_standata(d, {{ x }}, {{ y }}, {{ tuning_var }}, {{ voxel_var }})
       private$.prior <- prior
+      private$.standata <- self$make_standata(d, {{ x }}, {{ y }}, {{ tuning_var }}, {{ voxel_var }})
     },
 
     #' @description

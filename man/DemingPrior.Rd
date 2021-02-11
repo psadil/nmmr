@@ -11,29 +11,29 @@ List of priors
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{z_mu_mu}}{\eqn{\mu^{\mu^z} ~ normal(z_mu_mu[1], z_mu_mu[2])}}
+\item{\code{z_mu_mu}}{\eqn{\mu^{\mu^z}} ~ \code{normal(z_mu_mu[1], z_mu_mu[2])}}
 
-\item{\code{z_mu_sigma}}{\eqn{\sigma^{\mu^z} ~ normal(z_mu_sigma[1], z_mu_sigma[2])}}
+\item{\code{z_mu_sigma}}{\eqn{\sigma^{\mu^z}} ~ \code{normal(z_mu_sigma[1], z_mu_sigma[2])}}
 
-\item{\code{z_sigma_mu}}{\eqn{\mu^{\sigma^z} ~ normal(z_sigma_mu[1], z_sigma_mu[2])}}
+\item{\code{z_sigma_mu}}{\eqn{\mu^{\sigma^z}} ~ \code{normal(z_sigma_mu[1], z_sigma_mu[2])}}
 
-\item{\code{z_sigma_sigma}}{\eqn{\sigma^[\sigma^z] ~ normal(z_sigma_sigma[1], z_sigma_sigma[2])}}
+\item{\code{z_sigma_sigma}}{\eqn{\sigma^{\sigma^z}} ~ \code{normal(z_sigma_sigma[1], z_sigma_sigma[2])}}
 
-\item{\code{x_sigma_mu}}{\eqn{\mu^{\sigma^x} ~ normal(x_sigma_mu[1], x_sigma_mu[2])}}
+\item{\code{x_sigma_mu}}{\eqn{\mu^{\sigma^x}} ~ \code{normal(x_sigma_mu[1], x_sigma_mu[2])}}
 
-\item{\code{x_sigma_sigma}}{\eqn{\sigma^{\sigma^x} ~ normal(x_sigma_sigma[1], x_sigma_sigma[2])}}
+\item{\code{x_sigma_sigma}}{\eqn{\sigma^{\sigma^x}} ~ \code{normal(x_sigma_sigma[1], x_sigma_sigma[2])}}
 
-\item{\code{y_sigma_mu}}{\eqn{\mu^{\sigma^y} ~ normal(y_sigma_mu[1], y_sigma_mu[2])}}
+\item{\code{y_sigma_mu}}{\eqn{\mu^{\sigma^y}} ~ \code{normal(y_sigma_mu[1], y_sigma_mu[2])}}
 
-\item{\code{y_sigma_sigma}}{\eqn{\sigma^{\sigma^y} ~ normal(y_sigma_sigma[1], y_sigma_sigma[2])}}
+\item{\code{y_sigma_sigma}}{\eqn{\sigma^{\sigma^y}} ~ \code{normal(y_sigma_sigma[1], y_sigma_sigma[2])}}
 
-\item{\code{g_mu}}{\eqn{\mu^g ~ normal(g_mu[1], g_mu[2])}}
+\item{\code{g_mu}}{\eqn{\mu^g} ~ \code{normal(g_mu[1], g_mu[2])}}
 
-\item{\code{g_sigma}}{\eqn{\sigma^g ~ normal(g_sigma[1], g_sigma[2])}}
+\item{\code{g_sigma}}{\eqn{\sigma^g} ~ \code{normal(g_sigma[1], g_sigma[2])}}
 
-\item{\code{a_mu}}{\eqn{\mu^a ~ normal(a_mu[1], a_mu[2])}}
+\item{\code{a_mu}}{\eqn{\mu^a} ~ \code{normal(a_mu[1], a_mu[2])}}
 
-\item{\code{a_sigma}}{\eqn{\sigma^a ~ normal(a_sigma[1], a_sigma[2])}}
+\item{\code{a_sigma}}{\eqn{\sigma^a} ~ \code{normal(a_sigma[1], a_sigma[2])}}
 }
 \if{html}{\out{</div>}}
 }

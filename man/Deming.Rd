@@ -13,10 +13,13 @@ This class is a wrapper around a \code{\link[cmdstanr:CmdStanModel]{cmdstanr::Cm
 ## Method `Deming$new`
 ## ------------------------------------------------
 
-sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
-  dplyr::mutate(orientation = factor(orientation)) \%>\%
-  Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+m <- sub02 \%>\%
+     tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+     dplyr::mutate(orientation = factor(orientation)) \%>\%
+     Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+m
+
+m$cmdstanmodel
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -73,10 +76,13 @@ Initialize new instance of class Deming
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
-  dplyr::mutate(orientation = factor(orientation)) \%>\%
-  Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+\preformatted{m <- sub02 \%>\%
+     tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+     dplyr::mutate(orientation = factor(orientation)) \%>\%
+     Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+m
+
+m$cmdstanmodel
 }
 \if{html}{\out{</div>}}
 

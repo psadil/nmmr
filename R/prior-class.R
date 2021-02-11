@@ -5,34 +5,34 @@ Prior <- R6::R6Class(
   "Prior",
   public = list(
 
-    #' @field sigma_loc \eqn{\sigma_[loc]} ~ gamma(sigma_loc[1], sigma_loc[2])
+    #' @field sigma_loc \eqn{\sigma_{loc}} ~ `gamma(sigma_loc[1], sigma_loc[2])`
     sigma_loc = NULL,
 
-    #' @field sigma_scale  \eqn{\sigma_[scale]} ~ gamma(sigma_scale[1], sigma_scale[2])
+    #' @field sigma_scale  \eqn{\sigma_{scale}} ~ `gamma(sigma_scale[1], sigma_scale[2])`
     sigma_scale = NULL,
 
-    #' @field gamma_loc  \eqn{\gamma_[loc] ~ normal(0, gamma_loc[2])}
+    #' @field gamma_loc  \eqn{\gamma_{loc}} ~ `normal(0, gamma_loc[2])`
     gamma_loc = NULL,
 
-    #' @field gamma_scale  \eqn{\gamma_[scale]} ~ gamma(gamma_scale[1], gamma_scale[2])
+    #' @field gamma_scale  \eqn{\gamma_{scale}} ~ `gamma(gamma_scale[1], gamma_scale[2])`
     gamma_scale = NULL,
 
-    #' @field kappa_loc  \eqn{\kappa_[loc]} ~ gamma(kappa_loc[1], kappa_loc[2])
+    #' @field kappa_loc  \eqn{\kappa_{loc}} ~ `gamma(kappa_loc[1], kappa_loc[2])`
     kappa_loc = NULL,
 
-    #' @field kappa_scale \eqn{\kappa_[scale]} ~ gamma(kappa_scale[1], kappa_scale[2])
+    #' @field kappa_scale \eqn{\kappa_{scale}} ~ `gamma(kappa_scale[1], kappa_scale[2])`
     kappa_scale = NULL,
 
-    #' @field alpha_loc \eqn{\alpha_[loc]} ~ normal(alpha_loc[1], alpha_loc[2])
+    #' @field alpha_loc \eqn{\alpha_{loc}} ~ `normal(alpha_loc[1], alpha_loc[2])`
     alpha_loc = NULL,
 
-    #' @field alpha_scale \eqn{\alpha_[scale]} ~ gamma(alpha_scale[1], alpha_scale[2])
+    #' @field alpha_scale \eqn{\alpha_{scale}} ~ `gamma(alpha_scale[1], alpha_scale[2])`
     alpha_scale = NULL,
 
-    #' @field ntfp_loc \eqn{ntfp_[loc]} ~ normal(ntfp_loc[1], ntfp_loc[2])
+    #' @field ntfp_loc \eqn{ntfp_{loc}} ~ `normal(ntfp_loc[1], ntfp_loc[2])`
     ntfp_loc = NULL,
 
-    #' @field ntfp_scale \eqn{ntfp_[scale]} ~ gamma(ntfp_scale[1], ntfp_scale[2])
+    #' @field ntfp_scale \eqn{ntfp_{scale}} ~ `gamma(ntfp_scale[1], ntfp_scale[2])`
     ntfp_scale = NULL,
 
     #' @description
@@ -102,40 +102,40 @@ DemingPrior <- R6::R6Class(
   "DemingPrior",
   public = list(
 
-    #' @field z_mu_mu \eqn{\mu^{\mu^z} ~ normal(z_mu_mu[1], z_mu_mu[2])}
+    #' @field z_mu_mu \eqn{\mu^{\mu^z}} ~ `normal(z_mu_mu[1], z_mu_mu[2])`
     z_mu_mu = NULL,
 
-    #' @field z_mu_sigma \eqn{\sigma^{\mu^z} ~ normal(z_mu_sigma[1], z_mu_sigma[2])}
+    #' @field z_mu_sigma \eqn{\sigma^{\mu^z}} ~ `normal(z_mu_sigma[1], z_mu_sigma[2])`
     z_mu_sigma = NULL,
 
-    #' @field z_sigma_mu \eqn{\mu^{\sigma^z} ~ normal(z_sigma_mu[1], z_sigma_mu[2])}
+    #' @field z_sigma_mu \eqn{\mu^{\sigma^z}} ~ `normal(z_sigma_mu[1], z_sigma_mu[2])`
     z_sigma_mu = NULL,
 
-    #' @field z_sigma_sigma \eqn{\sigma^[\sigma^z] ~ normal(z_sigma_sigma[1], z_sigma_sigma[2])}
+    #' @field z_sigma_sigma \eqn{\sigma^{\sigma^z}} ~ `normal(z_sigma_sigma[1], z_sigma_sigma[2])`
     z_sigma_sigma = NULL,
 
-    #' @field x_sigma_mu \eqn{\mu^{\sigma^x} ~ normal(x_sigma_mu[1], x_sigma_mu[2])}
+    #' @field x_sigma_mu \eqn{\mu^{\sigma^x}} ~ `normal(x_sigma_mu[1], x_sigma_mu[2])`
     x_sigma_mu = NULL,
 
-    #' @field x_sigma_sigma \eqn{\sigma^{\sigma^x} ~ normal(x_sigma_sigma[1], x_sigma_sigma[2])}
+    #' @field x_sigma_sigma \eqn{\sigma^{\sigma^x}} ~ `normal(x_sigma_sigma[1], x_sigma_sigma[2])`
     x_sigma_sigma = NULL,
 
-    #' @field y_sigma_mu \eqn{\mu^{\sigma^y} ~ normal(y_sigma_mu[1], y_sigma_mu[2])}
+    #' @field y_sigma_mu \eqn{\mu^{\sigma^y}} ~ `normal(y_sigma_mu[1], y_sigma_mu[2])`
     y_sigma_mu = NULL,
 
-    #' @field y_sigma_sigma \eqn{\sigma^{\sigma^y} ~ normal(y_sigma_sigma[1], y_sigma_sigma[2])}
+    #' @field y_sigma_sigma \eqn{\sigma^{\sigma^y}} ~ `normal(y_sigma_sigma[1], y_sigma_sigma[2])`
     y_sigma_sigma = NULL,
 
-    #' @field g_mu \eqn{\mu^g ~ normal(g_mu[1], g_mu[2])}
+    #' @field g_mu \eqn{\mu^g} ~ `normal(g_mu[1], g_mu[2])`
     g_mu = NULL,
 
-    #' @field g_sigma \eqn{\sigma^g ~ normal(g_sigma[1], g_sigma[2])}
+    #' @field g_sigma \eqn{\sigma^g} ~ `normal(g_sigma[1], g_sigma[2])`
     g_sigma = NULL,
 
-    #' @field a_mu \eqn{\mu^a ~ normal(a_mu[1], a_mu[2])}
+    #' @field a_mu \eqn{\mu^a} ~ `normal(a_mu[1], a_mu[2])`
     a_mu = NULL,
 
-    #' @field a_sigma \eqn{\sigma^a ~ normal(a_sigma[1], a_sigma[2])}
+    #' @field a_sigma \eqn{\sigma^a} ~ `normal(a_sigma[1], a_sigma[2])`
     a_sigma = NULL,
 
     #' @description

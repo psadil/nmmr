@@ -26,9 +26,14 @@ test_that("read-only fields cannot be modified", {
   expect_error(m$form <- "new")
   expect_error(m$standata <- list())
   expect_error(m$cmdstanmodel <- NULL)
+  testthat::expect_error(m$prior <- list())
 })
 
 test_that("The fit method just returns the CmdStanMCMC", {
   checkmate::expect_r6(f, classes = c("CmdStanMCMC"))
   testthat::expect_s3_class(f$summary(), "draws_summary")
+})
+
+test_that("Prior is accessible", {
+  expect_equal(m$prior, DemingPrior$new())
 })
