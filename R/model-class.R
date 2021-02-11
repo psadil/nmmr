@@ -17,8 +17,7 @@ Model <- R6::R6Class(
     #' @param d dataframe from which to make standata.
     #' @param form Form of the neuromodulation (additive or multiplicative)
     #' @param prior A [`Prior`]
-    initialize = function(
-                          d,
+    initialize = function(d,
                           form,
                           prior = Prior$new()) {
       checkmate::assert_choice(form, c("additive", "multiplicative"))

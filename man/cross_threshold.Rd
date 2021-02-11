@@ -36,8 +36,6 @@ sub02 \%>\%
 sub02 \%>\%
   tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
   cross_threshold(c(voxel, run), low, high, participant = sub)
-
-
 }
 \seealso{
 \code{\link[=get_slope]{get_slope()}}, \code{\link[=get_slope_by_group]{get_slope_by_group()}}

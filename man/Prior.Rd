@@ -11,25 +11,25 @@ List of priors
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
 \describe{
-\item{\code{sigma_loc}}{\eqn{\sigma_loc ~ gamma(sigma_loc[1], sigma_loc[2])}}
+\item{\code{sigma_loc}}{\eqn{\sigma_[loc]} ~ gamma(sigma_loc\link{1}, sigma_loc\link{2})}
 
-\item{\code{sigma_scale}}{\eqn{\sigma_scale ~ gamma(sigma_scale[1], sigma_scale[2])}}
+\item{\code{sigma_scale}}{\eqn{\sigma_[scale]} ~ gamma(sigma_scale\link{1}, sigma_scale\link{2})}
 
-\item{\code{gamma_loc}}{\eqn{\gamma_loc ~ normal(0, gamma_loc[2])}}
+\item{\code{gamma_loc}}{\eqn{\gamma_[loc] ~ normal(0, gamma_loc[2])}}
 
-\item{\code{gamma_scale}}{\eqn{\gamma_scale ~ gamma(gamma_scale[1], gamma_scale[2])}}
+\item{\code{gamma_scale}}{\eqn{\gamma_[scale]} ~ gamma(gamma_scale\link{1}, gamma_scale\link{2})}
 
-\item{\code{kappa_loc}}{\eqn{\kappa_loc ~ gamma(kappa_loc[1], kappa_loc[2])}}
+\item{\code{kappa_loc}}{\eqn{\kappa_[loc]} ~ gamma(kappa_loc\link{1}, kappa_loc\link{2})}
 
-\item{\code{kappa_scale}}{\eqn{\kappa_scale ~ gamma(kappa_scale[1], kappa_scale[2])}}
+\item{\code{kappa_scale}}{\eqn{\kappa_[scale]} ~ gamma(kappa_scale\link{1}, kappa_scale\link{2})}
 
-\item{\code{alpha_loc}}{\eqn{\alpha_loc ~ normal(alpha_loc[1], alpha_loc[2])}}
+\item{\code{alpha_loc}}{\eqn{\alpha_[loc]} ~ normal(alpha_loc\link{1}, alpha_loc\link{2})}
 
-\item{\code{alpha_scale}}{\eqn{\alpha_scale ~ gamma(alpha_scale[1], alpha_scale[2])}}
+\item{\code{alpha_scale}}{\eqn{\alpha_[scale]} ~ gamma(alpha_scale\link{1}, alpha_scale\link{2})}
 
-\item{\code{ntfp_loc}}{\eqn{ntfp_loc ~ normal(ntfp_loc[1], ntfp_loc[2])}}
+\item{\code{ntfp_loc}}{\eqn{ntfp_[loc]} ~ normal(ntfp_loc\link{1}, ntfp_loc\link{2})}
 
-\item{\code{ntfp_scale}}{\eqn{ntfp_scale ~ gamma(ntfp_scale[1], ntfp_scale[2])}}
+\item{\code{ntfp_scale}}{\eqn{ntfp_[scale]} ~ gamma(ntfp_scale\link{1}, ntfp_scale\link{2})}
 }
 \if{html}{\out{</div>}}
 }

@@ -36,5 +36,5 @@ sum_squares(x)
 
 # a cross-product
 y <- rnorm(10)
-sum_squares(x,y)
+sum_squares(x, y)
 }

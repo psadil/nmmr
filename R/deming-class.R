@@ -22,15 +22,23 @@ Deming <- R6::R6Class(
     #' @param x,y Names of columns in d which contain the x and y values
     #' @param tuning_var Name of column across which there was testing
     #' @param voxel_var Name of column indexing voxels
-    #'
+    #' @param prior A [`DemingPrior`]
     #' @examples
     #' sub02 %>%
     #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
     #'   dplyr::mutate(orientation = factor(orientation)) %>%
     #'   Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
-    initialize = function(d, x, y, tuning_var, voxel_var = "voxel") {
+    initialize = function(d,
+                          x,
+                          y,
+                          tuning_var,
+                          voxel_var = "voxel",
+                          prior = DemingPrior$new()) {
+      checkmate::assert_class(prior, "DemingPrior")
+
       private$.cmdstanmodel <- stanmodels$deming
       private$.standata <- self$make_standata(d, {{ x }}, {{ y }}, {{ tuning_var }}, {{ voxel_var }})
+      private$.prior <- prior
     },
 
     #' @description
@@ -63,7 +71,7 @@ Deming <- R6::R6Class(
         dplyr::rename(x = {{ x }}, y = {{ y }}, "tuning" = {{ tuning_var }}) %>%
         tidybayes::compose_data()
 
-      return(stan_data)
+      return(c(stan_data, private$.prior$as_list()))
     },
 
     #' @description
@@ -88,6 +96,15 @@ Deming <- R6::R6Class(
       }
     },
 
+    #' @field prior used to fit model
+    prior = function(value) {
+      if (missing(value)) {
+        private$.prior
+      } else {
+        stop("`$prior` is read only", call. = FALSE)
+      }
+    },
+
     #' @field cmdstanmodel Underlying [`cmdstanr::CmdStanModel`]
     cmdstanmodel = function(value) {
       if (missing(value)) {
@@ -99,6 +116,7 @@ Deming <- R6::R6Class(
   ),
   private = list(
     .standata = list(),
-    .cmdstanmodel = NULL
+    .cmdstanmodel = NULL,
+    .prior = NULL
   )
 )

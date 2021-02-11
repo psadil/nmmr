@@ -26,8 +26,8 @@ of vertical and horizontal differences.
 n <- 1000
 z <- rnorm(n)
 x <- rnorm(n, z)
-y <- rnorm(n, 2*z + 1)
-get_slope(x,y)
+y <- rnorm(n, 2 * z + 1)
+get_slope(x, y)
 }
 \seealso{
 \code{\link[=sum_squares]{sum_squares()}}, \code{\link[=get_slope_by_group]{get_slope_by_group()}}

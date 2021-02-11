@@ -32,6 +32,8 @@ sub02 \%>\%
 \describe{
 \item{\code{standata}}{used to fit model}
 
+\item{\code{prior}}{used to fit model}
+
 \item{\code{cmdstanmodel}}{Underlying \code{\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}}}
 }
 \if{html}{\out{</div>}}
@@ -51,7 +53,7 @@ sub02 \%>\%
 \subsection{Method \code{new()}}{
 Initialize new instance of class Deming
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel", prior = DemingPrior$new())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -64,6 +66,8 @@ Initialize new instance of class Deming
 \item{\code{tuning_var}}{Name of column across which there was testing}
 
 \item{\code{voxel_var}}{Name of column indexing voxels}
+
+\item{\code{prior}}{A \code{\link{DemingPrior}}}
 }
 \if{html}{\out{</div>}}
 }

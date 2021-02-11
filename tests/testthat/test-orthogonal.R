@@ -8,7 +8,7 @@ test_that("sums of squares performs checks", {
 })
 
 test_that("get pretty accurate slope", {
-  n <- 1e5
+  n <- 1e6
   z <- rnorm(n)
   x <- rnorm(n, z)
 
