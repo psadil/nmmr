@@ -40,7 +40,6 @@ Within-subject Error Summary
 \examples{
 
 WISEsummary(sub02, y, withinvars = c(contrast, orientation), idvar = voxel)
-
 }
 \references{
 \href{http://www.cookbook-r.com/Graphs/Plotting_means_and_error_bars_(ggplot2)/}{WISESummary},

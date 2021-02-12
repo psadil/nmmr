@@ -27,5 +27,4 @@ Uses the following forumula:
 
 x <- runif(30, 5, 2)
 sem(x)
-
 }

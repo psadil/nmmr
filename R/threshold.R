@@ -22,27 +22,25 @@
 #' sub02 %>%
 #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
 #'   cross_threshold(c(voxel, run), low, high, participant = sub)
-#'
-#'
 #' @export
 #' @importFrom rlang .data
 cross_threshold <- function(d, group, x, y, quantiles = c(0, 0.9), participant = NULL) {
-
   checkmate::assert_numeric(quantiles, lower = 0, upper = 1, any.missing = FALSE, min.len = 1, unique = TRUE)
   checkmate::assert_data_frame(d)
   checkmate::assert_subset(as_name(enquo(x)), names(d))
   checkmate::assert_subset(as_name(enquo(y)), names(d))
 
   d %>%
-    dplyr::group_by(dplyr::across({{group}}), dplyr::across({{participant}})) %>%
+    dplyr::group_by(dplyr::across({{ group }}), dplyr::across({{ participant }})) %>%
     dplyr::summarise(
-      dplyr::across({{x}}, mean, .names = "x"),
-      dplyr::across({{y}}, mean, .names = "y"),
-      .groups = "drop") %>%
+      dplyr::across({{ x }}, mean, .names = "x"),
+      dplyr::across({{ y }}, mean, .names = "y"),
+      .groups = "drop"
+    ) %>%
     dplyr::mutate(di = .data$y - .data$x) %>%
     tidyr::crossing(Threshold = quantiles) %>%
-    dplyr::group_by(.data$Threshold, dplyr::across({{participant}})) %>%
+    dplyr::group_by(.data$Threshold, dplyr::across({{ participant }})) %>%
     dplyr::filter(.data$di >= stats::quantile(.data$di, .data$Threshold)) %>%
-    dplyr::select({{group}}, .data$Threshold, {{participant}}) %>%
+    dplyr::select({{ group }}, .data$Threshold, {{ participant }}) %>%
     dplyr::ungroup()
 }

@@ -28,12 +28,12 @@
 #'
 #' # a cross-product
 #' y <- rnorm(10)
-#' sum_squares(x,y)
-sum_squares <- function(x, y=x){
+#' sum_squares(x, y)
+sum_squares <- function(x, y = x) {
   checkmate::assert_numeric(x, any.missing = FALSE, null.ok = FALSE)
   checkmate::assert_numeric(y, any.missing = FALSE, null.ok = FALSE, len = length(x))
 
-  sum((x-mean(x)) * (y-mean(y)) )
+  sum((x - mean(x)) * (y - mean(y)))
 }
 
 #' Return slope in orthogonal regression problem
@@ -57,16 +57,16 @@ sum_squares <- function(x, y=x){
 #' n <- 1000
 #' z <- rnorm(n)
 #' x <- rnorm(n, z)
-#' y <- rnorm(n, 2*z + 1)
-#' get_slope(x,y)
-get_slope <- function(x,y){
+#' y <- rnorm(n, 2 * z + 1)
+#' get_slope(x, y)
+get_slope <- function(x, y) {
 
   # checks performed in sum_squares function
   s_xx <- sum_squares(x)
   s_yy <- sum_squares(y)
-  s_xy <- sum_squares(x,y)
+  s_xy <- sum_squares(x, y)
 
-  (-(s_xx - s_yy) + sqrt((s_xx - s_yy)^2 + 4*s_xy^2)) / (2*s_xy)
+  (-(s_xx - s_yy) + sqrt((s_xx - s_yy)^2 + 4 * s_xy^2)) / (2 * s_xy)
 }
 
 
@@ -90,11 +90,9 @@ get_slope <- function(x,y){
 #' sub02 %>%
 #'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
 #'   get_slope_by_group(c(voxel, sub), low, high)
-#'
 #' @export
 #' @importFrom rlang .data
 get_slope_by_group <- function(d, group, x, y) {
-
   x_name <- as_name(enquo(x))
   y_name <- as_name(enquo(y))
 
@@ -103,13 +101,11 @@ get_slope_by_group <- function(d, group, x, y) {
   checkmate::assert_subset(y_name, names(d))
 
   d %>%
-    dplyr::group_nest(dplyr::across({{group}})) %>%
+    dplyr::group_nest(dplyr::across({{ group }})) %>%
     dplyr::rowwise() %>%
     dplyr::mutate(
-      slope = get_slope(.data$data[[x_name]], .data$data[[y_name]])) %>%
+      slope = get_slope(.data$data[[x_name]], .data$data[[y_name]])
+    ) %>%
     dplyr::ungroup() %>%
-    dplyr::select({{group}}, .data$slope)
-
+    dplyr::select({{ group }}, .data$slope)
 }
-
-

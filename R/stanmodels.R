@@ -5,13 +5,14 @@ stanmodels <- c("vtf", "deming")
 stanmodels <- sapply(stanmodels, function(model_name) {
   # create C++ code for stan model
   # the two instances are for when the package is in development vs. installed
-  stan_file <- if(dir.exists("stan")) "stan" else file.path("inst", "stan")
+  stan_file <- if (dir.exists("stan")) "stan" else file.path("inst", "stan")
   stan_file <- file.path(stan_file, paste0(model_name, ".stan"))
 
-  if(!dir.exists("exec")) dir.create("exec")
+  if (!dir.exists("exec")) dir.create("exec")
 
   cmdstanr::cmdstan_model(
     stan_file,
     dir = "exec",
-    include_paths = file.path("inst", "stan"))
+    include_paths = file.path("inst", "stan")
+  )
 })

@@ -1,16 +1,18 @@
 small <- sub02 %>%
-  dplyr::filter(forcats::fct_match(voxel, c("191852","197706"))) %>%
+  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) %>%
   dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
 m <- Model$new(small, form = "multiplicative")
 
-testthat::capture_output(
-  {suppressMessages(f <- m$sample(
+testthat::capture_output({
+  suppressMessages(f <- m$sample(
     iter_warmup = 5,
     iter_sampling = 5,
     chains = 2,
     refresh = 0,
-    show_messages = FALSE))})
+    show_messages = FALSE
+  ))
+})
 
 test_that("read-only fields cannot be modified", {
   testthat::expect_error(m$form <- "new")
@@ -32,7 +34,10 @@ test_that("new data can be passed during sampling", {
         iter_sampling = 5,
         chains = 2,
         refresh = 0,
-        show_messages = FALSE))})
+        show_messages = FALSE
+      )
+    )
+  })
   checkmate::expect_r6(f2, classes = c("ModelMCMC"))
   testthat::expect_identical(f$standata, f2$standata)
 })
