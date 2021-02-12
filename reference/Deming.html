@@ -149,6 +149,8 @@ This class is a wrapper around a <code><a href='https://mc-stan.org/cmdstanr/ref
     <p><div class="r6-active-bindings"></p><dl>
 <dt><code>standata</code></dt><dd><p>used to fit model</p></dd>
 
+<dt><code>prior</code></dt><dd><p>used to fit model</p></dd>
+
 <dt><code>cmdstanmodel</code></dt><dd><p>Underlying <code><a href='https://mc-stan.org/cmdstanr/reference/CmdStanModel.html'>cmdstanr::CmdStanModel</a></code></p></dd>
 
 </dl><p></div></p>
@@ -166,7 +168,7 @@ This class is a wrapper around a <code><a href='https://mc-stan.org/cmdstanr/ref
 <p><hr>
 <a id="method-new"></a></p><h3 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Method <code>new()</code></h3>
 <p>Initialize new instance of class Deming</p><h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Usage</h4>
-<p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>tuning_var</span>, voxel_var <span class='op'>=</span> <span class='st'>"voxel"</span><span class='op'>)</span></pre><p></div></p>
+<p><div class="r"></p><pre><span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>d</span>, <span class='va'>x</span>, <span class='va'>y</span>, <span class='va'>tuning_var</span>, voxel_var <span class='op'>=</span> <span class='st'>"voxel"</span>, prior <span class='op'>=</span> <span class='va'><a href='DemingPrior.html'>DemingPrior</a></span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='op'>)</span><span class='op'>)</span></pre><p></div></p>
 
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Arguments</h4>
 <p><div class="arguments"></p><dl>
@@ -178,12 +180,17 @@ This class is a wrapper around a <code><a href='https://mc-stan.org/cmdstanr/ref
 
 <dt><code>voxel_var</code></dt><dd><p>Name of column indexing voxels</p></dd>
 
+<dt><code>prior</code></dt><dd><p>A <code><a href='DemingPrior.html'>DemingPrior</a></code></p></dd>
+
 </dl><p></div></p>
 <h4 class='hasAnchor' id='arguments'><a class='anchor' href='#arguments'></a>Examples</h4>
-<p><div class="r example copy"></p><pre><span class='va'>sub02</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>orientation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>orientation</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>low</span>, <span class='va'>high</span>, tuning_var <span class='op'>=</span> <span class='va'>orientation</span>, voxel_var <span class='op'>=</span> <span class='va'>voxel</span><span class='op'>)</span>
+<p><div class="r example copy"></p><pre><span class='va'>m</span> <span class='op'>&lt;-</span> <span class='va'>sub02</span> <span class='op'>%&gt;%</span>
+     <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+     <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>orientation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>orientation</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+     <span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>low</span>, <span class='va'>high</span>, tuning_var <span class='op'>=</span> <span class='va'>orientation</span>, voxel_var <span class='op'>=</span> <span class='va'>voxel</span><span class='op'>)</span>
+<span class='va'>m</span>
+
+<span class='va'>m</span><span class='op'>$</span><span class='va'>cmdstanmodel</span>
 </pre><p></div></p>
 
 <p><hr>
@@ -235,23 +242,117 @@ This class is a wrapper around a <code><a href='https://mc-stan.org/cmdstanr/ref
 <span class='co'>## Method `Deming$new`</span>
 <span class='co'>## ------------------------------------------------</span>
 
-<span class='va'>sub02</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>orientation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>orientation</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
-  <span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>low</span>, <span class='va'>high</span>, tuning_var <span class='op'>=</span> <span class='va'>orientation</span>, voxel_var <span class='op'>=</span> <span class='va'>voxel</span><span class='op'>)</span>
+<span class='va'>m</span> <span class='op'>&lt;-</span> <span class='va'>sub02</span> <span class='op'>%&gt;%</span>
+     <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+     <span class='fu'>dplyr</span><span class='fu'>::</span><span class='fu'><a href='https://dplyr.tidyverse.org/reference/mutate.html'>mutate</a></span><span class='op'>(</span>orientation <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/factor.html'>factor</a></span><span class='op'>(</span><span class='va'>orientation</span><span class='op'>)</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
+     <span class='va'>Deming</span><span class='op'>$</span><span class='fu'>new</span><span class='op'>(</span><span class='va'>low</span>, <span class='va'>high</span>, tuning_var <span class='op'>=</span> <span class='va'>orientation</span>, voxel_var <span class='op'>=</span> <span class='va'>voxel</span><span class='op'>)</span>
+<span class='va'>m</span>
 </div><div class='output co'>#&gt; &lt;Deming&gt;
 #&gt;   Public:
 #&gt;     clone: function (deep = FALSE) 
 #&gt;     cmdstan_version: 2.26.0
 #&gt;     cmdstanmodel: active binding
 #&gt;     cmdstanr_version: package_version, numeric_version
-#&gt;     initialize: function (d, x, y, tuning_var, voxel_var = "voxel") 
+#&gt;     initialize: function (d, x, y, tuning_var, voxel_var = "voxel", prior = DemingPrior$new()) 
 #&gt;     make_standata: function (d, x, y, tuning_var, voxel_var = "voxel") 
+#&gt;     prior: active binding
 #&gt;     sample: function (...) 
 #&gt;     standata: active binding
 #&gt;   Private:
 #&gt;     .cmdstanmodel: CmdStanModel, R6
-#&gt;     .standata: list</div></pre>
+#&gt;     .prior: DemingPrior, R6
+#&gt;     .standata: list</div><div class='input'>
+<span class='va'>m</span><span class='op'>$</span><span class='va'>cmdstanmodel</span>
+</div><div class='output co'>#&gt; data {
+#&gt;   int&lt;lower=1&gt; n;  // total number of observations
+#&gt;   int n_voxel;
+#&gt;   int&lt;lower=1, upper=n_voxel&gt; voxel[n];
+#&gt;   int n_tuning;
+#&gt;   int&lt;lower=1, upper=n_tuning&gt; tuning[n];
+#&gt;   int&lt;lower=1, upper=n_tuning*n_voxel&gt; voxel_tuning[n]; // index to pick out from matrix of tuning x voxel
+#&gt;   vector[n] y;  // response variable (high)
+#&gt;   vector[n] x;  // noisy values (low)
+#&gt; 
+#&gt;   // priors
+#&gt;   vector[2] prior_z_mu_mu;
+#&gt;   vector[2] prior_z_mu_sigma;
+#&gt;   vector[2] prior_z_sigma_mu;
+#&gt;   vector[2] prior_z_sigma_sigma;
+#&gt;   vector[2] prior_x_sigma_mu;
+#&gt;   vector[2] prior_x_sigma_sigma;
+#&gt;   vector[2] prior_y_sigma_mu;
+#&gt;   vector[2] prior_y_sigma_sigma;
+#&gt;   vector[2] prior_g_mu;
+#&gt;   vector[2] prior_g_sigma;
+#&gt;   vector[2] prior_a_mu;
+#&gt;   vector[2] prior_a_sigma;
+#&gt; }
+#&gt; parameters {
+#&gt;   real&lt;lower=0&gt; g_sigma;
+#&gt;   real g_mu;
+#&gt;   vector&lt;multiplier=g_sigma, offset=g_mu&gt;[n_voxel] g;
+#&gt;   real&lt;lower=0&gt; a_sigma;
+#&gt;   real a_mu;
+#&gt;   vector&lt;multiplier=a_sigma, offset=a_mu&gt;[n_voxel] a;
+#&gt;   real&lt;lower=0&gt; z_mu_sigma;
+#&gt;   real z_mu_mu;
+#&gt;   row_vector[n_voxel] z_mu;
+#&gt;   matrix[n_tuning, n_voxel] z_raw;
+#&gt;   real&lt;lower=0&gt; z_sigma_sigma;
+#&gt;   real&lt;lower=0&gt; z_sigma_mu;
+#&gt;   vector&lt;lower=-z_sigma_mu/z_sigma_sigma&gt;[n_voxel] z_sigma_raw;
+#&gt;   real&lt;lower=0&gt; x_sigma_sigma;
+#&gt;   real&lt;lower=0&gt; x_sigma_mu;
+#&gt;   vector&lt;lower=0&gt;[n_voxel] x_sigma;
+#&gt;   real&lt;lower=0&gt; y_sigma_sigma;
+#&gt;   real&lt;lower=0&gt; y_sigma_mu;
+#&gt;   vector&lt;lower=0&gt;[n_voxel] y_sigma;
+#&gt; }
+#&gt; transformed parameters{
+#&gt;   vector[n_tuning*n_voxel] zeta;
+#&gt; 
+#&gt;   {
+#&gt;     matrix[n_tuning, n_voxel] z;
+#&gt;     vector[n_voxel] z_sigma = z_sigma_mu + z_sigma_raw * z_sigma_sigma;
+#&gt;     for (v in 1:n_voxel) z[,v] = z_sigma[v] * z_raw[,v] + z_mu[v];
+#&gt;     zeta = to_vector(z);
+#&gt;   }
+#&gt; 
+#&gt; }
+#&gt; model {
+#&gt;   z_mu_mu ~ normal(prior_z_mu_mu[1], prior_z_mu_mu[2]);
+#&gt;   z_mu_sigma ~ normal(prior_z_mu_sigma[1], prior_z_mu_sigma[2]);
+#&gt;   z_mu ~ normal(z_mu_mu, z_mu_sigma);
+#&gt; 
+#&gt;   to_vector(z_raw) ~ std_normal();
+#&gt; 
+#&gt;   z_sigma_mu ~ normal(prior_z_sigma_mu[1], prior_z_sigma_mu[2]);
+#&gt;   z_sigma_sigma ~ normal(prior_z_sigma_sigma[1], prior_z_sigma_sigma[2]);
+#&gt;   z_sigma_raw ~ std_normal();
+#&gt;   target += -normal_lccdf(-z_sigma_mu/z_sigma_sigma | 0, 1)*n_voxel;
+#&gt; 
+#&gt;   x_sigma_mu ~ normal(prior_x_sigma_mu[1], prior_x_sigma_mu[2]);
+#&gt;   x_sigma_sigma ~ normal(prior_x_sigma_sigma[1], prior_x_sigma_sigma[2]);
+#&gt;   x_sigma ~ normal(x_sigma_mu, x_sigma_sigma);
+#&gt;   target += -normal_lccdf(0 | x_sigma_mu, x_sigma_sigma) * n_voxel;
+#&gt; 
+#&gt;   y_sigma_mu ~ normal(prior_y_sigma_mu[1], prior_y_sigma_mu[2]);
+#&gt;   y_sigma_sigma ~ normal(prior_y_sigma_sigma[1], prior_y_sigma_sigma[2]);
+#&gt;   y_sigma ~ normal(y_sigma_mu, y_sigma_sigma);
+#&gt;   target += -normal_lccdf(0 | y_sigma_mu, y_sigma_sigma) * n_voxel;
+#&gt; 
+#&gt;   g_mu ~ normal(prior_g_mu[1], prior_g_mu[2]);
+#&gt;   g_sigma ~ normal(prior_g_sigma[1], prior_g_sigma[2]);
+#&gt;   g ~ normal(g_mu, g_sigma);
+#&gt; 
+#&gt;   a_mu ~ normal(prior_a_mu[1], prior_a_mu[2]);
+#&gt;   a_sigma ~ normal(prior_a_sigma[1], prior_a_sigma[2]);
+#&gt;   a ~ normal(a_mu, a_sigma);
+#&gt; 
+#&gt;   // likelihood
+#&gt;   x ~ normal(zeta[voxel_tuning], x_sigma[voxel]);
+#&gt;   y ~ normal(a[voxel] + zeta[voxel_tuning] .* g[voxel], y_sigma[voxel]);
+#&gt; }</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
