@@ -18,9 +18,9 @@ test_that("can calculate thresholds", {
   testthat::expect_silent(cross_threshold(sub02_wide, c(voxel, run), low, high, participant = sub))
   testthat::expect_equal(
     cross_threshold(sub02_wide, voxel, low, high, participant = sub),
-    cross_threshold(sub02_wide, voxel, low, high, participant = "sub"))
+    cross_threshold(sub02_wide, voxel, low, high, participant = "sub")
+  )
 
   remaining <- cross_threshold(sub02_wide, voxel, low, high, participant = sub)
   testthat::expect_length(remaining, 3)
-
 })

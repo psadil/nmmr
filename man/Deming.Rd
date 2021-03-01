@@ -13,10 +13,13 @@ This class is a wrapper around a \code{\link[cmdstanr:CmdStanModel]{cmdstanr::Cm
 ## Method `Deming$new`
 ## ------------------------------------------------
 
-sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
-  dplyr::mutate(orientation = factor(orientation)) \%>\%
-  Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+m <- sub02 \%>\%
+     tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+     dplyr::mutate(orientation = factor(orientation)) \%>\%
+     Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+m
+
+m$cmdstanmodel
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -31,6 +34,8 @@ sub02 \%>\%
 \if{html}{\out{<div class="r6-active-bindings">}}
 \describe{
 \item{\code{standata}}{used to fit model}
+
+\item{\code{prior}}{used to fit model}
 
 \item{\code{cmdstanmodel}}{Underlying \code{\link[cmdstanr:CmdStanModel]{cmdstanr::CmdStanModel}}}
 }
@@ -51,7 +56,7 @@ sub02 \%>\%
 \subsection{Method \code{new()}}{
 Initialize new instance of class Deming
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel", prior = DemingPrior$new())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -64,15 +69,20 @@ Initialize new instance of class Deming
 \item{\code{tuning_var}}{Name of column across which there was testing}
 
 \item{\code{voxel_var}}{Name of column indexing voxels}
+
+\item{\code{prior}}{A \code{\link{DemingPrior}}}
 }
 \if{html}{\out{</div>}}
 }
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
-\preformatted{sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
-  dplyr::mutate(orientation = factor(orientation)) \%>\%
-  Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+\preformatted{m <- sub02 \%>\%
+     tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+     dplyr::mutate(orientation = factor(orientation)) \%>\%
+     Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+m
+
+m$cmdstanmodel
 }
 \if{html}{\out{</div>}}
 
