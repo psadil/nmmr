@@ -26,7 +26,7 @@ After installing `CmdStanR`, and `CmdStan`, `nmmr` can be installed with the `re
 
 ``` r
 # If you don't have the remotes package, install it with 
-# install.packages(remotes)
+# install.packages("remotes")
 # then, run the following to install nmmr
 remotes::install_github("psadil/nmmr")
 ```
@@ -35,9 +35,10 @@ remotes::install_github("psadil/nmmr")
 
 NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in two vignettes.
 
--   Rough-and-ready, (vignette to come)
--   Deming Regression (vignette to come)
--   Full Model (vignette to come)
+-   [Rough-and-ready non-parametric check](https://psadil.github.io/nmmr/articles/orthogonal.html). A Bayesian implementation of this analysis is also available, [here](https://psadil.github.io/nmmr/articles/deming-regression.html).
+
+-   Full Bayesian Analysis (vignette to come)
+
 
 ## Code of Conduct
 
