@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   deming-regression: deming-regression.html
   orthogonal: orthogonal.html
-last_built: 2021-02-12T13:50Z
+last_built: 2021-03-02T17:14Z
 urls:
   reference: https://psadil.github.io/nmmr/reference
   article: https://psadil.github.io/nmmr/articles
