@@ -252,7 +252,7 @@ d %>%
 
 ```
 
-This issue is known as [Regression Dilution](https://en.wikipedia.org/wiki/Regression_dilution). One way to understand the issue that that there is variability in, not just the y-coordinate, but also the x-coordinate, which inspires the name [errors-in-variables model](https://en.wikipedia.org/wiki/Errors-in-variables_models)^[Put another way, ordinary least squares assumes a model like $y\simN(2x, 1)$ -- e.g., that the activity at high contrast is directly related to the activity at low contrast]. For these circumstances, we need to use a _orthogonal_ regression.
+This issue is known as [Regression Dilution](https://en.wikipedia.org/wiki/Regression_dilution). One way to understand the issue that that there is variability in, not just the y-coordinate, but also the x-coordinate, which inspires the name [errors-in-variables model](https://en.wikipedia.org/wiki/Errors-in-variables_models)^[Put another way, ordinary least squares assumes a model like $y \sim N(2x, 1)$ -- e.g., that the activity at high contrast is directly related to the activity at low contrast]. For these circumstances, we need to use a _orthogonal_ regression.
 
 ### Orthogonal regression accurately recovers our desired slope
 

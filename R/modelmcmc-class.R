@@ -41,7 +41,7 @@ ModelMCMC <- R6::R6Class(
         each = self$cmdstanmcmc$metadata()$iter_sampling
       )
 
-      rm(sigma, vtf0)
+      rm(vtf0)
 
       data_ <- data.frame(
         y = self$standata$y,
@@ -77,12 +77,12 @@ ModelMCMC <- R6::R6Class(
     make_vtf0 = function(cores = 1) {
       x <- self$cmdstanmcmc$draws(variables = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) %>%
         posterior::as_draws_df() %>%
+        tibble::as_tibble() %>%
         tidyr::pivot_longer(
           cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
           names_to = c(".variable", "voxel"),
           names_pattern = "(.*)\\[(.*)\\]",
-          values_to = ".estimate"
-        ) %>%
+          values_to = ".estimate") %>%
         dplyr::mutate(voxel = as.numeric(.data$voxel)) %>%
         tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") %>%
         dplyr::group_nest(.data$.iteration)
