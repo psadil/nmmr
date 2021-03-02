@@ -82,7 +82,8 @@ ModelMCMC <- R6::R6Class(
           cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
           names_to = c(".variable", "voxel"),
           names_pattern = "(.*)\\[(.*)\\]",
-          values_to = ".estimate") %>%
+          values_to = ".estimate"
+        ) %>%
         dplyr::mutate(voxel = as.numeric(.data$voxel)) %>%
         tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") %>%
         dplyr::group_nest(.data$.iteration)
@@ -91,20 +92,21 @@ ModelMCMC <- R6::R6Class(
       n_iter <- dplyr::n_distinct(x$.iteration)
       vtf <- array(dim = c(n_iter, n_chain, max(self$standata$X)))
 
-        if (checkmate::test_os("windows")) {
-          xx <- parallel::mclapply(
-            1:nrow(x),
-            FUN = function(i) private$.make_vtf0_iter(x$data[[i]]),
-            mc.cores = cores
-          )
-        } else {
-          cl <- parallel::makePSOCKcluster(cores)
-          on.exit(parallel::stopCluster(cl))
-          xx <- parallel::parLapply(
-            cl = cl,
-            X = 1:nrow(x),
-            fun = function(i) private$.make_vtf0_iter(x$data[[i]]))
-        }
+      if (!checkmate::test_os("windows")) {
+        xx <- parallel::mclapply(
+          1:nrow(x),
+          FUN = function(i) private$.make_vtf0_iter(x$data[[i]]),
+          mc.cores = cores
+        )
+      } else {
+        cl <- parallel::makePSOCKcluster(cores)
+        on.exit(parallel::stopCluster(cl))
+        xx <- parallel::parLapply(
+          cl = cl,
+          X = 1:nrow(x),
+          fun = function(i) private$.make_vtf0_iter(x$data[[i]])
+        )
+      }
 
       for (i in 1:n_iter) {
         vtf[i, , ] <- xx[[i]]
