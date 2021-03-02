@@ -40,7 +40,8 @@ jobs:
         run: |
           install.packages("knitr")
           install.packages("pkgdown")
-          remotes::install_deps(dependencies = TRUE, upgrade = FALSE)
+          remotes::install_deps(dependencies = TRUE)
+          remotes::install_github("tidyverse/dplyr")
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), file.path(".github", "cmdstan-version"))
         shell: Rscript {0}
 

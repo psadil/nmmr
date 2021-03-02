@@ -18,7 +18,7 @@ Depends:
 Imports:
     checkmate,
     cmdstanr,
-    dplyr (<= 1.0.3),
+    dplyr,
     forcats,
     loo,
     magrittr,
