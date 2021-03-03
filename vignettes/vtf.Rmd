@@ -34,11 +34,11 @@ knitr::include_graphics("sd-model.png", dpi = 600)
 
 # Run Model
 
-These models require a long time to run. To speed things along for this vignette, the dataset is reduced to just two voxels
+These models require a long time to run. To speed things along for this vignette, the dataset is reduced to just three voxels
 
 ```{r, dataprep}
 small <- sub02 %>%
-  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) %>%
+  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706","215792","239930"))) %>%
   dplyr::mutate(voxel = forcats::fct_drop(voxel))
 ```
 
@@ -59,13 +59,15 @@ fit_multiplicative <- model_multiplicative$sample(
   chains = 2, 
   parallel_chains = 2, 
   seed = 1,
-  iter_sampling = 500)
+  iter_sampling = 100,
+  iter_warmup = 500)
 
 fit_additive <- model_additive$sample(
   chains = 2, 
   parallel_chains = 2, 
   seed = 1,
-  iter_sampling = 500)
+  iter_sampling = 100,
+  iter_warmup = 500)
 ```
 
 As with any Bayesian analysis, you should be wary about convergence issues. See `vignette('deming-regression')` for a discussion on how to check the output of the model.
