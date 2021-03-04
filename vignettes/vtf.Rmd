@@ -21,7 +21,6 @@ library(tidyr)
 library(ggplot2)
 library(dplyr)
 library(forcats)
-library(magrittr)
 
 set.seed(1234)
 ```
