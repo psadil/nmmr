@@ -1,0 +1,107 @@
+---
+title: "vtf"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{vtf}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+
+```{r setup}
+library(nmmr)
+library(tidyr)
+library(ggplot2)
+library(dplyr)
+library(forcats)
+
+set.seed(1234)
+```
+
+Fitting a the main Bayesian model is comparable to the Bayesian model presented in `vignette('deming-regression')`. This vignette additionally walks through how `nmmr` can be used to compare two models. 
+
+```{r, tikz-ex, echo=FALSE, out.width = "100%", fig.cap = 'Schematic of the Bayesian model. Filled square nodes indicate priors, open circles are estimated parameters, the shaded circles are observed data, and the open diamond is the result of a deterministic function of the parameters. Nodes are grouped with the square "plates", indicating over which subsets of the data the node is replicated. The distribution assigned to each node is listed to the right of the diagram. $N(\\mu,\\sigma)$ is a normal with location $\\mu$ and scale $\\sigma$, and $TN(\\mu,\\sigma)$ is a normal with the same parameters, truncated below at $\\mu$. Each equation in the upper right is associated with an arrow in the diagram, describing a relationship between nodes.', fig.ext='png', dpi=600}
+knitr::include_graphics("sd-model.png", dpi = 600)
+```
+
+
+# Run Model
+
+These models require a long time to run. To speed things along for this vignette, the dataset is reduced to just three voxels
+
+```{r, dataprep}
+small <- sub02 %>%
+  group_by(orientation, run, ses) %>%
+  slice_head(n = 10) %>%
+  mutate(voxel = fct_drop(voxel)) %>%
+  ungroup() 
+```
+
+Next, initialize two versions of the model.
+
+```{r, modeldef}
+model_multiplicative <- Model$new(small, form = "multiplicative")
+model_additive <- Model$new(small, form = "additive")
+```
+
+
+```{r fit}
+
+# fewer samples run for the sake of a quicker vignette
+# In a real analysis, you would probably want at least 4 chains with 
+# 1000 samples each
+fit_multiplicative <- model_multiplicative$sample(
+  chains = 2, 
+  parallel_chains = 2, 
+  seed = 1,
+  iter_sampling = 100,
+  iter_warmup = 500)
+
+fit_additive <- model_additive$sample(
+  chains = 2, 
+  parallel_chains = 2, 
+  seed = 1,
+  iter_sampling = 100,
+  iter_warmup = 500)
+```
+
+As with any Bayesian analysis, you should be wary about convergence issues. See `vignette('deming-regression')` for a discussion on how to check the output of the model.
+
+Note that, in this reduced example where there are only `r dplyr::n_distinct(small$voxel)` voxels, the models will likely have convergence issues^[For an expanded discussion on why, see https://betanalpha.github.io/assets/case_studies/identifiability.html, and https://betanalpha.github.io/assets/case_studies/hierarchical_modeling.html]. 
+
+## Compare Models
+
+Assuming that the posterior was estimated accurately, they may now be used for model comparison. In the original report, models were compared based on their predictive abilities, based on an efficient approximation to leave-one-out cross-validation. To implement this, `nmmr` takes advantage of functions provided by the [`loo`](https://mc-stan.org/loo/) package. The first step involves using a [`$loo()`](https://psadil.github.io/nmmr/reference/ModelMCMC.html#method-loo) method to calculate the expected log pointwise predictive density (ELPD). 
+
+```{r elpd}
+elpd_multiplicative <- fit_multiplicative$loo(cores = 2)
+elpd_additive <- fit_additive$loo(cores = 2)
+```
+
+The ELPD is closely related to information criteria like the AIC, BIC, or WAIC, but the ELPD requires fewer assumptions and is has more diagnostics for checking when the value should be questioned. For further details, see `help("loo-glossary", package="loo")`. 
+
+The output of the [`$loo()`](https://psadil.github.io/nmmr/reference/ModelMCMC.html#method-loo) method is an object that has class `psis_loo` (see `?loo::loo`), and so the diagnostics provided by the [`loo`](https://mc-stan.org/loo/) package are available. At a minimum, the object should be printed, and the `k` values should be inspected. Values of `k` larger than 0.7 are suspect, and indicate that the model comparison score cannot be trusted.
+
+```{r loo_diagnose}
+elpd_multiplicative
+```
+
+In this case, there were only a few voxels, and so the diagnostics indicate trouble. With more data, the diagnostics will likely improve.
+
+For a full list of the diagnostics, see `help("pareto-k-diagnostic", package="loo")`. 
+
+If the diagnostics look okay, ten the model may be compared. 
+
+```{r compare}
+loo::loo_compare(elpd_multiplicative, elpd_additive)
+```
+
+Higher scores are better. The winning model will always have an `elpd_diff` (ELPD difference) of 0, and the other models will be compared to this winner. A second column gives the standard error of the difference (e.g., for determining whether any difference is "reliable"). For details, see `?loo::loo_compare`.
+

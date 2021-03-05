@@ -58,7 +58,7 @@ For the purposes of this vignette, we reduce the dataset down to just 100 voxels
 ```{r, small}
 small <- sub02_wide %>%
   group_by(orientation, run, ses) %>%
-  slice_head(n = 100) %>%
+  slice_head(n = 10) %>%
   mutate(voxel = fct_drop(voxel)) %>%
   ungroup() 
 ```
@@ -89,7 +89,8 @@ fit <- m$sample(
   chains = 2, 
   parallel_chains = 2, 
   seed = 1,
-  iter_sampling = 500)
+  iter_sampling = 100,
+  iter_warmup = 500)
 ```
 
 The initial messages "The current Metropolis proposal is about to be rejected [...]" can safely be ignored. However, if you see warnings about either divergences or maximum treedepth, be wary. For a brief introduction to these warnings, [see here](https://mc-stan.org/misc/warnings.html). You can try setting adapt_delta to a higher number, but if you reach a value like 0.99 and still encounter divergences, then it is likely that there is a deeper issue, a conflict between the model and your data. 

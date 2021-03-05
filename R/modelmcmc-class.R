@@ -41,7 +41,7 @@ ModelMCMC <- R6::R6Class(
         each = self$cmdstanmcmc$metadata()$iter_sampling
       )
 
-      rm(sigma, vtf0)
+      rm(vtf0)
 
       data_ <- data.frame(
         y = self$standata$y,
@@ -77,6 +77,7 @@ ModelMCMC <- R6::R6Class(
     make_vtf0 = function(cores = 1) {
       x <- self$cmdstanmcmc$draws(variables = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) %>%
         posterior::as_draws_df() %>%
+        tibble::as_tibble() %>%
         tidyr::pivot_longer(
           cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
           names_to = c(".variable", "voxel"),
@@ -91,11 +92,22 @@ ModelMCMC <- R6::R6Class(
       n_iter <- dplyr::n_distinct(x$.iteration)
       vtf <- array(dim = c(n_iter, n_chain, max(self$standata$X)))
 
-      xx <- parallel::mclapply(
-        1:nrow(x),
-        FUN = function(i) private$.make_vtf0_iter(x$data[[i]]),
-        mc.cores = cores
-      )
+      if (!checkmate::test_os("windows")) {
+        xx <- parallel::mclapply(
+          1:nrow(x),
+          FUN = function(i) private$.make_vtf0_iter(x$data[[i]]),
+          mc.cores = cores
+        )
+      } else {
+        xx <- lapply(1:nrow(x), function(i) private$.make_vtf0_iter(x$data[[i]]))
+        # cl <- parallel::makePSOCKcluster(cores)
+        # on.exit(parallel::stopCluster(cl))
+        # xx <- parallel::parLapply(
+        #   cl = cl,
+        #   X = 1:nrow(x),
+        #   fun = function(i) private$.make_vtf0_iter(x$data[[i]])
+        # )
+      }
 
       for (i in 1:n_iter) {
         vtf[i, , ] <- xx[[i]]

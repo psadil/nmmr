@@ -22,6 +22,7 @@ Imports:
     forcats,
     loo,
     magrittr,
+    parallel,
     posterior,
     purrr,
     R6,
