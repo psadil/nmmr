@@ -41,7 +41,6 @@ jobs:
           install.packages("knitr")
           install.packages("pkgdown")
           remotes::install_deps(dependencies = TRUE)
-          remotes::install_github("tidyverse/dplyr")
           writeLines(sprintf("cmdstan-%s", cmdstanr:::latest_released_version()), file.path(".github", "cmdstan-version"))
         shell: Rscript {0}
 
@@ -55,6 +54,24 @@ jobs:
         run: |
           cmdstanr::install_cmdstan()
         shell: Rscript {0}
+
+      - name: Cache VTF Article
+        uses: actions/cache@v2
+        with:
+          path: vignettes/articles/vtf_cache
+          key: ${{ runner.os }}-${{ hashFiles('vignettes/articles/vtf.Rmd') }}
+
+      - name: Cache Orthogonal Article
+        uses: actions/cache@v2
+        with:
+          path: vignettes/articles/orthogonal_cache
+          key: ${{ runner.os }}-${{ hashFiles('vignettes/articles/orthogonal.Rmd') }}
+
+      - name: Cache Deming Article
+        uses: actions/cache@v2
+        with:
+          path: vignettes/articles/deming-regression_cache
+          key: ${{ runner.os }}-${{ hashFiles('vignettes/articles/deming-regression.Rmd') }}
 
       - name: Install package
         run: R CMD INSTALL .
