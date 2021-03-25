@@ -35,8 +35,8 @@ remotes::install_github("psadil/nmmr")
 
 NeuroModulation Modeling comprises two kinds of analyses, a rough-and-ready check and a Bayesian model. The functions for performing these analyses are detailed in the following vignettes.
 
--   [Rough-and-ready non-parametric check](https://psadil.github.io/nmmr/articles/orthogonal.html). A Bayesian implementation of this analysis is also available, [here](https://psadil.github.io/nmmr/articles/deming-regression.html).
--   Full Bayesian Analysis (vignette to come)
+- [Rough-and-ready non-parametric check](https://psadil.github.io/nmmr/articles/orthogonal.html). A Bayesian implementation of this analysis is also available, [here](https://psadil.github.io/nmmr/articles/deming-regression.html).
+- [Full Bayesian Analysis](https://psadil.github.io/nmmr/articles/vtf.html)
 
 
 ## Code of Conduct
