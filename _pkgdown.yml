@@ -6,6 +6,7 @@ url: https://psadil.github.io/nmmr
 template:
   params:
     noindex: true
+    ganalytics: G-VX8V7SDMRL
 
 reference:
   - title: "Non-parametric Check"
