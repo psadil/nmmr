@@ -54,6 +54,16 @@
 <![endif]-->
 
 
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VX8V7SDMRL"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-VX8V7SDMRL');
+</script>
+
 
   </head>
 
@@ -139,8 +149,8 @@
     <tbody>
       <tr>
         <th colspan="2">
-          <h2 id="section-all-functions" class="hasAnchor"><a href="#section-all-functions" class="anchor"></a>All functions</h2>
-          <p class="section-desc"></p>
+          <h2 id="section-non-parametric-check" class="hasAnchor"><a href="#section-non-parametric-check" class="anchor"></a>Non-parametric Check</h2>
+          <p class="section-desc"><p>Check for neuromodulation without the full model</p></p>
         </th>
       </tr>
       
@@ -163,15 +173,40 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="Model.html">Model</a></code> </p>
+          <p><code><a href="get_slope.html">get_slope()</a></code> </p>
         </td>
-        <td><p>Model object, ready for sampling</p></td>
+        <td><p>Return slope in orthogonal regression problem</p></td>
       </tr><tr>
         
         <td>
-          <p><code><a href="ModelMCMC.html">ModelMCMC</a></code> </p>
+          <p><code><a href="get_slope_by_group.html">get_slope_by_group()</a></code> </p>
         </td>
-        <td><p>ModelFit object, output from sampling</p></td>
+        <td><p>Calculate slopes by groups</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="cross_threshold.html">cross_threshold()</a></code> </p>
+        </td>
+        <td><p>Get Thresholds</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-main-model" class="hasAnchor"><a href="#section-main-model" class="anchor"></a>Main Model</h2>
+          <p class="section-desc"><p>Primary Model for Inferring Neuromodulation</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="Model.html">Model</a></code> </p>
+        </td>
+        <td><p>Model object, ready for sampling</p></td>
       </tr><tr>
         
         <td>
@@ -179,6 +214,44 @@
         </td>
         <td><p>List of priors</p></td>
       </tr><tr>
+        
+        <td>
+          <p><code><a href="ModelMCMC.html">ModelMCMC</a></code> </p>
+        </td>
+        <td><p>ModelFit object, output from sampling</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-data" class="hasAnchor"><a href="#section-data" class="anchor"></a>Data</h2>
+          <p class="section-desc"><p>Sample data for experimenting with functions</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
+        
+        <td>
+          <p><code><a href="sub02.html">sub02</a></code> </p>
+        </td>
+        <td><p>Sample beta values</p></td>
+      </tr>
+    </tbody><tbody>
+      <tr>
+        <th colspan="2">
+          <h2 id="section-misc" class="hasAnchor"><a href="#section-misc" class="anchor"></a>Misc</h2>
+          <p class="section-desc"><p>Utility functions</p></p>
+        </th>
+      </tr>
+      
+      
+    </tbody><tbody>
+      
+      
+      <tr>
         
         <td>
           <p><code><a href="WISEsummary.html">WISEsummary()</a></code> </p>
@@ -193,33 +266,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="cross_threshold.html">cross_threshold()</a></code> </p>
-        </td>
-        <td><p>Get Thresholds</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_slope.html">get_slope()</a></code> </p>
-        </td>
-        <td><p>Return slope in orthogonal regression problem</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="get_slope_by_group.html">get_slope_by_group()</a></code> </p>
-        </td>
-        <td><p>Calculate slopes by groups</p></td>
-      </tr><tr>
-        
-        <td>
           <p><code><a href="sem.html">sem()</a></code> </p>
         </td>
         <td><p>Standard Error of the Mean</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="sub02.html">sub02</a></code> </p>
-        </td>
-        <td><p>Sample beta values</p></td>
       </tr><tr>
         
         <td>
