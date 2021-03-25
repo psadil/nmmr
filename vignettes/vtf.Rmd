@@ -38,8 +38,10 @@ These models require a long time to run. To speed things along for this vignette
 
 ```{r, dataprep}
 small <- sub02 %>%
-  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706","215792","239930"))) %>%
-  dplyr::mutate(voxel = forcats::fct_drop(voxel))
+  group_by(orientation, run, ses) %>%
+  slice_head(n = 10) %>%
+  mutate(voxel = fct_drop(voxel)) %>%
+  ungroup() 
 ```
 
 Next, initialize two versions of the model.

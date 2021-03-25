@@ -99,13 +99,14 @@ ModelMCMC <- R6::R6Class(
           mc.cores = cores
         )
       } else {
-        cl <- parallel::makePSOCKcluster(cores)
-        on.exit(parallel::stopCluster(cl))
-        xx <- parallel::parLapply(
-          cl = cl,
-          X = 1:nrow(x),
-          fun = function(i) private$.make_vtf0_iter(x$data[[i]])
-        )
+        xx <- lapply(1:nrow(x), function(i) private$.make_vtf0_iter(x$data[[i]]))
+        # cl <- parallel::makePSOCKcluster(cores)
+        # on.exit(parallel::stopCluster(cl))
+        # xx <- parallel::parLapply(
+        #   cl = cl,
+        #   X = 1:nrow(x),
+        #   fun = function(i) private$.make_vtf0_iter(x$data[[i]])
+        # )
       }
 
       for (i in 1:n_iter) {
