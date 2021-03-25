@@ -6,3 +6,36 @@ url: https://psadil.github.io/nmmr
 template:
   params:
     noindex: true
+    ganalytics: G-VX8V7SDMRL
+
+reference:
+  - title: "Non-parametric Check"
+    desc: >
+      Check for neuromodulation without the full model
+    contents:
+      - Deming
+      - DemingPrior
+      - get_slope
+      - get_slope_by_group
+      - cross_threshold
+  - title: "Main Model"
+    desc: >
+      Primary Model for Inferring Neuromodulation
+    contents:
+      - Model
+      - Prior
+      - ModelMCMC
+  - title: "Data"
+    desc: >
+      Sample data for experimenting with functions
+    contents:
+      - sub02
+  - title: "Misc"
+    desc: >
+      Utility functions
+    contents:
+      - WISEsummary
+      - deg
+      - rad
+      - sem
+      - sum_squares
