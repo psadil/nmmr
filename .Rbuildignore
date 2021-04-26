@@ -16,8 +16,4 @@
 ^doc$
 ^Meta$
 
-^exec/vtf$
-^exec/deming
-^exec/vtf\.exe$
-^exec/deming\.exe$
 ^vignettes/articles$
