@@ -28,13 +28,13 @@ of \code{group} are excluded if they do not cross the threshold.
 Get Thresholds
 }
 \examples{
-sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+sub02 |>
+  tidyr::pivot_wider(names_from = contrast, values_from = y) |>
   cross_threshold(voxel, low, high)
 
 # can also calculate within groups
-sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+sub02 |>
+  tidyr::pivot_wider(names_from = contrast, values_from = y) |>
   cross_threshold(c(voxel, run), low, high, participant = sub)
 }
 \seealso{

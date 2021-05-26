@@ -24,9 +24,9 @@ Deming <- R6::R6Class(
     #' @param voxel_var Name of column indexing voxels
     #' @param prior A [`DemingPrior`]
     #' @examples
-    #' m <- sub02 %>%
-    #'      tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
-    #'      dplyr::mutate(orientation = factor(orientation)) %>%
+    #' m <- sub02 |>
+    #'      tidyr::pivot_wider(names_from = contrast, values_from = y) |>
+    #'      dplyr::mutate(orientation = factor(orientation)) |>
     #'      Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
     #' m
     #'
@@ -68,10 +68,10 @@ Deming <- R6::R6Class(
       checkmate::assert_factor(d[[tuning_name]])
       checkmate::assert_factor(d[[voxel_name]])
 
-      stan_data <- d %>%
-        dplyr::arrange({{ voxel_name }}, {{ tuning_var }}) %>%
-        dplyr::mutate(voxel_tuning = interaction({{ voxel_name }}, {{ tuning_var }}, lex.order = TRUE)) %>%
-        dplyr::rename(x = {{ x }}, y = {{ y }}, "tuning" = {{ tuning_var }}) %>%
+      stan_data <- d |>
+        dplyr::arrange({{ voxel_name }}, {{ tuning_var }}) |>
+        dplyr::mutate(voxel_tuning = interaction({{ voxel_name }}, {{ tuning_var }}, lex.order = TRUE)) |>
+        dplyr::rename(x = {{ x }}, y = {{ y }}, "tuning" = {{ tuning_var }}) |>
         tidybayes::compose_data()
 
       return(c(stan_data, private$.prior$as_list()))

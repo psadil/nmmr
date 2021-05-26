@@ -73,7 +73,7 @@ Prior <- R6::R6Class(
       checkmate::assert_number(ntfp_loc, lower = 0)
       checkmate::assert_numeric(ntfp_scale, lower = 0, len = 2)
 
-      purrr::walk2(rlang::fn_fmls_names(), rlang::fn_fmls_syms(), function(x, y) self %>% magrittr::inset2(x, eval(y)))
+      purrr::walk2(rlang::fn_fmls_names(), rlang::fn_fmls_syms(), function(x, y) self |> magrittr::inset2(x, eval(y)))
     },
 
     #' @description Convert object to a list.

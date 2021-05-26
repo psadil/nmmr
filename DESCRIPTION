@@ -14,14 +14,13 @@ URL: https://psadil.github.io/nmmr/,
     https://github.com/psadil/nmmr
 BugReports: https://github.com/psadil/nmmr/issues
 Depends:
-    R (>= 4.0.0)
+    R (>= 4.1.0)
 Imports:
     checkmate,
     cmdstanr,
     dplyr,
     forcats,
     loo,
-    magrittr,
     parallel,
     posterior,
     purrr,

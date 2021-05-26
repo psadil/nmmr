@@ -1,5 +1,5 @@
 test_that("can calculate thresholds", {
-  sub02_wide <- sub02 %>%
+  sub02_wide <- sub02 |>
     tidyr::pivot_wider(names_from = contrast, values_from = y)
 
   # can run with bare and quoted names

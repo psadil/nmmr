@@ -66,20 +66,20 @@ Model <- R6::R6Class(
         modulation <- 1
       }
 
-      tmp <- d %>%
+      tmp <- d |>
         dplyr::mutate(
           orientation_tested = as.numeric(factor(round(.data$orientation, 3)))
-        ) %>%
+        ) |>
         dplyr::arrange(.data$voxel, .data$contrast, .data$orientation)
 
-      sub_by_vox <- tmp %>%
-        dplyr::distinct(.data$sub, .data$voxel) %>%
-        magrittr::use_series("sub") %>%
+      sub_by_vox <- tmp |>
+        dplyr::distinct(.data$sub, .data$voxel) |>
+        magrittr::use_series("sub") |>
         as.numeric()
 
-      n_unique_orientations_vox <- tmp %>%
-        dplyr::group_by(.data$voxel) %>%
-        dplyr::summarise(n = dplyr::n_distinct(.data$orientation_tested)) %>%
+      n_unique_orientations_vox <- tmp |>
+        dplyr::group_by(.data$voxel) |>
+        dplyr::summarise(n = dplyr::n_distinct(.data$orientation_tested)) |>
         magrittr::use_series("n")
 
       unique_orientations <- sort(unique(tmp$orientation))
@@ -90,19 +90,19 @@ Model <- R6::R6Class(
         ncol = length(unique_orientations)
       )
 
-      ori_by_vox0 <- tmp %>%
-        dplyr::distinct(.data$voxel, .data$orientation_tested) %>%
+      ori_by_vox0 <- tmp |>
+        dplyr::distinct(.data$voxel, .data$orientation_tested) |>
         dplyr::group_nest(.data$voxel)
       for (v in 1:nrow(ori_by_vox0)) {
         ori_by_vox[v, 1:n_unique_orientations_vox[v]] <- ori_by_vox0$data[[v]]$orientation_tested
       }
 
       # voxels must already be differentiated by ses or sub (if relevant)
-      X <- interaction(tmp$voxel, tmp$contrast, tmp$orientation_tested, lex.order = TRUE, drop = TRUE) %>%
+      X <- interaction(tmp$voxel, tmp$contrast, tmp$orientation_tested, lex.order = TRUE, drop = TRUE) |>
         as.numeric()
 
-      stan_data <- tmp %>%
-        tidybayes::compose_data() %>%
+      stan_data <- tmp |>
+        tidybayes::compose_data() |>
         c(.data,
           n_unique_orientations = length(unique_orientations),
           unique_orientations = list(unique_orientations),

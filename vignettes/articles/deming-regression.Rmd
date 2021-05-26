@@ -48,18 +48,18 @@ knitr::include_graphics("deming-regression-model.png", dpi = 600)
 As for the orthogonal regression functions, the data need to be in a wider format. Additionally, the tuning variable (e.g., `orientation`) should be converted into a `factor`.
 
 ```{r, wider}
-sub02_wide <- sub02 %>%
-  pivot_wider(names_from = contrast, values_from = y) %>%
+sub02_wide <- sub02 |>
+  pivot_wider(names_from = contrast, values_from = y) |>
   mutate(orientation = factor(orientation))
 ```
 
 For the purposes of this vignette, we reduce the dataset down to just 100 voxels. This is only to speed up the estimation process. 
 
 ```{r, small}
-small <- sub02_wide %>%
-  group_by(orientation, run, ses) %>%
-  slice_head(n = 10) %>%
-  mutate(voxel = fct_drop(voxel)) %>%
+small <- sub02_wide |>
+  group_by(orientation, run, ses) |>
+  slice_head(n = 10) |>
+  mutate(voxel = fct_drop(voxel)) |>
   ungroup() 
 ```
 
@@ -127,22 +127,22 @@ shinystan::launch_shinystan(stanfit)
 When applying this model to your data, it is a good idea to browse through these plots. For now, focus on the three main parameters of interest, the average noise at low and high contrast (`x_sigma_mu` and `y_sigma_mu`), and the average slope (`g_mu`). For ease of plotting, convert the posterior samples into a `tibble::tibble`.
 
 ```{r, draws}
-draws <- fit$draws(c("g_mu", "x_sigma_mu","y_sigma_mu")) %>%
-  posterior::as_draws_df() %>%
+draws <- fit$draws(c("g_mu", "x_sigma_mu","y_sigma_mu")) |>
+  posterior::as_draws_df() |>
   as_tibble() 
 ```
 
 Now use [`tidyverse`](https://www.tidyverse.org/) packages to plot the posteriors. For example, we can look at whether there is evidence that the noise differs across levels of contrast.
 
 ```{r, post_noise, fig.cap="These data provide some evidence that noise increases at high contrast, but the posteriors are not precise enough to be confident."}
-draws %>%
-  select(-g_mu) %>%
-  pivot_longer(cols = contains("sigma"), names_to = "Contrast", values_to = "Noise") %>%
+draws |>
+  select(-g_mu) |>
+  pivot_longer(cols = contains("sigma"), names_to = "Contrast", values_to = "Noise") |>
   mutate(
     Contrast = factor(
       Contrast, 
       levels = c("x_sigma_mu", "y_sigma_mu"),
-      labels = c("Low", "High"))) %>%
+      labels = c("Low", "High"))) |>
   ggplot(aes(x=Noise, fill=Contrast)) +
   geom_histogram(bins=50, position = position_dodge()) 
 ```
@@ -150,8 +150,8 @@ draws %>%
 Finally, what is the average slope? 
 
 ```{r, post_slope, fig.cap="In support of multiplicative gain, the average slope appears to be larger than 1."}
-draws %>%
-  select(-contains("sigma"), Slope = "g_mu") %>%
+draws |>
+  select(-contains("sigma"), Slope = "g_mu") |>
   ggplot(aes(x = Slope)) +
   geom_histogram(bins = 50) 
 ```

@@ -50,11 +50,11 @@ WISEsummary <- function(data, dependentvars, betweenvars = NULL, withinvars = NU
   # Get the averages in each condition (grouping by within and between variables,
   # ignoring the subjects. Standard 'unnormed' means.
 
-  by_dv <- data %>%
+  by_dv <- data |>
     tidyr::pivot_longer(cols = {{ dependentvars }}, names_to = "DV")
 
-  cell_means <- by_dv %>%
-    dplyr::group_by(.data$DV, dplyr::across({{ betweenvars }}), dplyr::across({{ withinvars }})) %>%
+  cell_means <- by_dv |>
+    dplyr::group_by(.data$DV, dplyr::across({{ betweenvars }}), dplyr::across({{ withinvars }})) |>
     dplyr::summarise(
       dplyr::across(
         .data$value,
@@ -67,12 +67,12 @@ WISEsummary <- function(data, dependentvars, betweenvars = NULL, withinvars = NU
   nCells <- nrow(dplyr::distinct(cell_means, dplyr::across({{ withinvars }})))
   correction <- if (nCells > 1) sqrt((nCells / (nCells - 1))) else 1
 
-  recentered <- by_dv %>%
-    dplyr::group_by(.data$DV, dplyr::across({{ idvar }})) %>%
-    dplyr::mutate(subject_avg = mean(.data$value)) %>%
-    dplyr::group_by(.data$DV) %>%
-    dplyr::mutate(recentered_value = .data$value - .data$subject_avg + mean(.data$value)) %>%
-    dplyr::group_by(.data$DV, dplyr::across({{ withinvars }}), dplyr::across({{ betweenvars }})) %>%
+  recentered <- by_dv |>
+    dplyr::group_by(.data$DV, dplyr::across({{ idvar }})) |>
+    dplyr::mutate(subject_avg = mean(.data$value)) |>
+    dplyr::group_by(.data$DV) |>
+    dplyr::mutate(recentered_value = .data$value - .data$subject_avg + mean(.data$value)) |>
+    dplyr::group_by(.data$DV, dplyr::across({{ withinvars }}), dplyr::across({{ betweenvars }})) |>
     dplyr::summarise(
       dplyr::across(
         .data$recentered_value,
@@ -85,14 +85,14 @@ WISEsummary <- function(data, dependentvars, betweenvars = NULL, withinvars = NU
   by_cols <- names(cell_means)
   by_cols <- by_cols[!by_cols == "mean"]
 
-  dplyr::left_join(cell_means, recentered, by = by_cols) %>%
+  dplyr::left_join(cell_means, recentered, by = by_cols) |>
     dplyr::mutate(
       sem = .data$sem * correction,
       CI = stats::qt((1 - CI_width) / 2, df = .data$n - 1, lower.tail = FALSE) * .data$sem,
       CI_lower = .data$mean - .data$CI,
       CI_upper = .data$mean + .data$CI
-    ) %>%
-    dplyr::select(-.data$CI) %>%
+    ) |>
+    dplyr::select(-.data$CI) |>
     tidyr::pivot_wider(
       names_from = .data$DV,
       values_from = c(.data$mean, .data$recentered_mean, .data$sem, .data$n, .data$CI_lower, .data$CI_upper),
