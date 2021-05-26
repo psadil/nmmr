@@ -1,8 +1,8 @@
-small <- sub02 %>%
-  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) %>%
+small <- sub02 |>
+  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) |>
   dplyr::mutate(
     voxel = forcats::fct_drop(voxel),
-    orientation = factor(orientation)) %>%
+    orientation = factor(orientation)) |>
   tidyr::pivot_wider(names_from = contrast, values_from = y)
 
 m <- Deming$new(small, low, high, orientation, voxel)

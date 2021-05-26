@@ -82,13 +82,13 @@ get_slope <- function(x, y) {
 #' @seealso [get_slope()], [cross_threshold()]
 #'
 #' @examples
-#' sub02 %>%
-#'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
+#' sub02 |>
+#'   tidyr::pivot_wider(names_from = contrast, values_from = y) |>
 #'   get_slope_by_group(voxel, low, high)
 #'
 #' # create group with intersection of variables
-#' sub02 %>%
-#'   tidyr::pivot_wider(names_from = contrast, values_from = y) %>%
+#' sub02 |>
+#'   tidyr::pivot_wider(names_from = contrast, values_from = y) |>
 #'   get_slope_by_group(c(voxel, sub), low, high)
 #' @export
 #' @importFrom rlang .data
@@ -100,12 +100,12 @@ get_slope_by_group <- function(d, group, x, y) {
   checkmate::assert_subset(x_name, names(d))
   checkmate::assert_subset(y_name, names(d))
 
-  d %>%
-    dplyr::group_nest(dplyr::across({{ group }})) %>%
-    dplyr::rowwise() %>%
+  d |>
+    dplyr::group_nest(dplyr::across({{ group }})) |>
+    dplyr::rowwise() |>
     dplyr::mutate(
       slope = get_slope(.data$data[[x_name]], .data$data[[y_name]])
-    ) %>%
-    dplyr::ungroup() %>%
+    ) |>
+    dplyr::ungroup() |>
     dplyr::select({{ group }}, .data$slope)
 }

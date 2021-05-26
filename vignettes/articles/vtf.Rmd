@@ -37,10 +37,10 @@ knitr::include_graphics("sd-model.png", dpi = 600)
 These models require a long time to run. To speed things along for this vignette, the dataset is reduced to just a few voxels
 
 ```{r, dataprep}
-small <- sub02 %>%
-  group_by(orientation, run, ses) %>%
-  slice_head(n = 30) %>%
-  mutate(voxel = fct_drop(voxel)) %>%
+small <- sub02 |>
+  group_by(orientation, run, ses) |>
+  slice_head(n = 30) |>
+  mutate(voxel = fct_drop(voxel)) |>
   ungroup() 
 ```
 

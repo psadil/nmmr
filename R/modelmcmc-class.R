@@ -32,7 +32,7 @@ ModelMCMC <- R6::R6Class(
 
       draws <- list(
         vtf0 = posterior::as_draws_matrix(vtf0),
-        sigma = self$cmdstanmcmc$draws(variables = "sigma") %>%
+        sigma = self$cmdstanmcmc$draws(variables = "sigma") |>
           posterior::as_draws_matrix()
       )
 
@@ -75,17 +75,17 @@ ModelMCMC <- R6::R6Class(
     #'
     #' @return [`posterior::draws_array`],
     make_vtf0 = function(cores = 1) {
-      x <- self$cmdstanmcmc$draws(variables = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) %>%
-        posterior::as_draws_df() %>%
-        tibble::as_tibble() %>%
+      x <- self$cmdstanmcmc$draws(variables = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) |>
+        posterior::as_draws_df() |>
+        tibble::as_tibble() |>
         tidyr::pivot_longer(
           cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
           names_to = c(".variable", "voxel"),
           names_pattern = "(.*)\\[(.*)\\]",
           values_to = ".estimate"
-        ) %>%
-        dplyr::mutate(voxel = as.numeric(.data$voxel)) %>%
-        tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") %>%
+        ) |>
+        dplyr::mutate(voxel = as.numeric(.data$voxel)) |>
+        tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") |>
         dplyr::group_nest(.data$.iteration)
 
       n_chain <- dplyr::n_distinct(x$data[[1]]$.chain)
@@ -147,7 +147,7 @@ ModelMCMC <- R6::R6Class(
   ),
   private = list(
     .make_vtf0_iter = function(xx) {
-      d0 <- xx %>%
+      d0 <- xx |>
         dplyr::mutate(
           ori = purrr::map(
             .data$voxel,
@@ -155,18 +155,18 @@ ModelMCMC <- R6::R6Class(
               self$standata$ori_by_vox[.x, 1:self$standata$n_unique_orientations_vox[.x]]
             ]
           )
-        ) %>%
-        tidyr::unnest(.data$ori) %>%
-        dplyr::mutate(resp_to_ori = exp(.data$v_kappa * cos(.data$ori - .data$meanAngle))) %>%
-        dplyr::select(-.data$meanAngle, -.data$v_kappa) %>%
-        dplyr::group_by(.data$voxel, .data$.chain) %>%
-        dplyr::mutate(resp_to_ori = .data$v_gamma * (.data$resp_to_ori / sum(.data$resp_to_ori))) %>%
-        dplyr::ungroup() %>%
-        dplyr::select(-.data$v_gamma) %>%
+        ) |>
+        tidyr::unnest(.data$ori) |>
+        dplyr::mutate(resp_to_ori = exp(.data$v_kappa * cos(.data$ori - .data$meanAngle))) |>
+        dplyr::select(-.data$meanAngle, -.data$v_kappa) |>
+        dplyr::group_by(.data$voxel, .data$.chain) |>
+        dplyr::mutate(resp_to_ori = .data$v_gamma * (.data$resp_to_ori / sum(.data$resp_to_ori))) |>
+        dplyr::ungroup() |>
+        dplyr::select(-.data$v_gamma) |>
         tidyr::crossing(contrast = factor(c("low", "high"), levels = c("low", "high")))
 
       if (self$standata$modulation == 0) {
-        d2 <- d0 %>%
+        d2 <- d0 |>
           dplyr::mutate(
             vtf0 = dplyr::if_else(
               forcats::fct_match(.data$contrast, "low"),
@@ -176,7 +176,7 @@ ModelMCMC <- R6::R6Class(
             vtf0 = .data$vtf0 + .data$v_alpha
           )
       } else if (self$standata$modulation == 1) {
-        d2 <- d0 %>%
+        d2 <- d0 |>
           dplyr::mutate(
             vtf0 = dplyr::if_else(
               forcats::fct_match(.data$contrast, "low"),
@@ -187,12 +187,12 @@ ModelMCMC <- R6::R6Class(
           )
       }
 
-      out <- d2 %>%
-        dplyr::mutate(idx = interaction(.data$ori, .data$contrast, .data$voxel)) %>%
-        dplyr::arrange(.data$.chain, .data$idx) %>%
-        dplyr::select(.data$idx, .data$.chain, .data$vtf0) %>%
-        tidyr::pivot_wider(names_from = "idx", values_from = "vtf0") %>%
-        dplyr::select(-.data$.chain) %>%
+      out <- d2 |>
+        dplyr::mutate(idx = interaction(.data$ori, .data$contrast, .data$voxel)) |>
+        dplyr::arrange(.data$.chain, .data$idx) |>
+        dplyr::select(.data$idx, .data$.chain, .data$vtf0) |>
+        tidyr::pivot_wider(names_from = "idx", values_from = "vtf0") |>
+        dplyr::select(-.data$.chain) |>
         as.matrix()
 
       out

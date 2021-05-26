@@ -21,13 +21,13 @@ one containing the estimated slope for that group
 Calculate slopes by groups
 }
 \examples{
-sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+sub02 |>
+  tidyr::pivot_wider(names_from = contrast, values_from = y) |>
   get_slope_by_group(voxel, low, high)
 
 # create group with intersection of variables
-sub02 \%>\%
-  tidyr::pivot_wider(names_from = contrast, values_from = y) \%>\%
+sub02 |>
+  tidyr::pivot_wider(names_from = contrast, values_from = y) |>
   get_slope_by_group(c(voxel, sub), low, high)
 }
 \seealso{

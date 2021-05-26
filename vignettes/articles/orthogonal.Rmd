@@ -42,19 +42,19 @@ Ideally, we could assess changes in the voxel tuning functions by simply plottin
 ```{r, vtfs, fig.cap="Individual voxel tuning functions are too noisy to provide information about neuromodulation individually. Error bars span 95% confidence intervals"}
 
 # take six voxels worth of data and calculate summary statistics
-six_voxels <- sub02 %>%
-  group_by(contrast, orientation, run, ses) %>%
-  slice_head(n = 6) %>%
-  group_by(voxel) %>%
-  group_nest() %>%
+six_voxels <- sub02 |>
+  group_by(contrast, orientation, run, ses) |>
+  slice_head(n = 6) |>
+  group_by(voxel) |>
+  group_nest() |>
   mutate(
     data = map(
       data, 
-      ~WISEsummary(.x, dependentvars = y, withinvars = c(orientation, contrast)))) %>%
+      ~WISEsummary(.x, dependentvars = y, withinvars = c(orientation, contrast)))) |>
   unnest(data)
 
 # plot the tuning functions
-six_voxels %>%
+six_voxels |>
   ggplot(aes(x=orientation, y=y_mean, color = contrast)) +
   facet_wrap(~voxel, labeller = label_both) +
   geom_line() +
@@ -76,12 +76,12 @@ make_d <- function(raw,
                    m = 1.4,
                    a = 0.1,
                    p = 0.6) {
-  d <- tibble(raw = raw) %>%
+  d <- tibble(raw = raw) |>
     crossing(
       Contrast = factor(c("Low", "High"), levels = c("Low", "High")),
       VTF = factor(
         c("Additive", "Multiplicative"),
-        levels = c("Additive", "Multiplicative"))) %>%
+        levels = c("Additive", "Multiplicative"))) |>
     mutate(
       y = case_when(
         fct_match(Contrast, "Low") ~ CircStats::dmixedvm(raw, center, center+pi, kv, kv, p),
@@ -91,15 +91,15 @@ make_d <- function(raw,
   return(d)
 }
 
-test_oris <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
-  group_by(orientation, VTF) %>%
+test_oris <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) |>
+  group_by(orientation, VTF) |>
   mutate(
     high = max(y),
     higher = high + 0.025,
-    highest = 0.6) %>%
+    highest = 0.6) |>
   filter(fct_match(Contrast, "Low"))
 
-a <- make_d(seq(-pi, pi, length.out = 1000)) %>%
+a <- make_d(seq(-pi, pi, length.out = 1000)) |>
   ggplot(aes(x=orientation)) +
   facet_wrap(~VTF, nrow=2, strip.position = "left") +
   geom_segment(
@@ -115,7 +115,7 @@ a <- make_d(seq(-pi, pi, length.out = 1000)) %>%
       x = orientation,
       y = highest,
       shape = factor(orientation)),
-    data = test_oris %>%filter(fct_match(VTF, "Multiplicative")),
+    data = test_oris |>filter(fct_match(VTF, "Multiplicative")),
     show.legend = FALSE,
     size = size_shape) +
   geom_segment(
@@ -148,13 +148,13 @@ a <- make_d(seq(-pi, pi, length.out = 1000)) %>%
     rect = element_blank(),
     legend.position = "bottom")
 
-b <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) %>%
-  group_by(VTF, orientation) %>%
-  mutate(avg = mean(y)) %>%
-  group_by(VTF, Contrast) %>%
-  mutate(rank = rank(y)) %>%
-  ungroup() %>%
-  pivot_wider(names_from = Contrast, values_from = y) %>%
+b <- make_d(seq(-pi, pi-2*pi/8, length.out = 8)) |>
+  group_by(VTF, orientation) |>
+  mutate(avg = mean(y)) |>
+  group_by(VTF, Contrast) |>
+  mutate(rank = rank(y)) |>
+  ungroup() |>
+  pivot_wider(names_from = Contrast, values_from = y) |>
   ggplot(aes(x = Low, y = High)) +
   facet_wrap(~VTF, nrow = 2) +
   geom_abline(
@@ -219,7 +219,7 @@ Together, these assumptions define a model from which we can simulate datasets. 
 
 ```{r, tls_data}
 simulate_toy <- function(N, true_slope = 2){
-  tibble(z = rnorm(N)) %>%
+  tibble(z = rnorm(N)) |>
     mutate(
       x = rnorm(N, z),
       y = rnorm(N, 2*z))
@@ -242,7 +242,7 @@ ls
 At only about `r round(coef(ls)[2], digits=2)`, the estimated slope is only about half of the true slope (2)! The following plot shows the difference between the line we wanted to estimate (with a slope of 2), versus the line provided by `lm`.
 
 ```{r, tls_plot, fig.cap="We want to estimate the dashed line, which has a slope of 2. However, Ordinary Least Squares (OLS) provides an estimate that is biased towards 0 (solid line)."}
-d %>%
+d |>
   ggplot(aes(x=x, y=y)) +
   geom_point(alpha = .2) +
   geom_abline(intercept=coef(ls)[1], slope=coef(ls)[2], color="blue") +
@@ -268,20 +268,20 @@ This is much closer to the true slope!
 But perhaps we got lucky. Let's stimulate 1000 datasets, estimating for each the slope with both ordinary least squares and orthogonal regression.
 
 ```{r, tls_show}
-fits <- crossing(i = 1:1000) %>%
-  mutate(simulation = map(i, simulate_toy, N=1000)) %>%
-  rowwise() %>%
+fits <- crossing(i = 1:1000) |>
+  mutate(simulation = map(i, simulate_toy, N=1000)) |>
+  rowwise() |>
   mutate(
-  ordinary = lm(y ~ x, data=simulation) %>% coef() %>% magrittr::extract(2),
-  orthogonal = get_slope(simulation$x, simulation$y)) %>%
-  select(-simulation) %>%
+  ordinary = lm(y ~ x, data=simulation) |> coef() |> magrittr::extract(2),
+  orthogonal = get_slope(simulation$x, simulation$y)) |>
+  select(-simulation) |>
   pivot_longer(c(ordinary, orthogonal), names_to = "Method", values_to = "Estimate")
 ```
 
 Next, plot the distribution of recovered slopes for each of the two methods.
 
 ```{r, ls_compare, fig.cap="Across many simulated datasets, the ordinary least squares method estimates a slope that is too small, whereas the orthogonal regression is unbiased. The dashed vertical line marks the true slope."}
-fits %>%
+fits |>
   ggplot(aes(x=Estimate)) +
   geom_histogram(aes(fill=Method), bins = 100) +
   geom_vline(xintercept = 2, linetype = "dashed")
@@ -294,7 +294,7 @@ These simulations suggest that ordinary least squares is indeed biased, whereas 
 We can apply this same method to estimate a slope for each voxel in the provided dataset, `sub02`. To use `get_slope`, first [widen](https://r4ds.had.co.nz/tidy-data.html) the data.
 
 ```{r, pivot}
-sub02_wide <- sub02 %>%
+sub02_wide <- sub02 |>
   pivot_wider(names_from = contrast, values_from = y)
 
 sub02_wide
@@ -303,7 +303,7 @@ sub02_wide
 As mentioned above, contrast seems to have a different effect on each voxel. Hence, we should calculate the slope for each voxel separately. The `nmmr` package provides a helper function for applying the `get_slope` function to groups of a dataset, called `get_slope_by_group`. 
 
 ```{r, group}
-slopes <- sub02_wide %>%
+slopes <- sub02_wide |>
   get_slope_by_group(voxel, low, high)
 ```
 
@@ -311,7 +311,7 @@ For visualization, plot the distribution of estimated slopes.
 
 ```{r, voxel_slopes, fig.cap="When looking at all of the voxels, some of the slopes are spuriously high."}
 
-slopes %>%
+slopes |>
   ggplot(aes(x=slope)) +
   geom_histogram(bins = 200) 
 
@@ -320,8 +320,8 @@ slopes %>%
 Unfortunately, this distribution of slopes is not helpful. Clearly, there are outliers (e.g., one voxel has a slope that is over 200). These outliers are symptomatic of two challenges identified at the beginning of this voxel: voxels are flat and noisy. We can see the issue by looking at the activity for a single voxel.
 
 ```{r, circle, fig.cap="When voxels are poorly tuned, the best-fitting line can easily be one that is nearly vertical."}
-sub02_wide %>%
-  filter(fct_match(voxel, "209671")) %>%
+sub02_wide |>
+  filter(fct_match(voxel, "209671")) |>
   ggplot(aes(x=low, y = high)) +
   geom_point() +
   coord_fixed() 
@@ -334,10 +334,10 @@ When a voxel is tuned weakly, the scatter plot is nearly circular. When the data
 Orthogonal least squares allows us to focus on the form of neuromodulation, but now we need a way to focus on just those voxels that are responsive to stimulation. In the paper, we advise thresholding based on each voxel's responsivity to contrast. That is, we advise considering each voxel's average difference in activity between high and low contrast, and then selecting only those voxels whose differences are in the upper quantiles. 
 
 ```{r avg_diff, fig.cap="Distribution of average difference between high and low contrast, across voxels. The thresholding is based on the quantiles of this distribution."}
-sub02_wide %>%
-  mutate(diff = high - low) %>%
-  group_by(voxel) %>%
-  summarise(average_difference = mean(diff)) %>%
+sub02_wide |>
+  mutate(diff = high - low) |>
+  group_by(voxel) |>
+  summarise(average_difference = mean(diff)) |>
   ggplot() +
   geom_histogram(
     aes(x=average_difference),
@@ -353,7 +353,7 @@ ranks <- cross_threshold(sub02_wide, voxel, low, high, quantiles = c(0, 0.9))
 Joining the returned dataframe with the original dataset allows us to plot the distribution of slopes at both thresholds.
 
 ```{r, thresholded_slopes, fig.cap="Thresholding based on the average difference across levels of contrast removed the spuriously high slopes. Vertical line marks a slope of 1, which is predicted by the additive but not multiplicative model."}
-left_join(ranks, slopes, by = c("voxel")) %>%
+left_join(ranks, slopes, by = c("voxel")) |>
   ggplot(aes(x=slope)) +
   facet_wrap(~Threshold, scales = "free", labeller = label_both) +
   geom_histogram(bins = 20) +

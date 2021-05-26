@@ -1,5 +1,5 @@
-small <- sub02 %>%
-  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) %>%
+small <- sub02 |>
+  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) |>
   dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
 m <- Model$new(small, form = "multiplicative")
