@@ -2,14 +2,25 @@ small <- sub02 %>%
   dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) %>%
   dplyr::mutate(
     voxel = forcats::fct_drop(voxel),
-    orientation = factor(orientation)
-  ) %>%
+    orientation = factor(orientation)) %>%
   tidyr::pivot_wider(names_from = contrast, values_from = y)
 
 m <- Deming$new(small, low, high, orientation, voxel)
 
+test_that("model is available", {
+  checkmate::expect_r6(m$cmdstanmodel, classes = "CmdStanModel")
+  expect_type(m$cmdstanmodel$code(), "character")
+})
+
 test_that("ModelFit object contains data", {
   expect_type(m$standata, "list")
+})
+
+test_that("read-only fields cannot be modified", {
+  expect_error(m$form <- "new")
+  expect_error(m$standata <- list())
+  expect_error(m$cmdstanmodel <- NULL)
+  testthat::expect_error(m$prior <- list())
 })
 
 testthat::capture_output({
@@ -20,13 +31,6 @@ testthat::capture_output({
     refresh = 0,
     show_messages = FALSE
   ))
-})
-
-test_that("read-only fields cannot be modified", {
-  expect_error(m$form <- "new")
-  expect_error(m$standata <- list())
-  expect_error(m$cmdstanmodel <- NULL)
-  testthat::expect_error(m$prior <- list())
 })
 
 test_that("The fit method just returns the CmdStanMCMC", {
