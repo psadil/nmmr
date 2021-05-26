@@ -4,14 +4,9 @@ small <- sub02 %>%
 
 m <- Model$new(small, form = "multiplicative")
 
-testthat::capture_output({
-  suppressMessages(f <- m$sample(
-    iter_warmup = 5,
-    iter_sampling = 5,
-    chains = 2,
-    refresh = 0,
-    show_messages = FALSE
-  ))
+test_that("model is available", {
+  checkmate::expect_r6(m$cmdstanmodel, classes = "CmdStanModel")
+  expect_type(m$cmdstanmodel$code(), "character")
 })
 
 test_that("read-only fields cannot be modified", {
@@ -21,22 +16,30 @@ test_that("read-only fields cannot be modified", {
   testthat::expect_error(m$cmdstanmodel <- NULL)
 })
 
+testthat::capture_output({
+  suppressMessages(f <- m$sample(
+    iter_warmup = 5,
+    iter_sampling = 5,
+    chains = 2,
+    refresh = 0,
+    show_messages = FALSE)
+  )
+})
+
 test_that("multiplicative model runs", {
   checkmate::expect_r6(f, classes = c("ModelMCMC"))
 })
 
 test_that("new data can be passed during sampling", {
   testthat::capture_output({
-    suppressMessages(
-      f2 <- m$sample(
-        data = small,
-        iter_warmup = 5,
-        iter_sampling = 5,
-        chains = 2,
-        refresh = 0,
-        show_messages = FALSE
-      )
-    )
+    suppressMessages(f2 <- m$sample(
+      data = small,
+      iter_warmup = 5,
+      iter_sampling = 5,
+      chains = 2,
+      refresh = 0,
+      show_messages = FALSE
+    ))
   })
   checkmate::expect_r6(f2, classes = c("ModelMCMC"))
   testthat::expect_identical(f$standata, f2$standata)

@@ -1,5 +1,29 @@
 data {
-#include data/data.stan
+  int n;
+  int n_voxel; // total voxels across all subs
+  int n_sub;
+  int sub_by_vox[n_voxel]; // locates the voxel's sub
+  int n_unique_orientations;
+  vector<lower = -pi(), upper = pi()>[n_unique_orientations] unique_orientations;
+  int n_unique_orientations_vox[n_voxel];
+  int<lower = 0, upper = n_unique_orientations> ori_by_vox[n_voxel, n_unique_orientations];
+  vector[n] y;
+  int X[n];
+  int<lower = 1, upper = n_sub> sub[n];
+  real<lower = 0> ntfp_min;
+  int<lower = 0, upper = 1> modulation;
+  int<lower = 1, upper = n_voxel> voxel[n];
+  // priors from here on
+  vector<lower = 0>[2] prior_sigma_loc;
+  vector<lower = 0>[2] prior_sigma_scale;
+  real<lower = 0> prior_gamma_loc;
+  vector<lower = 0>[2] prior_gamma_scale;
+  vector<lower = 0>[2] prior_kappa_loc;
+  vector<lower = 0>[2] prior_kappa_scale;
+  vector<lower = 0>[2] prior_alpha_loc;
+  vector<lower = 0>[2] prior_alpha_scale;
+  real<lower = 0> prior_ntfp_loc;
+  vector<lower = 0>[2] prior_ntfp_scale;
 }
 transformed data{
   int maxX = max(X);
@@ -33,7 +57,12 @@ parameters {
 }
 transformed parameters{
   vector<lower=0>[n_voxel] v_kappa = v_kappa_loc + v_kappa_raw*v_kappa_scale;
-#include tparameters/donut.stan
+  vector<lower=0>[n_voxel] lengthOfMeanAngleVector = sqrt(rows_dot_self(meanAngleVector));
+  matrix[n_voxel, 2] meanAngleUnitVector = append_col(meanAngleVector[,1] ./ lengthOfMeanAngleVector,
+  meanAngleVector[,2] ./ lengthOfMeanAngleVector);
+  vector<lower = -pi(), upper = pi()>[n_voxel] meanAngle;
+
+  for(v in 1:n_voxel) meanAngle[v] = atan2(meanAngleUnitVector[v,2], meanAngleUnitVector[v,1]);
 }
 model{
   lengthOfMeanAngleVector ~ normal(1, .1);
@@ -66,5 +95,29 @@ model{
   v_ntfp ~ normal(s_ntfp_loc, s_ntfp_scale);
   target += -normal_lccdf(ntfp_min | s_ntfp_loc, s_ntfp_scale) * n_voxel;
 
-#include model/likelihood.stan
+  {
+    // unless all voxels were tested with the same number of orientations,
+    // not every element of vtf should be filled. The int array X should
+    // end up plucking out just those values which are filled
+    vector[n_unique_orientations * 2 * n_voxel] vtf;
+    int i = 1;
+
+    for(v in 1:n_voxel){
+      int no = n_unique_orientations_vox[v];
+      int no2 = no * 2;
+      int up = i + no2 - 1;
+      vector[no] resp_to_ori = exp(v_kappa[v] * cos(unique_orientations[ori_by_vox[v, 1:no]] - meanAngle[v]));
+      if (up > maxX) reject("index should not exceed elements of X. Found up = ", up);
+      resp_to_ori /= sum(resp_to_ori);
+
+      resp_to_ori *= v_gamma[v];
+      if(modulation == 0){
+        vtf[i:up] = v_alpha[v] + append_row(resp_to_ori, resp_to_ori + v_ntfp[v]);
+      }else if(modulation == 1){
+        vtf[i:up] = v_alpha[v] + append_row(resp_to_ori, resp_to_ori * v_ntfp[v]);
+      }
+      i += no2;
+    }
+    y ~ normal(vtf[X], sigma[voxel]);
+  }
 }

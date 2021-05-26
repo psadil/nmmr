@@ -23,7 +23,7 @@ Model <- R6::R6Class(
       checkmate::assert_choice(form, c("additive", "multiplicative"))
       checkmate::assert_class(prior, "Prior")
 
-      private$.cmdstanmodel <- stanmodels$vtf
+      private$.cmdstanmodel <- cmdstanr::cmdstan_model(private$.write_file())
       private$.form <- form
       private$.prior <- prior
       private$.standata <- self$make_standata(d = d)
@@ -162,6 +162,7 @@ Model <- R6::R6Class(
     .standata = list(),
     .form = NA_character_,
     .prior = NULL,
-    .cmdstanmodel = NULL
+    .cmdstanmodel = NULL,
+    .write_file = function() cmdstanr::write_stan_file(stan_code$vtf)
   )
 )
