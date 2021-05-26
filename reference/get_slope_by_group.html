@@ -176,38 +176,38 @@ one containing the estimated slope for that group</p>
     <pre class="examples"><div class='input'><span class='va'>sub02</span> <span class='op'>%&gt;%</span>
   <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>get_slope_by_group</span><span class='op'>(</span><span class='va'>voxel</span>, <span class='va'>low</span>, <span class='va'>high</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 187 x 2</span><span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 187 x 2</span>
 #&gt;    voxel    slope
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>    </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> 191852  1.31  
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> 197706  1.05  
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> 197769  0.889 
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> 197842  0.823 
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> 197906  1.21  
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> 197907  2.23  
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> 203688  0.878 
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> 203689  0.730 
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> 203690 -</span><span style='color: #BB0000;'>0.026</span><span style='color: #BB0000;text-decoration: underline;'>9</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> 203753  1.25  
-#&gt; </span><span style='color: #949494;'># … with 177 more rows</span><span></div><div class='input'>
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>    <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> 191852  1.31  
+#&gt; <span style='color: #BCBCBC;'> 2</span> 197706  1.05  
+#&gt; <span style='color: #BCBCBC;'> 3</span> 197769  0.889 
+#&gt; <span style='color: #BCBCBC;'> 4</span> 197842  0.823 
+#&gt; <span style='color: #BCBCBC;'> 5</span> 197906  1.21  
+#&gt; <span style='color: #BCBCBC;'> 6</span> 197907  2.23  
+#&gt; <span style='color: #BCBCBC;'> 7</span> 203688  0.878 
+#&gt; <span style='color: #BCBCBC;'> 8</span> 203689  0.730 
+#&gt; <span style='color: #BCBCBC;'> 9</span> 203690 -<span style='color: #BB0000;'>0.026</span><span style='color: #BB0000; text-decoration: underline;'>9</span>
+#&gt; <span style='color: #BCBCBC;'>10</span> 203753  1.25  
+#&gt; <span style='color: #949494;'># … with 177 more rows</span></div><div class='input'>
 <span class='co'># create group with intersection of variables</span>
 <span class='va'>sub02</span> <span class='op'>%&gt;%</span>
   <span class='fu'>tidyr</span><span class='fu'>::</span><span class='fu'><a href='https://tidyr.tidyverse.org/reference/pivot_wider.html'>pivot_wider</a></span><span class='op'>(</span>names_from <span class='op'>=</span> <span class='va'>contrast</span>, values_from <span class='op'>=</span> <span class='va'>y</span><span class='op'>)</span> <span class='op'>%&gt;%</span>
   <span class='fu'>get_slope_by_group</span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='va'>voxel</span>, <span class='va'>sub</span><span class='op'>)</span>, <span class='va'>low</span>, <span class='va'>high</span><span class='op'>)</span>
-</div><div class='output co'>#&gt; </span><span style='color: #949494;'># A tibble: 187 x 3</span><span>
+</div><div class='output co'>#&gt; <span style='color: #949494;'># A tibble: 187 x 3</span>
 #&gt;    voxel  sub     slope
-#&gt;    </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>  </span><span style='color: #949494;font-style: italic;'>&lt;fct&gt;</span><span>   </span><span style='color: #949494;font-style: italic;'>&lt;dbl&gt;</span><span>
-#&gt; </span><span style='color: #BCBCBC;'> 1</span><span> 191852 2      1.31  
-#&gt; </span><span style='color: #BCBCBC;'> 2</span><span> 197706 2      1.05  
-#&gt; </span><span style='color: #BCBCBC;'> 3</span><span> 197769 2      0.889 
-#&gt; </span><span style='color: #BCBCBC;'> 4</span><span> 197842 2      0.823 
-#&gt; </span><span style='color: #BCBCBC;'> 5</span><span> 197906 2      1.21  
-#&gt; </span><span style='color: #BCBCBC;'> 6</span><span> 197907 2      2.23  
-#&gt; </span><span style='color: #BCBCBC;'> 7</span><span> 203688 2      0.878 
-#&gt; </span><span style='color: #BCBCBC;'> 8</span><span> 203689 2      0.730 
-#&gt; </span><span style='color: #BCBCBC;'> 9</span><span> 203690 2     -</span><span style='color: #BB0000;'>0.026</span><span style='color: #BB0000;text-decoration: underline;'>9</span><span>
-#&gt; </span><span style='color: #BCBCBC;'>10</span><span> 203753 2      1.25  
-#&gt; </span><span style='color: #949494;'># … with 177 more rows</span><span></div></span></pre>
+#&gt;    <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>  <span style='color: #949494; font-style: italic;'>&lt;fct&gt;</span>   <span style='color: #949494; font-style: italic;'>&lt;dbl&gt;</span>
+#&gt; <span style='color: #BCBCBC;'> 1</span> 191852 2      1.31  
+#&gt; <span style='color: #BCBCBC;'> 2</span> 197706 2      1.05  
+#&gt; <span style='color: #BCBCBC;'> 3</span> 197769 2      0.889 
+#&gt; <span style='color: #BCBCBC;'> 4</span> 197842 2      0.823 
+#&gt; <span style='color: #BCBCBC;'> 5</span> 197906 2      1.21  
+#&gt; <span style='color: #BCBCBC;'> 6</span> 197907 2      2.23  
+#&gt; <span style='color: #BCBCBC;'> 7</span> 203688 2      0.878 
+#&gt; <span style='color: #BCBCBC;'> 8</span> 203689 2      0.730 
+#&gt; <span style='color: #BCBCBC;'> 9</span> 203690 2     -<span style='color: #BB0000;'>0.026</span><span style='color: #BB0000; text-decoration: underline;'>9</span>
+#&gt; <span style='color: #BCBCBC;'>10</span> 203753 2      1.25  
+#&gt; <span style='color: #949494;'># … with 177 more rows</span></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">
