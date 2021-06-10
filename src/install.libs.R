@@ -1,9 +1,5 @@
 
-message(glue::glue("R_PACKAGE_SOURCE: {R_PACKAGE_SOURCE}"))
-message(glue::glue("R_PACKAGE_DIR: {R_PACKAGE_DIR}"))
-
-
-sapply(c("deming"), function(model_name) {
+sapply(c("deming", "vtf"), function(model_name) {
   # create C++ code for stan model
   # the two instances are for when the package is in development vs. installed
   stan_dir <- if (dir.exists(file.path(R_PACKAGE_SOURCE, "stan"))) "stan" else file.path(R_PACKAGE_SOURCE, "inst", "stan")
