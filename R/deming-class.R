@@ -39,7 +39,6 @@ Deming <- R6::R6Class(
                           prior = DemingPrior$new()) {
       checkmate::assert_class(prior, "DemingPrior")
 
-      private$.cmdstanmodel <- cmdstanr::cmdstan_model(private$.write_file())
       private$.prior <- prior
       private$.standata <- self$make_standata(d, {{ x }}, {{ y }}, {{ tuning_var }}, {{ voxel_var }})
     },
@@ -111,7 +110,8 @@ Deming <- R6::R6Class(
     #' @field cmdstanmodel Underlying [`cmdstanr::CmdStanModel`]
     cmdstanmodel = function(value) {
       if (missing(value)) {
-        private$.cmdstanmodel
+        get_stanmodel("deming")
+        # private$.cmdstanmodel
       } else {
         stop("`$cmdstanmodel` is read only", call. = FALSE)
       }
@@ -119,8 +119,7 @@ Deming <- R6::R6Class(
   ),
   private = list(
     .standata = list(),
-    .cmdstanmodel = NULL,
-    .prior = NULL,
-    .write_file = function() cmdstanr::write_stan_file(stan_code$deming)
+    # .cmdstanmodel = NULL,
+    .prior = NULL
   )
 )

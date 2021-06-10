@@ -23,7 +23,6 @@ Model <- R6::R6Class(
       checkmate::assert_choice(form, c("additive", "multiplicative"))
       checkmate::assert_class(prior, "Prior")
 
-      private$.cmdstanmodel <- cmdstanr::cmdstan_model(private$.write_file())
       private$.form <- form
       private$.prior <- prior
       private$.standata <- self$make_standata(d = d)
@@ -152,7 +151,7 @@ Model <- R6::R6Class(
     #' @field cmdstanmodel Underlying [`cmdstanr::CmdStanModel`]
     cmdstanmodel = function(value) {
       if (missing(value)) {
-        private$.cmdstanmodel
+        get_stanmodel("vtf")
       } else {
         stop("`$cmdstanmodel` is read only", call. = FALSE)
       }
@@ -161,8 +160,6 @@ Model <- R6::R6Class(
   private = list(
     .standata = list(),
     .form = NA_character_,
-    .prior = NULL,
-    .cmdstanmodel = NULL,
-    .write_file = function() cmdstanr::write_stan_file(stan_code$vtf)
+    .prior = NULL
   )
 )
