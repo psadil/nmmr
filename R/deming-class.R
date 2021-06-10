@@ -39,7 +39,8 @@ Deming <- R6::R6Class(
                           prior = DemingPrior$new()) {
       checkmate::assert_class(prior, "DemingPrior")
 
-      private$.cmdstanmodel <- cmdstanr::cmdstan_model(private$.write_file())
+      # private$.cmdstanmodel <- cmdstanr::cmdstan_model(private$.write_file())
+      private$.cmdstanmodel <- stanmodels("deming")
       private$.prior <- prior
       private$.standata <- self$make_standata(d, {{ x }}, {{ y }}, {{ tuning_var }}, {{ voxel_var }})
     },
