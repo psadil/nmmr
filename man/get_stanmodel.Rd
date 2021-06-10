@@ -16,6 +16,6 @@ compiled cmdstanmodel
 get_stanmodel
 }
 \examples{
-stanmodels("deming")
-stanmodels("vtf")
+get_stanmodel("deming")
+get_stanmodel("vtf")
 }

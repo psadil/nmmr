@@ -19,6 +19,7 @@ Imports:
     checkmate,
     cmdstanr,
     dplyr,
+    fs,
     forcats,
     loo,
     parallel,

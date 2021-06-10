@@ -7,8 +7,8 @@
 #' @export
 #'
 #' @examples
-#' stanmodels("deming")
-#' stanmodels("vtf")
+#' get_stanmodel("deming")
+#' get_stanmodel("vtf")
 get_stanmodel <- function(model_name){
   checkmate::assert_choice(model_name, c("deming","vtf"))
   suppressMessages(
