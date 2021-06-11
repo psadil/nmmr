@@ -1,8 +1,8 @@
 small <- sub02 |>
-  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) |>
-  dplyr::mutate(voxel = forcats::fct_drop(voxel))
+dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) |>
+dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
-m <- Model$new(small, form = "multiplicative")
+m <- Model$new(small, form = "multiplicative", id_var = voxel)
 
 test_that("model is available", {
   checkmate::expect_r6(m$cmdstanmodel, classes = "CmdStanModel")
@@ -22,8 +22,8 @@ testthat::capture_output({
     iter_sampling = 5,
     chains = 2,
     refresh = 0,
-    show_messages = FALSE)
-  )
+    show_messages = FALSE
+  ))
 })
 
 test_that("multiplicative model runs", {
@@ -33,7 +33,7 @@ test_that("multiplicative model runs", {
 test_that("new data can be passed during sampling", {
   testthat::capture_output({
     suppressMessages(f2 <- m$sample(
-      data = small,
+      data = m$make_standata(small, id_var = voxel),
       iter_warmup = 5,
       iter_sampling = 5,
       chains = 2,

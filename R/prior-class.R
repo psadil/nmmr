@@ -51,8 +51,7 @@ Prior <- R6::R6Class(
     #' @param ntfp_scale vector of length 2
     #'
     #' @return A new `Prior` object.
-    initialize = function(
-                          sigma_loc = c(2, 1 / 2),
+    initialize = function(sigma_loc = c(2, 1 / 2),
                           sigma_scale = c(2, 1 / 2),
                           gamma_loc = 5,
                           gamma_scale = c(2, 1 / 20),
@@ -156,8 +155,7 @@ DemingPrior <- R6::R6Class(
     #' @param a_sigma vector of length 2
     #'
     #' @return A new `Prior` object.
-    initialize = function(
-                          z_mu_mu = c(0, 10),
+    initialize = function(z_mu_mu = c(0, 10),
                           z_mu_sigma = c(0, 10),
                           z_sigma_mu = c(0, 10),
                           z_sigma_sigma = c(0, 10),

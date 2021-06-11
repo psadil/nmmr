@@ -27,7 +27,7 @@ test_that("get pretty accurate slope", {
 
 test_that("Can calculate slopes in groups", {
   sub02_wide <- sub02 |>
-    tidyr::pivot_wider(names_from = contrast, values_from = y)
+  tidyr::pivot_wider(names_from = contrast, values_from = y)
 
   # can run with bare and quoted names
   testthat::expect_silent(get_slope_by_group(sub02_wide, voxel, low, high))

@@ -16,16 +16,18 @@ Model <- R6::R6Class(
 
     #' @param d dataframe from which to make standata.
     #' @param form Form of the neuromodulation (additive or multiplicative)
+    #' @param id_var Name of column indexing ids
     #' @param prior A [`Prior`]
     initialize = function(d,
                           form,
+                          id_var,
                           prior = Prior$new()) {
       checkmate::assert_choice(form, c("additive", "multiplicative"))
       checkmate::assert_class(prior, "Prior")
 
       private$.form <- form
       private$.prior <- prior
-      private$.standata <- self$make_standata(d = d)
+      private$.standata <- self$make_standata(d = d, id_var = {{ id_var }})
     },
 
     #' @description
@@ -38,7 +40,7 @@ Model <- R6::R6Class(
     #' @seealso [cmdstanr::sample()][cmdstanr::model-method-sample]
     sample = function(data = NULL, ...) {
       if (!is.null(data)) {
-        standata <- self$make_standata(d = data)
+        standata <- data
       } else {
         standata <- self$standata
       }
@@ -50,11 +52,14 @@ Model <- R6::R6Class(
     #' Prepare data for running model
     #'
     #' @param d dataframe from which to make standata.
+    #' @param id_var Name of column indexing units (e.g., voxels, cells). Column must be a factor.
     #'
     #' @return named list
-    make_standata = function(d) {
+    make_standata = function(d, id_var) {
       checkmate::assert_data_frame(d, any.missing = FALSE)
-      checkmate::assert_subset(c("sub", "voxel", "contrast", "orientation", "y"), names(d))
+      id_name <- as_name(enquo(id_var))
+
+      checkmate::assert_subset(c("sub", id_name, "contrast", "orientation", "y"), names(d))
       checkmate::assert_numeric(d$orientation, lower = -pi, upper = pi)
 
       if (self$form == "additive") {
@@ -66,52 +71,53 @@ Model <- R6::R6Class(
       }
 
       tmp <- d |>
-        dplyr::mutate(
-          orientation_tested = as.numeric(factor(round(.data$orientation, 3)))
-        ) |>
-        dplyr::arrange(.data$voxel, .data$contrast, .data$orientation)
+      dplyr::mutate(
+        orientation_tested = as.numeric(factor(round(.data$orientation, 3)))
+      ) |>
+      dplyr::arrange({{ id_var }}, .data$contrast, .data$orientation)
 
       sub_by_vox <- tmp |>
-        dplyr::distinct(.data$sub, .data$voxel) |>
-        magrittr::use_series("sub") |>
-        as.numeric()
+      dplyr::distinct(.data$sub, {{ id_var }}) |>
+      magrittr::use_series("sub") |>
+      as.numeric()
 
       n_unique_orientations_vox <- tmp |>
-        dplyr::group_by(.data$voxel) |>
-        dplyr::summarise(n = dplyr::n_distinct(.data$orientation_tested)) |>
-        magrittr::use_series("n")
+      dplyr::group_by({{ id_var }}) |>
+      dplyr::summarise(n = dplyr::n_distinct(.data$orientation_tested)) |>
+      magrittr::use_series("n")
 
       unique_orientations <- sort(unique(tmp$orientation))
 
       ori_by_vox <- matrix(
         0,
-        nrow = dplyr::n_distinct(tmp$voxel),
+        nrow = dplyr::n_distinct(tmp[[id_name]]),
         ncol = length(unique_orientations)
       )
 
       ori_by_vox0 <- tmp |>
-        dplyr::distinct(.data$voxel, .data$orientation_tested) |>
-        dplyr::group_nest(.data$voxel)
+      dplyr::distinct({{ id_var }}, .data$orientation_tested) |>
+      dplyr::group_nest({{ id_var }})
       for (v in 1:nrow(ori_by_vox0)) {
         ori_by_vox[v, 1:n_unique_orientations_vox[v]] <- ori_by_vox0$data[[v]]$orientation_tested
       }
 
-      # voxels must already be differentiated by ses or sub (if relevant)
-      X <- interaction(tmp$voxel, tmp$contrast, tmp$orientation_tested, lex.order = TRUE, drop = TRUE) |>
-        as.numeric()
+      # ids must already be differentiated by ses or sub (if relevant)
+      X <- interaction(tmp[[id_name]], tmp$contrast, tmp$orientation_tested, lex.order = TRUE, drop = TRUE) |>
+      as.numeric()
 
       stan_data <- tmp |>
-        tidybayes::compose_data() |>
-        c(.data,
-          n_unique_orientations = length(unique_orientations),
-          unique_orientations = list(unique_orientations),
-          n_unique_orientations_vox = list(n_unique_orientations_vox),
-          ori_by_vox = list(ori_by_vox),
-          X = list(X),
-          sub_by_vox = list(sub_by_vox),
-          ntfp_min = ntfp_min,
-          modulation = modulation
-        )
+      dplyr::rename("id" = {{ id_var }}) |>
+      tidybayes::compose_data() |>
+      c(.data,
+        n_unique_orientations = length(unique_orientations),
+        unique_orientations = list(unique_orientations),
+        n_unique_orientations_vox = list(n_unique_orientations_vox),
+        ori_by_vox = list(ori_by_vox),
+        X = list(X),
+        sub_by_vox = list(sub_by_vox),
+        ntfp_min = ntfp_min,
+        modulation = modulation
+      )
 
       stan_data$orientation_tested <- NULL
       stan_data$orientation <- NULL

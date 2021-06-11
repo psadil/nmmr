@@ -33,7 +33,7 @@ ModelMCMC <- R6::R6Class(
       draws <- list(
         vtf0 = posterior::as_draws_matrix(vtf0),
         sigma = self$cmdstanmcmc$draws(variables = "sigma") |>
-          posterior::as_draws_matrix()
+        posterior::as_draws_matrix()
       )
 
       chain_id <- rep(
@@ -46,7 +46,7 @@ ModelMCMC <- R6::R6Class(
       data_ <- data.frame(
         y = self$standata$y,
         X = self$standata$X,
-        voxel = self$standata$voxel
+        id = self$standata$id
       )
 
       r_eff <- loo::relative_eff(
@@ -76,17 +76,17 @@ ModelMCMC <- R6::R6Class(
     #' @return [`posterior::draws_array`],
     make_vtf0 = function(cores = 1) {
       x <- self$cmdstanmcmc$draws(variables = c("v_gamma", "v_kappa", "v_alpha", "meanAngle", "v_ntfp")) |>
-        posterior::as_draws_df() |>
-        tibble::as_tibble() |>
-        tidyr::pivot_longer(
-          cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
-          names_to = c(".variable", "voxel"),
-          names_pattern = "(.*)\\[(.*)\\]",
-          values_to = ".estimate"
-        ) |>
-        dplyr::mutate(voxel = as.numeric(.data$voxel)) |>
-        tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") |>
-        dplyr::group_nest(.data$.iteration)
+      posterior::as_draws_df() |>
+      tibble::as_tibble() |>
+      tidyr::pivot_longer(
+        cols = c(-.data$.iteration, -.data$.chain, -.data$.draw),
+        names_to = c(".variable", "id"),
+        names_pattern = "(.*)\\[(.*)\\]",
+        values_to = ".estimate"
+      ) |>
+      dplyr::mutate(id = as.numeric(.data$id)) |>
+      tidyr::pivot_wider(names_from = ".variable", values_from = ".estimate") |>
+      dplyr::group_nest(.data$.iteration)
 
       n_chain <- dplyr::n_distinct(x$data[[1]]$.chain)
       n_iter <- dplyr::n_distinct(x$.iteration)
@@ -127,7 +127,7 @@ ModelMCMC <- R6::R6Class(
       # each time called internally within loo the arguments will be equal to:
       # data_i: ith row of fake_data (fake_data[i,, drop=FALSE])
       # draws: entire fake_posterior matrix
-      ll <- stats::dnorm(data_i$y, mean = draws$vtf0[, data_i$X], sd = draws$sigma[, data_i$voxel])
+      ll <- stats::dnorm(data_i$y, mean = draws$vtf0[, data_i$X], sd = draws$sigma[, data_i$id])
       return(ll)
     },
 
@@ -141,59 +141,59 @@ ModelMCMC <- R6::R6Class(
       # each time called internally within loo the arguments will be equal to:
       # data_i: ith row of fake_data (fake_data[i,, drop=FALSE])
       # draws: entire fake_posterior matrix
-      ll <- stats::dnorm(data_i$y, mean = draws$vtf0[, data_i$X], sd = draws$sigma[, data_i$voxel], log = TRUE)
+      ll <- stats::dnorm(data_i$y, mean = draws$vtf0[, data_i$X], sd = draws$sigma[, data_i$id], log = TRUE)
       return(ll)
     }
   ),
   private = list(
     .make_vtf0_iter = function(xx) {
       d0 <- xx |>
-        dplyr::mutate(
-          ori = purrr::map(
-            .data$voxel,
-            ~ self$standata$unique_orientations[
-              self$standata$ori_by_vox[.x, 1:self$standata$n_unique_orientations_vox[.x]]
-            ]
-          )
-        ) |>
-        tidyr::unnest(.data$ori) |>
-        dplyr::mutate(resp_to_ori = exp(.data$v_kappa * cos(.data$ori - .data$meanAngle))) |>
-        dplyr::select(-.data$meanAngle, -.data$v_kappa) |>
-        dplyr::group_by(.data$voxel, .data$.chain) |>
-        dplyr::mutate(resp_to_ori = .data$v_gamma * (.data$resp_to_ori / sum(.data$resp_to_ori))) |>
-        dplyr::ungroup() |>
-        dplyr::select(-.data$v_gamma) |>
-        tidyr::crossing(contrast = factor(c("low", "high"), levels = c("low", "high")))
+      dplyr::mutate(
+        ori = purrr::map(
+          .data$id,
+          ~ self$standata$unique_orientations[
+            self$standata$ori_by_vox[.x, 1:self$standata$n_unique_orientations_vox[.x]]
+          ]
+        )
+      ) |>
+      tidyr::unnest(.data$ori) |>
+      dplyr::mutate(resp_to_ori = exp(.data$v_kappa * cos(.data$ori - .data$meanAngle))) |>
+      dplyr::select(-.data$meanAngle, -.data$v_kappa) |>
+      dplyr::group_by(.data$id, .data$.chain) |>
+      dplyr::mutate(resp_to_ori = .data$v_gamma * (.data$resp_to_ori / sum(.data$resp_to_ori))) |>
+      dplyr::ungroup() |>
+      dplyr::select(-.data$v_gamma) |>
+      tidyr::crossing(contrast = factor(c("low", "high"), levels = c("low", "high")))
 
       if (self$standata$modulation == 0) {
         d2 <- d0 |>
-          dplyr::mutate(
-            vtf0 = dplyr::if_else(
-              forcats::fct_match(.data$contrast, "low"),
-              .data$resp_to_ori,
-              .data$resp_to_ori + .data$v_ntfp
-            ),
-            vtf0 = .data$vtf0 + .data$v_alpha
-          )
+        dplyr::mutate(
+          vtf0 = dplyr::if_else(
+            forcats::fct_match(.data$contrast, "low"),
+            .data$resp_to_ori,
+            .data$resp_to_ori + .data$v_ntfp
+          ),
+          vtf0 = .data$vtf0 + .data$v_alpha
+        )
       } else if (self$standata$modulation == 1) {
         d2 <- d0 |>
-          dplyr::mutate(
-            vtf0 = dplyr::if_else(
-              forcats::fct_match(.data$contrast, "low"),
-              .data$resp_to_ori,
-              .data$resp_to_ori * .data$v_ntfp
-            ),
-            vtf0 = .data$vtf0 + .data$v_alpha
-          )
+        dplyr::mutate(
+          vtf0 = dplyr::if_else(
+            forcats::fct_match(.data$contrast, "low"),
+            .data$resp_to_ori,
+            .data$resp_to_ori * .data$v_ntfp
+          ),
+          vtf0 = .data$vtf0 + .data$v_alpha
+        )
       }
 
       out <- d2 |>
-        dplyr::mutate(idx = interaction(.data$ori, .data$contrast, .data$voxel)) |>
-        dplyr::arrange(.data$.chain, .data$idx) |>
-        dplyr::select(.data$idx, .data$.chain, .data$vtf0) |>
-        tidyr::pivot_wider(names_from = "idx", values_from = "vtf0") |>
-        dplyr::select(-.data$.chain) |>
-        as.matrix()
+      dplyr::mutate(idx = interaction(.data$ori, .data$contrast, .data$id)) |>
+      dplyr::arrange(.data$.chain, .data$idx) |>
+      dplyr::select(.data$idx, .data$.chain, .data$vtf0) |>
+      tidyr::pivot_wider(names_from = "idx", values_from = "vtf0") |>
+      dplyr::select(-.data$.chain) |>
+      as.matrix()
 
       out
     }

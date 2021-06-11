@@ -1,10 +1,10 @@
 small <- sub02 |>
-  dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) |>
-  dplyr::mutate(voxel = forcats::fct_drop(voxel))
+dplyr::filter(forcats::fct_match(voxel, c("191852", "197706"))) |>
+dplyr::mutate(voxel = forcats::fct_drop(voxel))
 
 test_that("loo runs", {
-  m <- Model$new(small, form = "multiplicative")
-  a <- Model$new(small, form = "additive")
+  m <- Model$new(small, form = "multiplicative", id_var = voxel)
+  a <- Model$new(small, form = "additive", id_var = voxel)
 
   testthat::capture_output({
     suppressMessages(
