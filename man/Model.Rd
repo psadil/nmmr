@@ -48,7 +48,7 @@ Prepare data for running model
 \if{latex}{\out{\hypertarget{method-new}{}}}
 \subsection{Method \code{new()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$new(d, form, prior = Prior$new())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$new(d, form, id_var, prior = Prior$new())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -57,6 +57,8 @@ Prepare data for running model
 \item{\code{d}}{dataframe from which to make standata.}
 
 \item{\code{form}}{Form of the neuromodulation (additive or multiplicative)}
+
+\item{\code{id_var}}{Name of column indexing ids}
 
 \item{\code{prior}}{A \code{\link{Prior}}}
 }
@@ -88,13 +90,15 @@ of the internally stored data (created when the object was initialized)}
 \if{latex}{\out{\hypertarget{method-make_standata}{}}}
 \subsection{Method \code{make_standata()}}{
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Model$make_standata(d)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Model$make_standata(d, id_var)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
 \item{\code{d}}{dataframe from which to make standata.}
+
+\item{\code{id_var}}{Name of column indexing units (e.g., voxels, cells). Column must be a factor.}
 }
 \if{html}{\out{</div>}}
 }

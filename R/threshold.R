@@ -15,13 +15,13 @@
 #' @seealso [get_slope()], [get_slope_by_group()]
 #' @examples
 #' sub02 |>
-#'   tidyr::pivot_wider(names_from = contrast, values_from = y) |>
-#'   cross_threshold(voxel, low, high)
+#' tidyr::pivot_wider(names_from = contrast, values_from = y) |>
+#' cross_threshold(voxel, low, high)
 #'
 #' # can also calculate within groups
 #' sub02 |>
-#'   tidyr::pivot_wider(names_from = contrast, values_from = y) |>
-#'   cross_threshold(c(voxel, run), low, high, participant = sub)
+#' tidyr::pivot_wider(names_from = contrast, values_from = y) |>
+#' cross_threshold(c(voxel, run), low, high, participant = sub)
 #' @export
 #' @importFrom rlang .data
 cross_threshold <- function(d, group, x, y, quantiles = c(0, 0.9), participant = NULL) {
@@ -31,16 +31,16 @@ cross_threshold <- function(d, group, x, y, quantiles = c(0, 0.9), participant =
   checkmate::assert_subset(as_name(enquo(y)), names(d))
 
   d |>
-    dplyr::group_by(dplyr::across({{ group }}), dplyr::across({{ participant }})) |>
-    dplyr::summarise(
-      dplyr::across({{ x }}, mean, .names = "x"),
-      dplyr::across({{ y }}, mean, .names = "y"),
-      .groups = "drop"
-    ) |>
-    dplyr::mutate(di = .data$y - .data$x) |>
-    tidyr::crossing(Threshold = quantiles) |>
-    dplyr::group_by(.data$Threshold, dplyr::across({{ participant }})) |>
-    dplyr::filter(.data$di >= stats::quantile(.data$di, .data$Threshold)) |>
-    dplyr::select({{ group }}, .data$Threshold, {{ participant }}) |>
-    dplyr::ungroup()
+  dplyr::group_by(dplyr::across({{ group }}), dplyr::across({{ participant }})) |>
+  dplyr::summarise(
+    dplyr::across({{ x }}, mean, .names = "x"),
+    dplyr::across({{ y }}, mean, .names = "y"),
+    .groups = "drop"
+  ) |>
+  dplyr::mutate(di = .data$y - .data$x) |>
+  tidyr::crossing(Threshold = quantiles) |>
+  dplyr::group_by(.data$Threshold, dplyr::across({{ participant }})) |>
+  dplyr::filter(.data$di >= stats::quantile(.data$di, .data$Threshold)) |>
+  dplyr::select({{ group }}, .data$Threshold, {{ participant }}) |>
+  dplyr::ungroup()
 }

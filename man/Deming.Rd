@@ -16,7 +16,7 @@ This class is a wrapper around a \code{\link[cmdstanr:CmdStanModel]{cmdstanr::Cm
 m <- sub02 |>
      tidyr::pivot_wider(names_from = contrast, values_from = y) |>
      dplyr::mutate(orientation = factor(orientation)) |>
-     Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+     Deming$new(low, high, tuning_var = orientation, id_var = voxel)
 m
 
 m$cmdstanmodel
@@ -56,7 +56,7 @@ m$cmdstanmodel
 \subsection{Method \code{new()}}{
 Initialize new instance of class Deming
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, voxel_var = "voxel", prior = DemingPrior$new())}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Deming$new(d, x, y, tuning_var, id_var, prior = DemingPrior$new())}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -68,7 +68,7 @@ Initialize new instance of class Deming
 
 \item{\code{tuning_var}}{Name of column across which there was testing}
 
-\item{\code{voxel_var}}{Name of column indexing voxels}
+\item{\code{id_var}}{Name of column indexing ids}
 
 \item{\code{prior}}{A \code{\link{DemingPrior}}}
 }
@@ -79,7 +79,7 @@ Initialize new instance of class Deming
 \preformatted{m <- sub02 |>
      tidyr::pivot_wider(names_from = contrast, values_from = y) |>
      dplyr::mutate(orientation = factor(orientation)) |>
-     Deming$new(low, high, tuning_var = orientation, voxel_var = voxel)
+     Deming$new(low, high, tuning_var = orientation, id_var = voxel)
 m
 
 m$cmdstanmodel
@@ -95,7 +95,7 @@ m$cmdstanmodel
 \subsection{Method \code{make_standata()}}{
 Prepare data for running model
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{Deming$make_standata(d, x, y, tuning_var, voxel_var = "voxel")}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{Deming$make_standata(d, x, y, tuning_var, id_var)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -107,7 +107,7 @@ Prepare data for running model
 
 \item{\code{tuning_var}}{Name of column across which there was testing. Column must be a factor.}
 
-\item{\code{voxel_var}}{Name of column indexing voxels. Column must be a factor.}
+\item{\code{id_var}}{Name of column indexing units (e.g., voxels, cells). Column must be a factor.}
 }
 \if{html}{\out{</div>}}
 }
