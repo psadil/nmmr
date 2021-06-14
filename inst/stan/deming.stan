@@ -21,6 +21,8 @@ data {
   vector[2] prior_g_sigma;
   vector[2] prior_a_mu;
   vector[2] prior_a_sigma;
+
+  int<lower=0, upper=1> prior_only;
 }
 parameters {
   real<lower=0> g_sigma;
@@ -85,6 +87,8 @@ model {
   a ~ normal(a_mu, a_sigma);
 
   // likelihood
-  x ~ normal(zeta[id_tuning], x_sigma[id]);
-  y ~ normal(a[id] + zeta[id_tuning] .* g[id], y_sigma[id]);
+  if(!prior_only){
+    x ~ normal(zeta[id_tuning], x_sigma[id]);
+    y ~ normal(a[id] + zeta[id_tuning] .* g[id], y_sigma[id]);
+  }
 }

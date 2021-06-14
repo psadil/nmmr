@@ -24,6 +24,8 @@ data {
   vector<lower = 0>[2] prior_alpha_scale;
   real<lower = 0> prior_ntfp_loc;
   vector<lower = 0>[2] prior_ntfp_scale;
+
+  int<lower=0, upper=1> prior_only;
 }
 transformed data{
   int maxX = max(X);
@@ -118,6 +120,6 @@ model{
       }
       i += no2;
     }
-    y ~ normal(vtf[X], sigma[id]);
+    if(!prior_only) y ~ normal(vtf[X], sigma[id]);
   }
 }
