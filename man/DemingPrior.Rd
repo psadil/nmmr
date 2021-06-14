@@ -34,6 +34,10 @@ List of priors
 \item{\code{a_mu}}{\eqn{\mu^a} ~ \code{normal(a_mu[1], a_mu[2])}}
 
 \item{\code{a_sigma}}{\eqn{\sigma^a} ~ \code{normal(a_sigma[1], a_sigma[2])}}
+
+\item{\code{prior_only}}{bool indicating whether to include the likelihood (1 => prior predictive check)}
+
+\item{\code{prior_only}}{bool indicating whether to include the likelihood (1 => prior predictive check)}
 }
 \if{html}{\out{</div>}}
 }
@@ -64,7 +68,9 @@ All values must be greater than 0.
   g_mu = c(0, 10),
   g_sigma = c(0, 10),
   a_mu = c(0, 10),
-  a_sigma = c(0, 10)
+  a_sigma = c(0, 10),
+  prior_only = 0,
+  sample_yrep = 0
 )}\if{html}{\out{</div>}}
 }
 
@@ -94,6 +100,10 @@ All values must be greater than 0.
 \item{\code{a_mu}}{vector of length 2}
 
 \item{\code{a_sigma}}{vector of length 2}
+
+\item{\code{prior_only}}{0 or 1 indicating whether to include the likelihood (1 => prior predictive check)}
+
+\item{\code{sample_yrep}}{0 or 1 indicating whether to simulate from the posterior}
 }
 \if{html}{\out{</div>}}
 }

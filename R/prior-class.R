@@ -38,6 +38,9 @@ Prior <- R6::R6Class(
     #' @field prior_only bool indicating whether to include the likelihood (1 => prior predictive check)
     prior_only = NULL,
 
+    #' @field prior_only bool indicating whether to include the likelihood (1 => prior predictive check)
+    sample_yrep = NULL,
+
     #' @description
     #'   Create a new Model object.
     #'   All values must be greater than 0.
@@ -53,6 +56,7 @@ Prior <- R6::R6Class(
     #' @param ntfp_loc real
     #' @param ntfp_scale vector of length 2
     #' @param prior_only 0 or 1 indicating whether to include the likelihood (1 => prior predictive check)
+    #' @param sample_yrep 0 or 1 indicating whether to simulate from the posterior
     #'
     #' @return A new `Prior` object.
     initialize = function(sigma_loc = c(2, 1 / 2),
@@ -65,7 +69,8 @@ Prior <- R6::R6Class(
                           alpha_scale = c(2, 1 / 2),
                           ntfp_loc = 0.5,
                           ntfp_scale = c(2, 3),
-                          prior_only = 0) {
+                          prior_only = 0,
+                          sample_yrep = 0) {
       checkmate::assert_numeric(sigma_loc, lower = 0, len = 2)
       checkmate::assert_numeric(sigma_scale, lower = 0, len = 2)
       checkmate::assert_number(gamma_loc, lower = 0)
@@ -77,6 +82,7 @@ Prior <- R6::R6Class(
       checkmate::assert_number(ntfp_loc, lower = 0)
       checkmate::assert_numeric(ntfp_scale, lower = 0, len = 2)
       checkmate::assert_number(prior_only, lower = 0, upper = 1)
+      checkmate::assert_number(sample_yrep, lower = 0, upper = 1)
 
       purrr::walk2(rlang::fn_fmls_names(), rlang::fn_fmls_syms(), function(x, y) self |> magrittr::inset2(x, eval(y)))
     },
@@ -95,7 +101,8 @@ Prior <- R6::R6Class(
         prior_alpha_scale = self$alpha_scale,
         prior_ntfp_loc = self$ntfp_loc,
         prior_ntfp_scale = self$ntfp_scale,
-        prior_only = self$prior_only
+        prior_only = self$prior_only,
+        sample_yrep = self$sample_yrep
       )
     }
   )
@@ -147,6 +154,9 @@ DemingPrior <- R6::R6Class(
     #' @field prior_only bool indicating whether to include the likelihood (1 => prior predictive check)
     prior_only = NULL,
 
+    #' @field prior_only bool indicating whether to include the likelihood (1 => prior predictive check)
+    sample_yrep = NULL,
+
     #' @description
     #'   Create a new Model object.
     #'   All values must be greater than 0.
@@ -164,6 +174,7 @@ DemingPrior <- R6::R6Class(
     #' @param a_mu vector of length 2
     #' @param a_sigma vector of length 2
     #' @param prior_only 0 or 1 indicating whether to include the likelihood (1 => prior predictive check)
+    #' @param sample_yrep 0 or 1 indicating whether to simulate from the posterior
     #'
     #' @return A new `Prior` object.
     initialize = function(z_mu_mu = c(0, 10),
@@ -178,7 +189,8 @@ DemingPrior <- R6::R6Class(
                           g_sigma = c(0, 10),
                           a_mu = c(0, 10),
                           a_sigma = c(0, 10),
-                          prior_only = 0) {
+                          prior_only = 0,
+                          sample_yrep = 0) {
       purrr::walk(rlang::fn_fmls_syms(), ~ checkmate::assert_numeric(eval(.x), min.len = 1, max.len = 2))
       purrr::walk2(rlang::fn_fmls_names(), rlang::fn_fmls_syms(), function(x, y) self[[x]] <- eval(y))
     },
@@ -199,7 +211,8 @@ DemingPrior <- R6::R6Class(
         prior_g_sigma = self$g_sigma,
         prior_a_mu = self$a_mu,
         prior_a_sigma = self$a_sigma,
-        prior_only = self$prior_only
+        prior_only = self$prior_only,
+        sample_yrep = self$sample_yrep
       )
     }
   )

@@ -23,6 +23,7 @@ data {
   vector[2] prior_a_sigma;
 
   int<lower=0, upper=1> prior_only;
+  int<lower=0, upper=1> sample_yrep;
 }
 parameters {
   real<lower=0> g_sigma;
@@ -87,8 +88,16 @@ model {
   a ~ normal(a_mu, a_sigma);
 
   // likelihood
-  if(!prior_only){
+  if(prior_only > 0){
     x ~ normal(zeta[id_tuning], x_sigma[id]);
     y ~ normal(a[id] + zeta[id_tuning] .* g[id], y_sigma[id]);
+  }
+}
+generated quantities{
+  real yrep[sample_yrep > 0 ? n : 0];
+  real xrep[sample_yrep > 0 ? n : 0];
+  if(sample_yrep > 0){
+    xrep = normal_rng(zeta[id_tuning], x_sigma[id]);
+    yrep = normal_rng(a[id] + zeta[id_tuning] .* g[id], y_sigma[id]);
   }
 }

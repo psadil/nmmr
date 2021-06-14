@@ -22,13 +22,13 @@ Calculate slopes by groups
 }
 \examples{
 sub02 |>
-  tidyr::pivot_wider(names_from = contrast, values_from = y) |>
-  get_slope_by_group(voxel, low, high)
+tidyr::pivot_wider(names_from = contrast, values_from = y) |>
+get_slope_by_group(voxel, low, high)
 
 # create group with intersection of variables
 sub02 |>
-  tidyr::pivot_wider(names_from = contrast, values_from = y) |>
-  get_slope_by_group(c(voxel, sub), low, high)
+tidyr::pivot_wider(names_from = contrast, values_from = y) |>
+get_slope_by_group(c(voxel, sub), low, high)
 }
 \seealso{
 \code{\link[=get_slope]{get_slope()}}, \code{\link[=cross_threshold]{cross_threshold()}}

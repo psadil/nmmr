@@ -30,6 +30,10 @@ List of priors
 \item{\code{ntfp_loc}}{\eqn{ntfp_{loc}} ~ \code{normal(ntfp_loc[1], ntfp_loc[2])}}
 
 \item{\code{ntfp_scale}}{\eqn{ntfp_{scale}} ~ \code{gamma(ntfp_scale[1], ntfp_scale[2])}}
+
+\item{\code{prior_only}}{bool indicating whether to include the likelihood (1 => prior predictive check)}
+
+\item{\code{prior_only}}{bool indicating whether to include the likelihood (1 => prior predictive check)}
 }
 \if{html}{\out{</div>}}
 }
@@ -58,7 +62,9 @@ All values must be greater than 0.
   alpha_loc = c(0, 5),
   alpha_scale = c(2, 1/2),
   ntfp_loc = 0.5,
-  ntfp_scale = c(2, 3)
+  ntfp_scale = c(2, 3),
+  prior_only = 0,
+  sample_yrep = 0
 )}\if{html}{\out{</div>}}
 }
 
@@ -84,6 +90,10 @@ All values must be greater than 0.
 \item{\code{ntfp_loc}}{real}
 
 \item{\code{ntfp_scale}}{vector of length 2}
+
+\item{\code{prior_only}}{0 or 1 indicating whether to include the likelihood (1 => prior predictive check)}
+
+\item{\code{sample_yrep}}{0 or 1 indicating whether to simulate from the posterior}
 }
 \if{html}{\out{</div>}}
 }

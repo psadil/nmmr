@@ -26,6 +26,7 @@ data {
   vector<lower = 0>[2] prior_ntfp_scale;
 
   int<lower=0, upper=1> prior_only;
+  int<lower=0, upper=1> sample_yrep;
 }
 transformed data{
   int maxX = max(X);
@@ -120,6 +121,31 @@ model{
       }
       i += no2;
     }
-    if(!prior_only) y ~ normal(vtf[X], sigma[id]);
+    if(prior_only > 0) y ~ normal(vtf[X], sigma[id]);
+  }
+}
+generated quantities{
+  real yrep[sample_yrep > 0 ? n : 0];
+  if(sample_yrep > 0){
+    vector[n_unique_orientations * 2 * n_id] vtf;
+    int i = 1;
+
+    for(v in 1:n_id){
+      int no = n_unique_orientations_vox[v];
+      int no2 = no * 2;
+      int up = i + no2 - 1;
+      vector[no] resp_to_ori = exp(v_kappa[v] * cos(unique_orientations[ori_by_vox[v, 1:no]] - meanAngle[v]));
+      if (up > maxX) reject("index should not exceed elements of X. Found up = ", up);
+      resp_to_ori /= sum(resp_to_ori);
+
+      resp_to_ori *= v_gamma[v];
+      if(modulation == 0){
+        vtf[i:up] = v_alpha[v] + append_row(resp_to_ori, resp_to_ori + v_ntfp[v]);
+      }else if(modulation == 1){
+        vtf[i:up] = v_alpha[v] + append_row(resp_to_ori, resp_to_ori * v_ntfp[v]);
+      }
+      i += no2;
+    }
+    yrep = normal_rng(vtf[X], sigma[id]);
   }
 }
